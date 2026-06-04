@@ -380,7 +380,7 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            input.search-input, select {
+            input.search-input, select, .filters .btn-secondary {
                 width: 100%;
             }
             #addAlbumBtn {
@@ -407,7 +407,6 @@
             <span class="current">Lanzamientos de Rap Español</span>
         </nav>
 
-        <!-- Filtros, Buscadores y Ordenación -->
         <section class="filters">
             <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
             <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
@@ -427,21 +426,20 @@
                 <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
             </select>
 
-            <!-- Selector para Dirección del Orden -->
             <select id="sortDirection" onchange="resetPageAndRender()">
                 <option value="desc">Más recientes primero</option>
                 <option value="asc">Más antiguos primero</option>
             </select>
 
+            <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar Filtros</button>
+
             <button id="addAlbumBtn" class="btn" style="display: none; margin-left: auto;" onclick="openAddModal()">+ Añadir Álbum</button>
         </section>
 
-        <!-- Listado de Álbumes -->
         <main class="albums-grid" id="albumsGrid">
             <div class="no-results">Cargando lanzamientos...</div>
         </main>
 
-        <!-- Barra de Paginación -->
         <section class="pagination-container">
             <div class="pagination-limit">
                 <span>Mostrar:</span>
@@ -465,7 +463,6 @@
         Base de datos del rap español by Malditos Raperos
     </footer>
 
-    <!-- Modales -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2>Login Administrador</h2>
@@ -577,7 +574,7 @@
                 addAlbumBtn.style.display = "block";
                 adminBadge.style.display = "inline-block";
             } else {
-                authBtn.innerText = "Login Admin";
+                authBtn.innerText = "Admin";
                 authBtn.classList.remove('btn-danger');
                 authBtn.classList.add('btn-secondary');
                 addAlbumBtn.style.display = "none";
@@ -586,26 +583,35 @@
             renderAlbums();
         });
 
-        // Modificación: Al resetear filtros/búsqueda también sube la vista arriba
         window.resetPageAndRender = function() {
             currentPage = 1;
             renderAlbums();
             scrollToTop();
         }
 
-        // Modificación: Al cambiar de página, se ejecuta el scroll superior suave
         window.changePage = function(direction) {
             currentPage += direction;
             renderAlbums();
             scrollToTop();
         }
 
-        // Función reutilizable para desplazar suavemente la ventana al inicio de la rejilla
         function scrollToTop() {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
+        }
+
+        // Nueva función global para vaciar y restablecer los inputs y selects
+        window.clearFilters = function() {
+            document.getElementById('searchAuthor').value = '';
+            document.getElementById('searchTitle').value = '';
+            document.getElementById('filterYear').value = 'all';
+            document.getElementById('filterMonth').value = 'all';
+            document.getElementById('sortDirection').value = 'desc'; // Volver por defecto a más recientes primero
+            
+            // Re-renderizar todo desde la primera página
+            resetPageAndRender();
         }
 
         window.renderAlbums = function() {
@@ -629,15 +635,15 @@
                 return matchYear && matchMonth && matchAuthor && matchTitle;
             });
 
-            // 2. Ordenación Dinámica por fecha (Ascendente / Descendente)
+            // 2. Ordenación
             filteredAlbums.sort((a, b) => {
                 const dateA = parseInt(a.year + a.month, 10);
                 const dateB = parseInt(b.year + b.month, 10);
                 
                 if (sortDirection === 'asc') {
-                    return dateA - dateB; // Antiguos primero
+                    return dateA - dateB;
                 } else {
-                    return dateB - dateA; // Recientes primero
+                    return dateB - dateA;
                 }
             });
 

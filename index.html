@@ -15,6 +15,11 @@
             --text-muted: #858585;
             --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Colores de las plataformas */
+            --spotify-color: #1DB954;
+            --bandcamp-color: #1da1f2;
+            --youtube-color: #FF0000;
         }
 
         * {
@@ -255,30 +260,62 @@
             margin-top: 5px;
         }
 
-        .album-link {
+        /* Contenedor de enlaces múltiples de escucha */
+        .album-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .album-link-btn {
             text-align: center;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-title);
             text-decoration: none;
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             display: block;
             transition: var(--transition);
+            color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        .album-link:hover { 
-            background: var(--accent-color);
+
+        .album-link-btn.spotify {
+            background: rgba(29, 185, 84, 0.15);
+            border-color: rgba(29, 185, 84, 0.3);
+            color: #1DB954;
+        }
+        .album-link-btn.spotify:hover {
+            background: var(--spotify-color);
             color: #0b0c10;
-            border-color: var(--accent-color);
+        }
+
+        .album-link-btn.bandcamp {
+            background: rgba(30, 161, 242, 0.15);
+            border-color: rgba(30, 161, 242, 0.3);
+            color: #62b4ec;
+        }
+        .album-link-btn.bandcamp:hover {
+            background: #1da1f2;
+            color: #0b0c10;
+        }
+
+        .album-link-btn.youtube {
+            background: rgba(255, 0, 0, 0.15);
+            border-color: rgba(255, 0, 0, 0.3);
+            color: #ff4a4a;
+        }
+        .album-link-btn.youtube:hover {
+            background: var(--youtube-color);
+            color: #ffffff;
         }
 
         .admin-actions {
             display: flex;
             gap: 8px;
-            margin-top: 5px;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 8px;
         }
         .admin-actions button { flex: 1; padding: 8px; font-size: 0.8rem; border-radius: 6px; }
 
@@ -300,9 +337,11 @@
             padding: 30px;
             border-radius: var(--border-radius);
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h2 { 
@@ -312,7 +351,7 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
         }
@@ -325,7 +364,7 @@
         }
         
         .form-group input, .form-group select {
-            padding: 12px;
+            padding: 10px 12px;
             background: #121212;
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--text-title);
@@ -407,6 +446,7 @@
             <span class="current">Lanzamientos de Rap Español</span>
         </nav>
 
+        <!-- Filtros, Buscadores, Ordenación y Limpieza -->
         <section class="filters">
             <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
             <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
@@ -436,10 +476,12 @@
             <button id="addAlbumBtn" class="btn" style="display: none; margin-left: auto;" onclick="openAddModal()">+ Añadir Álbum</button>
         </section>
 
+        <!-- Listado de Álbumes -->
         <main class="albums-grid" id="albumsGrid">
             <div class="no-results">Cargando lanzamientos...</div>
         </main>
 
+        <!-- Barra de Paginación -->
         <section class="pagination-container">
             <div class="pagination-limit">
                 <span>Mostrar:</span>
@@ -463,9 +505,10 @@
         Base de datos del rap español by Malditos Raperos
     </footer>
 
+    <!-- Modales -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <h2>Login Administrador</h2>
+            <h2>Login Administrator</h2>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" placeholder="correo@ejemplo.com">
@@ -481,6 +524,7 @@
         </div>
     </div>
 
+    <!-- Formulario de Álbum con nuevos campos Multiplataforma -->
     <div id="albumModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Añadir Nuevo Lanzamiento</h2>
@@ -498,10 +542,21 @@
                     <label for="albumCover">URL de la Portada</label>
                     <input type="url" id="albumCover" required placeholder="https://ejemplo.com/portada.jpg">
                 </div>
+                
+                <!-- Links de Escucha -->
                 <div class="form-group">
-                    <label for="albumLink">Link de Escucha</label>
-                    <input type="url" id="albumLink" required placeholder="https://open.spotify.com/album/...">
+                    <label for="albumLink">Link de Spotify</label>
+                    <input type="url" id="albumLink" placeholder="https://open.spotify.com/album/...">
                 </div>
+                <div class="form-group">
+                    <label for="albumBandcamp">Link de Bandcamp (Opcional)</label>
+                    <input type="url" id="albumBandcamp" placeholder="https://artista.bandcamp.com/album/...">
+                </div>
+                <div class="form-group">
+                    <label for="albumYoutube">Link de YouTube (Opcional)</label>
+                    <input type="url" id="albumYoutube" placeholder="https://www.youtube.com/playlist?list=...">
+                </div>
+
                 <div class="form-group">
                     <label for="albumReleaseYear">Año</label>
                     <select id="albumReleaseYear" required>
@@ -574,7 +629,7 @@
                 addAlbumBtn.style.display = "block";
                 adminBadge.style.display = "inline-block";
             } else {
-                authBtn.innerText = "Admin";
+                authBtn.innerText = "Login Admin";
                 authBtn.classList.remove('btn-danger');
                 authBtn.classList.add('btn-secondary');
                 addAlbumBtn.style.display = "none";
@@ -602,15 +657,12 @@
             });
         }
 
-        // Nueva función global para vaciar y restablecer los inputs y selects
         window.clearFilters = function() {
             document.getElementById('searchAuthor').value = '';
             document.getElementById('searchTitle').value = '';
             document.getElementById('filterYear').value = 'all';
             document.getElementById('filterMonth').value = 'all';
-            document.getElementById('sortDirection').value = 'desc'; // Volver por defecto a más recientes primero
-            
-            // Re-renderizar todo desde la primera página
+            document.getElementById('sortDirection').value = 'desc';
             resetPageAndRender();
         }
 
@@ -639,12 +691,7 @@
             filteredAlbums.sort((a, b) => {
                 const dateA = parseInt(a.year + a.month, 10);
                 const dateB = parseInt(b.year + b.month, 10);
-                
-                if (sortDirection === 'asc') {
-                    return dateA - dateB;
-                } else {
-                    return dateB - dateA;
-                }
+                return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
             });
 
             // 3. Paginación
@@ -667,10 +714,28 @@
                 return;
             }
 
-            // 4. Render
+            // 4. Renderizado con múltiples enlaces condicionales
             paginatedAlbums.forEach(album => {
                 const card = document.createElement('div');
                 card.className = 'album-card';
+
+                // Generar los botones dinámicamente si el enlace existe
+                let linksHtml = '<div class="album-links-container">';
+                if (album.link) {
+                    linksHtml += `<a class="album-link-btn spotify" href="${album.link}" target="_blank">🟢 Spotify</a>`;
+                }
+                if (album.bandcamp) {
+                    linksHtml += `<a class="album-link-btn bandcamp" href="${album.bandcamp}" target="_blank">🔵 Bandcamp</a>`;
+                }
+                if (album.youtube) {
+                    linksHtml += `<a class="album-link-btn youtube" href="${album.youtube}" target="_blank">🔴 YouTube</a>`;
+                }
+                // Si el álbum de pura casualidad no tiene ningún link guardado
+                if (!album.link && !album.bandcamp && !album.youtube) {
+                    linksHtml += `<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>`;
+                }
+                linksHtml += '</div>';
+
                 card.innerHTML = `
                     <div class="album-cover-container">
                         <img class="album-cover" src="${album.cover}" alt="Portada" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
@@ -682,7 +747,7 @@
                             <p class="album-date">📅 ${mesesNombres[album.month]} de ${album.year}</p>
                         </div>
                         <div>
-                            <a class="album-link" href="${album.link}" target="_blank">Escuchar</a>
+                            ${linksHtml}
                             ${userLoggedIn ? `
                                 <div class="admin-actions">
                                     <button class="btn btn-secondary" onclick="openEditModal('${album.id}')">Editar</button>
@@ -718,7 +783,7 @@
             }
         }
 
-        // Crear o Editar Álbum en Firebase
+        // Crear o Editar en Firebase incluyendo los nuevos campos
         window.saveAlbum = async function(event) {
             event.preventDefault();
             if (!userLoggedIn) return;
@@ -728,7 +793,9 @@
                 author: document.getElementById('albumAuthor').value,
                 title: document.getElementById('albumTitleInput').value,
                 cover: document.getElementById('albumCover').value,
-                link: document.getElementById('albumLink').value,
+                link: document.getElementById('albumLink').value || "",
+                bandcamp: document.getElementById('albumBandcamp').value || "",
+                youtube: document.getElementById('albumYoutube').value || "",
                 year: document.getElementById('albumReleaseYear').value,
                 month: document.getElementById('albumReleaseMonth').value
             };
@@ -756,7 +823,6 @@
             }
         }
 
-        // Modales e Interfaz de edición
         window.openAddModal = function() {
             document.getElementById('albumForm').reset();
             document.getElementById('albumId').value = '';
@@ -772,7 +838,12 @@
             document.getElementById('albumAuthor').value = album.author;
             document.getElementById('albumTitleInput').value = album.title;
             document.getElementById('albumCover').value = album.cover;
-            document.getElementById('albumLink').value = album.link;
+            
+            // Cargar los campos de enlaces evaluando si existen
+            document.getElementById('albumLink').value = album.link || "";
+            document.getElementById('albumBandcamp').value = album.bandcamp || "";
+            document.getElementById('albumYoutube').value = album.youtube || "";
+            
             document.getElementById('albumReleaseYear').value = album.year;
             document.getElementById('albumReleaseMonth').value = album.month;
 

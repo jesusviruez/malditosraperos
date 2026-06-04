@@ -34,7 +34,6 @@
             min-height: 100vh;
         }
 
-        /* Contenedor Max Width para envolver la app */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -58,7 +57,6 @@
             letter-spacing: -0.5px;
         }
 
-        /* Miga de pan / Breadcrumb */
         .breadcrumb {
             font-size: 0.85rem;
             color: var(--text-muted);
@@ -86,7 +84,6 @@
             color: var(--text-color);
         }
 
-        /* Botones modernos */
         .btn {
             background-color: var(--accent-color);
             color: #0b0c10;
@@ -120,7 +117,7 @@
             background-color: #ff3333;
         }
 
-        /* Filtros más limpios */
+        /* Sección de Filtros y Buscadores Extendida */
         .filters {
             display: flex;
             flex-wrap: wrap;
@@ -133,23 +130,59 @@
             align-items: center;
         }
 
-        select {
+        select, input.search-input {
             background: #121212;
             color: var(--text-title);
             border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 10px 16px;
             border-radius: 8px;
             font-size: 0.9rem;
-            cursor: pointer;
             outline: none;
             transition: var(--transition);
         }
 
-        select:focus {
+        select:focus, input.search-input:focus {
             border-color: var(--accent-color);
         }
 
-        /* Grid de Álbumes Dinámico y Responsive */
+        input.search-input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Paginación */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 35px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pagination-limit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Grid de Álbumes */
         .albums-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -332,7 +365,6 @@
             font-size: 1.1rem;
         }
 
-        /* Pie de Página / Footer */
         footer {
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 30px 0;
@@ -343,28 +375,18 @@
             width: 100%;
         }
 
-        /* Ajustes de responsividad específicos adicionales */
-        @media (max-width: 600px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-                padding-top: 20px;
-            }
+        @media (max-width: 768px) {
             .filters {
                 flex-direction: column;
                 align-items: stretch;
             }
-            select {
+            input.search-input, select {
                 width: 100%;
             }
             #addAlbumBtn {
                 margin-left: 0 !important;
                 width: 100%;
                 text-align: center;
-            }
-            h1 {
-                font-size: 1.5rem;
             }
         }
     </style>
@@ -385,15 +407,19 @@
             <span class="current">Lanzamientos de Rap Español</span>
         </nav>
 
+        <!-- Filtros y Buscadores por Autor y Título -->
         <section class="filters">
-            <select id="filterYear" onchange="renderAlbums()">
+            <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
+            <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
+
+            <select id="filterYear" onchange="resetPageAndRender()">
                 <option value="all">Todos los años</option>
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
             </select>
 
-            <select id="filterMonth" onchange="renderAlbums()">
+            <select id="filterMonth" onchange="resetPageAndRender()">
                 <option value="all">Todos los meses</option>
                 <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
                 <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
@@ -404,15 +430,36 @@
             <button id="addAlbumBtn" class="btn" style="display: none; margin-left: auto;" onclick="openAddModal()">+ Añadir Álbum</button>
         </section>
 
+        <!-- Listado de Álbumes -->
         <main class="albums-grid" id="albumsGrid">
             <div class="no-results">Cargando lanzamientos...</div>
         </main>
+
+        <!-- Barra de Paginación Editable -->
+        <section class="pagination-container">
+            <div class="pagination-limit">
+                <span>Mostrar:</span>
+                <select id="itemsPerPage" onchange="resetPageAndRender()">
+                    <option value="4">4 por página</option>
+                    <option value="8" selected>8 por página</option>
+                    <option value="12">12 por página</option>
+                    <option value="24">24 por página</option>
+                </select>
+            </div>
+            
+            <div class="pagination-controls">
+                <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">« Ant.</button>
+                <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
+                <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. »</button>
+            </div>
+        </section>
     </div>
 
     <footer>
         Base de datos del rap español by Malditos Raperos
     </footer>
 
+    <!-- Modales -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2>Login Administrador</h2>
@@ -478,7 +525,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
@@ -490,7 +537,6 @@
             measurementId: "G-GQGTE0P3RS"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -498,12 +544,14 @@
         let albums = [];
         let userLoggedIn = false;
 
+        // Variables de Control para la Paginación
+        let currentPage = 1;
+
         const mesesNombres = {
             "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
             "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
         };
 
-        // Escuchar cambios en la base de datos en tiempo real para todos los usuarios
         onSnapshot(collection(db, "albums"), (snapshot) => {
             albums = [];
             snapshot.forEach((doc) => {
@@ -512,7 +560,6 @@
             renderAlbums();
         });
 
-        // Escuchar el estado de autenticación
         onAuthStateChanged(auth, (user) => {
             userLoggedIn = !!user;
             const authBtn = document.getElementById('authBtn');
@@ -535,28 +582,71 @@
             renderAlbums();
         });
 
-        // Renderizar elementos en pantalla
+        // Función auxiliar para reajustar la página a 1 cuando cambian los criterios de búsqueda/filtros
+        window.resetPageAndRender = function() {
+            currentPage = 1;
+            renderAlbums();
+        }
+
+        // Cambiar de página adelante/atrás
+        window.changePage = function(direction) {
+            currentPage += direction;
+            renderAlbums();
+        }
+
+        // Renderizar elementos en pantalla con filtros, buscadores y paginación
         window.renderAlbums = function() {
             const grid = document.getElementById('albumsGrid');
             const yearFilter = document.getElementById('filterYear').value;
             const monthFilter = document.getElementById('filterMonth').value;
+            const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+            const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+            const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
             
             grid.innerHTML = '';
 
+            // 1. Filtrar los álbumes según año, mes, autor y título
             const filteredAlbums = albums.filter(album => {
                 const matchYear = yearFilter === 'all' || album.year === yearFilter;
                 const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-                return matchYear && matchMonth;
+                const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+                const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+                
+                return matchYear && matchMonth && matchAuthor && matchTitle;
             });
 
-            filteredAlbums.sort((a, b) => (b.year + b.month) - (a.year + a.month));
+            // 2. Ordenar de más NUEVOS a más ANTIGUOS por fecha de lanzamiento estricta
+            filteredAlbums.sort((a, b) => {
+                const dateA = parseInt(a.year + a.month, 10);
+                const dateB = parseInt(b.year + b.month, 10);
+                return dateB - dateA; 
+            });
 
-            if (filteredAlbums.length === 0) {
-                grid.innerHTML = '<div class="no-results">No hay lanzamientos para este filtro.</div>';
+            // 3. Lógica matemática de la paginación editable
+            const totalItems = filteredAlbums.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+            // Asegurar que la página actual esté en un rango válido si se reducen elementos
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            // Actualizar estado visual de los controles de página
+            document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+
+            // Recortar la lista para mostrar solo los de la página actual
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
+
+            if (paginatedAlbums.length === 0) {
+                grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
                 return;
             }
 
-            filteredAlbums.forEach(album => {
+            // 4. Renderizar tarjetas en el HTML
+            paginatedAlbums.forEach(album => {
                 const card = document.createElement('div');
                 card.className = 'album-card';
                 card.innerHTML = `

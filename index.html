@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanzamientos de Rap Español | Malditos Raperos</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent-color: #66fcf1;
+            --accent-hover: #45f3e5;
+            --text-color: #c5c6c7;
+            --text-title: #ffffff;
+            --text-muted: #858585;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Contenedor Max Width para envolver la app */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 20px;
+        }
+
+        h1 { 
+            color: var(--text-title);
+            font-size: 1.75rem; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Miga de pan / Breadcrumb */
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent-color);
+        }
+
+        .breadcrumb span.separator {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .breadcrumb span.current {
+            color: var(--text-color);
+        }
+
+        /* Botones modernos */
+        .btn {
+            background-color: var(--accent-color);
+            color: #0b0c10;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .btn:hover { 
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary { 
+            background-color: rgba(255, 255, 255, 0.08); 
+            color: var(--text-title);
+        }
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-danger { 
+            background-color: #ff4a4a; 
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #ff3333;
+        }
+
+        /* Filtros más limpios */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 35px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: center;
+        }
+
+        select {
+            background: #121212;
+            color: var(--text-title);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        select:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Grid de Álbumes Dinámico y Responsive */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 30px;
+            margin-bottom: 5px;
+        }
+
+        .album-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .album-card:hover { 
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border-color: rgba(102, 252, 241, 0.2);
+        }
+
+        .album-cover-container {
+            width: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            position: relative;
+            background: #121212;
+        }
+
+        .album-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .album-card:hover .album-cover {
+            transform: scale(1.04);
+        }
+
+        .album-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .album-title { 
+            font-size: 1.15rem; 
+            color: var(--text-title);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        
+        .album-author { 
+            color: var(--accent-color); 
+            font-size: 0.95rem; 
+            font-weight: 500;
+        }
+        
+        .album-date { 
+            color: var(--text-muted); 
+            font-size: 0.85rem; 
+            margin-top: 5px;
+        }
+
+        .album-link {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-title);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: block;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .album-link:hover { 
+            background: var(--accent-color);
+            color: #0b0c10;
+            border-color: var(--accent-color);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .admin-actions button { flex: 1; padding: 8px; font-size: 0.8rem; border-radius: 6px; }
+
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1f2833;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h2 { 
+            margin-bottom: 20px; 
+            color: var(--text-title);
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label { 
+            margin-bottom: 6px; 
+            color: var(--text-color);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 12px;
+            background: #121212;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-title);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .admin-badge {
+            background: var(--accent-color);
+            color: #0b0c10;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        
+        .no-results { 
+            grid-column: 1 / -1; 
+            text-align: center; 
+            color: var(--text-muted); 
+            padding: 60px 20px; 
+            font-size: 1.1rem;
+        }
+
+        /* Pie de Página / Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        /* Ajustes de responsividad específicos adicionales */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                padding-top: 20px;
+            }
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            select {
+                width: 100%;
+            }
+            #addAlbumBtn {
+                margin-left: 0 !important;
+                width: 100%;
+                text-align: center;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Malditos Raperos <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span></h1>
+            </div>
+            <button id="authBtn" class="btn btn-secondary" onclick="handleAuthClick()">Admin</button>
+        </header>
+
+        <nav class="breadcrumb">
+            <a href="#">Inicio</a>
+            <span class="separator">/</span>
+            <span class="current">Lanzamientos de Rap Español</span>
+        </nav>
+
+        <section class="filters">
+            <select id="filterYear" onchange="renderAlbums()">
+                <option value="all">Todos los años</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+
+            <select id="filterMonth" onchange="renderAlbums()">
+                <option value="all">Todos los meses</option>
+                <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+                <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+                <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+                <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+
+            <button id="addAlbumBtn" class="btn" style="display: none; margin-left: auto;" onclick="openAddModal()">+ Añadir Álbum</button>
+        </section>
+
+        <main class="albums-grid" id="albumsGrid">
+            <div class="no-results">Cargando lanzamientos...</div>
+        </main>
+    </div>
+
+    <footer>
+        Base de datos del rap español by Malditos Raperos
+    </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Login Administrador</h2>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
+                <button class="btn" onclick="login()">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="albumModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Añadir Nuevo Lanzamiento</h2>
+            <form id="albumForm" onsubmit="saveAlbum(event)">
+                <input type="hidden" id="albumId">
+                <div class="form-group">
+                    <label for="albumAuthor">Autor / Autores</label>
+                    <input type="text" id="albumAuthor" required placeholder="Ej: Violadores del Verso">
+                </div>
+                <div class="form-group">
+                    <label for="albumTitleInput">Título del Álbum</label>
+                    <input type="text" id="albumTitleInput" required placeholder="Ej: Vivir para contarlo">
+                </div>
+                <div class="form-group">
+                    <label for="albumCover">URL de la Portada</label>
+                    <input type="url" id="albumCover" required placeholder="https://ejemplo.com/portada.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="albumLink">Link de Escucha</label>
+                    <input type="url" id="albumLink" required placeholder="https://open.spotify.com/album/...">
+                </div>
+                <div class="form-group">
+                    <label for="albumReleaseYear">Año</label>
+                    <select id="albumReleaseYear" required>
+                        <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="albumReleaseMonth">Mes</label>
+                    <select id="albumReleaseMonth" required>
+                        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+                        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+                        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+                        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('albumModal')">Cancelar</button>
+                    <button type="submit" class="btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+            authDomain: "malditosraperos-c9198.firebaseapp.com",
+            projectId: "malditosraperos-c9198",
+            storageBucket: "malditosraperos-c9198.firebasestorage.app",
+            messagingSenderId: "78058247623",
+            appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+            measurementId: "G-GQGTE0P3RS"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let albums = [];
+        let userLoggedIn = false;
+
+        const mesesNombres = {
+            "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
+            "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+        };
+
+        // Escuchar cambios en la base de datos en tiempo real para todos los usuarios
+        onSnapshot(collection(db, "albums"), (snapshot) => {
+            albums = [];
+            snapshot.forEach((doc) => {
+                albums.push({ id: doc.id, ...doc.data() });
+            });
+            renderAlbums();
+        });
+
+        // Escuchar el estado de autenticación
+        onAuthStateChanged(auth, (user) => {
+            userLoggedIn = !!user;
+            const authBtn = document.getElementById('authBtn');
+            const addAlbumBtn = document.getElementById('addAlbumBtn');
+            const adminBadge = document.getElementById('adminBadge');
+
+            if (user) {
+                authBtn.innerText = "Logout";
+                authBtn.classList.remove('btn-secondary');
+                authBtn.classList.add('btn-danger');
+                addAlbumBtn.style.display = "block";
+                adminBadge.style.display = "inline-block";
+            } else {
+                authBtn.innerText = "Login Admin";
+                authBtn.classList.remove('btn-danger');
+                authBtn.classList.add('btn-secondary');
+                addAlbumBtn.style.display = "none";
+                adminBadge.style.display = "none";
+            }
+            renderAlbums();
+        });
+
+        // Renderizar elementos en pantalla
+        window.renderAlbums = function() {
+            const grid = document.getElementById('albumsGrid');
+            const yearFilter = document.getElementById('filterYear').value;
+            const monthFilter = document.getElementById('filterMonth').value;
+            
+            grid.innerHTML = '';
+
+            const filteredAlbums = albums.filter(album => {
+                const matchYear = yearFilter === 'all' || album.year === yearFilter;
+                const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+                return matchYear && matchMonth;
+            });
+
+            filteredAlbums.sort((a, b) => (b.year + b.month) - (a.year + a.month));
+
+            if (filteredAlbums.length === 0) {
+                grid.innerHTML = '<div class="no-results">No hay lanzamientos para este filtro.</div>';
+                return;
+            }
+
+            filteredAlbums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.innerHTML = `
+                    <div class="album-cover-container">
+                        <img class="album-cover" src="${album.cover}" alt="Portada" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
+                    </div>
+                    <div class="album-info">
+                        <div>
+                            <p class="album-title">${album.title}</p>
+                            <p class="album-author">${album.author}</p>
+                            <p class="album-date">📅 ${mesesNombres[album.month]} de ${album.year}</p>
+                        </div>
+                        <div>
+                            <a class="album-link" href="${album.link}" target="_blank">Escuchar</a>
+                            ${userLoggedIn ? `
+                                <div class="admin-actions">
+                                    <button class="btn btn-secondary" onclick="openEditModal('${album.id}')">Editar</button>
+                                    <button class="btn btn-danger" onclick="deleteAlbum('${album.id}')">Borrar</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Acciones de Auth
+        window.handleAuthClick = function() {
+            if (userLoggedIn) {
+                signOut(auth);
+            } else {
+                openModal('loginModal');
+            }
+        }
+
+        window.login = async function() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                closeModal('loginModal');
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            } catch (error) {
+                alert("Error de autenticación: " + error.message);
+            }
+        }
+
+        // Crear o Editar Álbum en Firebase
+        window.saveAlbum = async function(event) {
+            event.preventDefault();
+            if (!userLoggedIn) return;
+
+            const id = document.getElementById('albumId').value;
+            const albumData = {
+                author: document.getElementById('albumAuthor').value,
+                title: document.getElementById('albumTitleInput').value,
+                cover: document.getElementById('albumCover').value,
+                link: document.getElementById('albumLink').value,
+                year: document.getElementById('albumReleaseYear').value,
+                month: document.getElementById('albumReleaseMonth').value
+            };
+
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "albums", id), albumData);
+                } else {
+                    await addDoc(collection(db, "albums"), albumData);
+                }
+                closeModal('albumModal');
+                document.getElementById('albumForm').reset();
+            } catch (error) {
+                alert("Error al guardar: " + error.message);
+            }
+        }
+
+        window.deleteAlbum = async function(id) {
+            if (confirm("¿Seguro que deseas eliminar este lanzamiento?")) {
+                try {
+                    await deleteDoc(doc(db, "albums", id));
+                } catch (error) {
+                    alert("Error al eliminar: " + error.message);
+                }
+            }
+        }
+
+        // Modales e Interfaz de edición
+        window.openAddModal = function() {
+            document.getElementById('albumForm').reset();
+            document.getElementById('albumId').value = '';
+            document.getElementById('modalTitle').innerText = "Añadir Nuevo Lanzamiento";
+            openModal('albumModal');
+        }
+
+        window.openEditModal = function(id) {
+            const album = albums.find(a => a.id === id);
+            if (!album) return;
+
+            document.getElementById('albumId').value = album.id;
+            document.getElementById('albumAuthor').value = album.author;
+            document.getElementById('albumTitleInput').value = album.title;
+            document.getElementById('albumCover').value = album.cover;
+            document.getElementById('albumLink').value = album.link;
+            document.getElementById('albumReleaseYear').value = album.year;
+            document.getElementById('albumReleaseMonth').value = album.month;
+
+            document.getElementById('modalTitle').innerText = "Editar Lanzamiento";
+            openModal('albumModal');
+        }
+
+        window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
+        window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
+</body>
+</html>

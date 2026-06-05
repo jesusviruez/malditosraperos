@@ -363,22 +363,26 @@
       <div class="no-results">Cargando lanzamientos...</div>
     </main>
 
-    <section class="pagination-container">
-      <div class="pagination-limit">
-        <span>Mostrar:</span>
-        <select id="itemsPerPage" onchange="resetPageAndRender()">
-          <option value="4">4 por página</option>
-          <option value="8" selected>8 por página</option>
-          <option value="12">12 por página</option>
-          <option value="24">24 por página</option>
-        </select>
-      </div>
-      <div class="pagination-controls">
-        <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">« Ant.</button>
-        <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
-        <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. »</button>
-      </div>
-    </section>
+<section class="pagination-container">
+  <div class="pagination-limit">
+    <span>Mostrar:</span>
+    <select id="itemsPerPage" onchange="resetPageAndRender()">
+      <option value="4">4 por página</option>
+      <option value="8" selected>8 por página</option>
+      <option value="12">12 por página</option>
+      <option value="24">24 por página</option>
+    </select>
+  </div>
+
+  <div class="pagination-controls">
+    <button id="firstPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToPage(1)">« Primera</button>
+    <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">‹ Ant.</button>
+    <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
+    <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. ›</button>
+    <button id="lastPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToLastPage()">Última »</button>
+  </div>
+</section>
+
   </div>
 
   <footer>Base de datos musical by Malditos Raperos</footer>
@@ -453,6 +457,36 @@
       renderAlbums();
       scrollToTop();
     };
+    window.goToPage = function(page) {
+  currentPage = page;
+  renderAlbums();
+  scrollToTop();
+};
+
+window.goToLastPage = function() {
+  const yearFilter = document.getElementById('filterYear').value;
+  const monthFilter = document.getElementById('filterMonth').value;
+  const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+  const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+  const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
+
+  const filteredAlbums = albums.filter(album => {
+    const albumLibrary = album.library || 'rap';
+    const matchLibrary = albumLibrary === CURRENT_LIBRARY;
+    const matchYear = yearFilter === 'all' || album.year === yearFilter;
+    const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+    const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+    const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+
+    return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+  });
+
+  const totalPages = Math.ceil(filteredAlbums.length / itemsPerPage) || 1;
+  currentPage = totalPages;
+  renderAlbums();
+  scrollToTop();
+};
+
 
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -467,6 +501,24 @@
       resetPageAndRender();
     };
 
+    function getFilteredAlbums() {
+  const yearFilter = document.getElementById('filterYear').value;
+  const monthFilter = document.getElementById('filterMonth').value;
+  const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+  const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+
+  return albums.filter(album => {
+    const albumLibrary = album.library || 'rap';
+    const matchLibrary = albumLibrary === CURRENT_LIBRARY;
+    const matchYear = yearFilter === 'all' || album.year === yearFilter;
+    const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+    const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+    const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+    return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+  });
+}
+
+
     window.renderAlbums = function() {
       const grid = document.getElementById('albumsGrid');
       const yearFilter = document.getElementById('filterYear').value;
@@ -478,15 +530,8 @@
 
       grid.innerHTML = '';
 
-      const filteredAlbums = albums.filter(album => {
-        const albumLibrary = album.library || 'rap';
-        const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-        const matchYear = yearFilter === 'all' || album.year === yearFilter;
-        const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
-        return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
-      });
+     const filteredAlbums = getFilteredAlbums();
+
 
       filteredAlbums.sort((a, b) => {
         const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
@@ -499,9 +544,12 @@
       if (currentPage > totalPages) currentPage = totalPages;
       if (currentPage < 1) currentPage = 1;
 
-      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-      document.getElementById('prevPageBtn').disabled = currentPage === 1;
-      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+document.getElementById('firstPageBtn').disabled = currentPage === 1;
+document.getElementById('prevPageBtn').disabled = currentPage === 1;
+document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
+
 
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca rap español</title>
+  <style>
+    :root {
+      --bg-color: #0b0c10;
+      --card-bg: #1f2833;
+      --accent-color: #66fcf1;
+      --accent-hover: #45f3e5;
+      --text-color: #c5c6c7;
+      --text-title: #ffffff;
+      --text-muted: #858585;
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --spotify-color: #1DB954;
+      --bandcamp-color: #1da1f2;
+      --youtube-color: #FF0000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.5;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 30px 0 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .header-copy h1 {
+      color: var(--text-title);
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header-copy p {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .breadcrumb a:hover { color: var(--accent-color); }
+    .breadcrumb span.separator { color: rgba(255, 255, 255, 0.2); }
+    .breadcrumb span.current { color: var(--text-color); }
+
+    .library-switch {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn, .switch-link {
+      background-color: var(--accent-color);
+      color: #0b0c10;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover, .switch-link:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary, .switch-link.secondary {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+    }
+
+    .btn-secondary:hover, .switch-link.secondary:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .switch-link.active {
+      background-color: var(--accent-color);
+      color: #0b0c10;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 35px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 16px;
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+    }
+
+    select, input.search-input {
+      background: #121212;
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    select:focus, input.search-input:focus { border-color: var(--accent-color); }
+    input.search-input { flex: 1; min-width: 180px; }
+
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 35px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pagination-controls { display: flex; gap: 8px; align-items: center; }
+    .pagination-info { font-size: 0.9rem; color: var(--text-muted); }
+    .pagination-limit { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+
+    .albums-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 30px;
+      margin-bottom: 5px;
+    }
+
+    .album-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .album-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+      border-color: rgba(102, 252, 241, 0.2);
+    }
+
+    .album-cover-container {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+      background: #121212;
+    }
+
+    .album-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .album-card:hover .album-cover { transform: scale(1.04); }
+
+    .album-info {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .album-title {
+      font-size: 1.15rem;
+      color: var(--text-title);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .album-author {
+      color: var(--accent-color);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .album-date {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .album-links-container { display: flex; flex-direction: column; gap: 6px; }
+
+    .album-link-btn {
+      text-align: center;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: block;
+      transition: var(--transition);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .album-link-btn.spotify {
+      background: rgba(29, 185, 84, 0.15);
+      border-color: rgba(29, 185, 84, 0.3);
+      color: #1DB954;
+    }
+
+    .album-link-btn.spotify:hover { background: var(--spotify-color); color: #0b0c10; }
+
+    .album-link-btn.bandcamp {
+      background: rgba(30, 161, 242, 0.15);
+      border-color: rgba(30, 161, 242, 0.3);
+      color: #62b4ec;
+    }
+
+    .album-link-btn.bandcamp:hover { background: #1da1f2; color: #0b0c10; }
+
+    .album-link-btn.youtube {
+      background: rgba(255, 0, 0, 0.15);
+      border-color: rgba(255, 0, 0, 0.3);
+      color: #ff4a4a;
+    }
+
+    .album-link-btn.youtube:hover { background: var(--youtube-color); color: #ffffff; }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-muted);
+      padding: 60px 20px;
+      font-size: 1.1rem;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 40px;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: stretch; }
+      .header-actions { justify-content: stretch; }
+      .filters { flex-direction: column; align-items: stretch; }
+      input.search-input, select, .filters .btn-secondary { width: 100%; }
+      .pagination-container { flex-direction: column; align-items: stretch; }
+      .pagination-controls { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-copy">
+        <h1 id="pageTitle">Biblioteca rap español</h1>
+        <p id="pageSubtitle">Cargando biblioteca...</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-secondary" href="index.html">Inicio</a>
+      </div>
+    </header>
+
+    <nav class="breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="separator">/</span>
+      <span class="current" id="breadcrumbCurrent">Biblioteca</span>
+    </nav>
+
+    <section class="library-switch">
+      <a id="rapSwitch" class="switch-link secondary" href="biblioteca.html?library=rap">Rap</a>
+      <a id="rbSwitch" class="switch-link secondary" href="biblioteca.html?library=rb">R&amp;B</a>
+    </section>
+
+    <section class="filters">
+      <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
+      <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
+      <select id="filterYear" onchange="resetPageAndRender()">
+        <option value="all">Todos los años</option>
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+      </select>
+      <select id="filterMonth" onchange="resetPageAndRender()">
+        <option value="all">Todos los meses</option>
+        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+      <select id="sortDirection" onchange="resetPageAndRender()">
+        <option value="desc">Más recientes primero</option>
+        <option value="asc">Más antiguos primero</option>
+      </select>
+      <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar filtros</button>
+    </section>
+
+    <main class="albums-grid" id="albumsGrid">
+      <div class="no-results">Cargando lanzamientos...</div>
+    </main>
+
+    <section class="pagination-container">
+      <div class="pagination-limit">
+        <span>Mostrar:</span>
+        <select id="itemsPerPage" onchange="resetPageAndRender()">
+          <option value="4">4 por página</option>
+          <option value="8" selected>8 por página</option>
+          <option value="12">12 por página</option>
+          <option value="24">24 por página</option>
+        </select>
+      </div>
+      <div class="pagination-controls">
+        <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">« Ant.</button>
+        <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
+        <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. »</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>Base de datos musical by Malditos Raperos</footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+      authDomain: "malditosraperos-c9198.firebaseapp.com",
+      projectId: "malditosraperos-c9198",
+      storageBucket: "malditosraperos-c9198.firebasestorage.app",
+      messagingSenderId: "78058247623",
+      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+      measurementId: "G-GQGTE0P3RS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let albums = [];
+    let currentPage = 1;
+
+    const mesesNombres = {
+      "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
+      "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+    };
+
+    const libraryConfig = {
+      rap: {
+        title: 'Listado de álbumes de rap español',
+        subtitle: 'Consulta los lanzamientos de rap español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de rap español'
+      },
+      rb: {
+        title: 'Listado de álbumes de r&b español',
+        subtitle: 'Consulta los lanzamientos de r&b español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de r&b español'
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const CURRENT_LIBRARY = params.get('library') === 'rb' ? 'rb' : 'rap';
+    const currentConfig = libraryConfig[CURRENT_LIBRARY];
+
+    document.title = `Biblioteca rap español | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
+    document.getElementById('pageTitle').innerText = currentConfig.title;
+    document.getElementById('pageSubtitle').innerText = currentConfig.subtitle;
+    document.getElementById('breadcrumbCurrent').innerText = currentConfig.breadcrumb;
+    document.getElementById('rapSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rap');
+    document.getElementById('rapSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rap');
+    document.getElementById('rbSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rb');
+    document.getElementById('rbSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rb');
+
+    onSnapshot(collection(db, 'albums'), (snapshot) => {
+      albums = [];
+      snapshot.forEach((doc) => {
+        albums.push({ id: doc.id, ...doc.data() });
+      });
+      renderAlbums();
+    });
+
+    window.resetPageAndRender = function() {
+      currentPage = 1;
+      renderAlbums();
+      scrollToTop();
+    };
+
+    window.changePage = function(direction) {
+      currentPage += direction;
+      renderAlbums();
+      scrollToTop();
+    };
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.clearFilters = function() {
+      document.getElementById('searchAuthor').value = '';
+      document.getElementById('searchTitle').value = '';
+      document.getElementById('filterYear').value = 'all';
+      document.getElementById('filterMonth').value = 'all';
+      document.getElementById('sortDirection').value = 'desc';
+      resetPageAndRender();
+    };
+
+    window.renderAlbums = function() {
+      const grid = document.getElementById('albumsGrid');
+      const yearFilter = document.getElementById('filterYear').value;
+      const monthFilter = document.getElementById('filterMonth').value;
+      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+      const sortDirection = document.getElementById('sortDirection').value;
+      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
+
+      grid.innerHTML = '';
+
+      const filteredAlbums = albums.filter(album => {
+        const albumLibrary = album.library || 'rap';
+        const matchLibrary = albumLibrary === CURRENT_LIBRARY;
+        const matchYear = yearFilter === 'all' || album.year === yearFilter;
+        const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+        return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+      });
+
+      filteredAlbums.sort((a, b) => {
+        const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
+        const dateB = parseInt((b.year || '0000') + (b.month || '00'), 10);
+        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      const totalItems = filteredAlbums.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
+
+      if (paginatedAlbums.length === 0) {
+        grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
+        return;
+      }
+
+      paginatedAlbums.forEach(album => {
+        const card = document.createElement('div');
+        card.className = 'album-card';
+
+        let linksHtml = '<div class="album-links-container">';
+        if (album.link) {
+          linksHtml += `<a class="album-link-btn spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
+        }
+        if (album.bandcamp) {
+          linksHtml += `<a class="album-link-btn bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
+        }
+        if (album.youtube) {
+          linksHtml += `<a class="album-link-btn youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
+        }
+        if (!album.link && !album.bandcamp && !album.youtube) {
+          linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
+        }
+        linksHtml += '</div>';
+
+        const monthName = mesesNombres[album.month] || 'Mes desconocido';
+        const yearLabel = album.year || 'Año desconocido';
+
+        card.innerHTML = `
+          <div class="album-cover-container">
+            <img class="album-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
+          </div>
+          <div class="album-info">
+            <div>
+              <p class="album-title">${album.title || 'Sin título'}</p>
+              <p class="album-author">${album.author || 'Autor desconocido'}</p>
+              <p class="album-date">📅 ${monthName} de ${yearLabel}</p>
+            </div>
+            <div>${linksHtml}</div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    };
+  </script>
+</body>
+</html>

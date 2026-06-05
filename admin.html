@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración | Biblioteca rap español</title>
+  <style>
+    :root {
+      --bg-color: #0b0c10;
+      --card-bg: #1f2833;
+      --accent-color: #66fcf1;
+      --accent-hover: #45f3e5;
+      --text-color: #c5c6c7;
+      --text-title: #ffffff;
+      --text-muted: #858585;
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --danger-color: #ff4a4a;
+      --danger-hover: #ff3333;
+      --spotify-color: #1DB954;
+      --bandcamp-color: #1da1f2;
+      --youtube-color: #FF0000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.5;
+      padding: 0 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 30px 0 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      color: var(--text-title);
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .breadcrumb a:hover { color: var(--accent-color); }
+    .breadcrumb span.separator { color: rgba(255, 255, 255, 0.2); }
+    .breadcrumb span.current { color: var(--text-color); }
+
+    .btn {
+      background-color: var(--accent-color);
+      color: #0b0c10;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+    }
+
+    .btn-secondary:hover { background-color: rgba(255, 255, 255, 0.15); }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover { background-color: var(--danger-hover); }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+
+    .panel h2 {
+      color: var(--text-title);
+      margin-bottom: 8px;
+      font-size: 1.25rem;
+    }
+
+    .panel-intro {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 6px;
+      color: var(--text-color);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      background: #121212;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-title);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--accent-color);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      display: none;
+    }
+
+    .status-box.success {
+      display: block;
+      background: rgba(29, 185, 84, 0.12);
+      border: 1px solid rgba(29, 185, 84, 0.25);
+      color: #7ee2a8;
+    }
+
+    .status-box.error {
+      display: block;
+      background: rgba(255, 74, 74, 0.12);
+      border: 1px solid rgba(255, 74, 74, 0.25);
+      color: #ff9b9b;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      background: #121212;
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 180px;
+    }
+
+    .admin-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .admin-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .admin-cover {
+      width: 84px;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #121212;
+    }
+
+    .admin-card h3 {
+      color: var(--text-title);
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .admin-card .meta {
+      color: var(--accent-color);
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .admin-card .details {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-title);
+      margin-bottom: 10px;
+    }
+
+    .pill.rap { background: rgba(102, 252, 241, 0.12); color: var(--accent-color); }
+    .pill.rb { background: rgba(255, 165, 0, 0.15); color: #ffc466; }
+
+    .link-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .link-badge {
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .link-badge.spotify { color: #1DB954; background: rgba(29,185,84,0.14); }
+    .link-badge.bandcamp { color: #62b4ec; background: rgba(30,161,242,0.14); }
+    .link-badge.youtube { color: #ff6f6f; background: rgba(255,0,0,0.12); }
+
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 36px 20px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 14px;
+    }
+
+    .admin-badge {
+      background: var(--accent-color);
+      color: #0b0c10;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 12px;
+      vertical-align: middle;
+      display: none;
+    }
+
+    .login-panel {
+      max-width: 460px;
+      margin: 40px auto 0;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 920px) {
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .admin-card { grid-template-columns: 1fr; }
+      .admin-cover { width: 100%; max-width: 150px; }
+      .toolbar input, .toolbar select { width: 100%; min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Administración <span id="adminBadge" class="admin-badge">ADMIN</span></h1>
+        <p class="subtitle">Alta, edición y borrado centralizados para rap y r&amp;b desde una sola página.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-secondary" href="index.html">Inicio</a>
+        <a class="btn btn-secondary" href="biblioteca.html?library=rap">Rap</a>
+        <a class="btn btn-secondary" href="biblioteca.html?library=rb">R&amp;B</a>
+        <button id="authBtn" class="btn btn-secondary" onclick="handleAuthClick()">Login admin</button>
+      </div>
+    </header>
+
+    <nav class="breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="separator">/</span>
+      <span class="current">Administración</span>
+    </nav>
+
+    <section id="loginPanel" class="panel login-panel">
+      <h2>Acceso administrador</h2>
+      <p class="panel-intro">Inicia sesión para gestionar los lanzamientos de ambas bibliotecas.</p>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="correo@ejemplo.com">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn" onclick="login()">Entrar</button>
+      </div>
+
+      <div id="loginStatus" class="status-box"></div>
+    </section>
+
+    <section id="adminPanel" class="panel-grid hidden">
+      <aside class="panel">
+        <h2 id="formTitle">Añadir nuevo lanzamiento</h2>
+        <p class="panel-intro">Usa el selector de biblioteca para decidir si el álbum se almacena en rap o en r&amp;b.</p>
+
+        <form id="albumForm" onsubmit="saveAlbum(event)">
+          <input type="hidden" id="albumId">
+
+          <div class="form-group">
+            <label for="albumLibrary">Biblioteca</label>
+            <select id="albumLibrary" required>
+              <option value="rap">Rap</option>
+              <option value="rb">R&amp;B</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="albumAuthor">Autor / Autores</label>
+            <input type="text" id="albumAuthor" required placeholder="Ej: Violadores del Verso">
+          </div>
+
+          <div class="form-group">
+            <label for="albumTitleInput">Título del álbum</label>
+            <input type="text" id="albumTitleInput" required placeholder="Ej: Vivir para contarlo">
+          </div>
+
+          <div class="form-group">
+            <label for="albumCover">URL de la portada</label>
+            <input type="url" id="albumCover" required placeholder="https://ejemplo.com/portada.jpg">
+          </div>
+
+          <div class="form-group">
+            <label for="albumLink">Link de Spotify</label>
+            <input type="url" id="albumLink" placeholder="https://open.spotify.com/album/...">
+          </div>
+
+          <div class="form-group">
+            <label for="albumBandcamp">Link de Bandcamp (opcional)</label>
+            <input type="url" id="albumBandcamp" placeholder="https://artista.bandcamp.com/album/...">
+          </div>
+
+          <div class="form-group">
+            <label for="albumYoutube">Link de YouTube (opcional)</label>
+            <input type="url" id="albumYoutube" placeholder="https://www.youtube.com/playlist?list=...">
+          </div>
+
+          <div class="form-group">
+            <label for="albumReleaseYear">Año</label>
+            <select id="albumReleaseYear" required>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="albumReleaseMonth">Mes</label>
+            <select id="albumReleaseMonth" required>
+              <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+              <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+              <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+              <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn">Guardar</button>
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Limpiar formulario</button>
+          </div>
+        </form>
+
+        <div id="formStatus" class="status-box"></div>
+      </aside>
+
+      <section class="panel">
+        <h2>Álbumes registrados</h2>
+        <p class="panel-intro">Edita o elimina cualquier lanzamiento desde una única lista centralizada.</p>
+
+        <div class="toolbar">
+          <input type="text" id="adminSearch" placeholder="🔍 Buscar por autor o título..." oninput="renderAdminList()">
+          <select id="adminLibraryFilter" onchange="renderAdminList()">
+            <option value="all">Todas las bibliotecas</option>
+            <option value="rap">Rap</option>
+            <option value="rb">R&amp;B</option>
+          </select>
+          <select id="adminSort" onchange="renderAdminList()">
+            <option value="desc">Más recientes primero</option>
+            <option value="asc">Más antiguos primero</option>
+          </select>
+        </div>
+
+        <div id="adminList" class="admin-list">
+          <div class="empty-state">Cargando lanzamientos...</div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+      authDomain: "malditosraperos-c9198.firebaseapp.com",
+      projectId: "malditosraperos-c9198",
+      storageBucket: "malditosraperos-c9198.firebasestorage.app",
+      messagingSenderId: "78058247623",
+      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+      measurementId: "G-GQGTE0P3RS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let albums = [];
+    let userLoggedIn = false;
+
+    const mesesNombres = {
+      "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
+      "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+    };
+
+    const adminBadge = document.getElementById('adminBadge');
+    const authBtn = document.getElementById('authBtn');
+    const loginPanel = document.getElementById('loginPanel');
+    const adminPanel = document.getElementById('adminPanel');
+
+    onSnapshot(collection(db, 'albums'), (snapshot) => {
+      albums = [];
+      snapshot.forEach((doc) => {
+        albums.push({ id: doc.id, ...doc.data() });
+      });
+      renderAdminList();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      userLoggedIn = !!user;
+      if (user) {
+        authBtn.innerText = 'Logout';
+        authBtn.classList.remove('btn-secondary');
+        authBtn.classList.add('btn-danger');
+        adminBadge.style.display = 'inline-block';
+        loginPanel.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+      } else {
+        authBtn.innerText = 'Login admin';
+        authBtn.classList.remove('btn-danger');
+        authBtn.classList.add('btn-secondary');
+        adminBadge.style.display = 'none';
+        loginPanel.classList.remove('hidden');
+        adminPanel.classList.add('hidden');
+      }
+      renderAdminList();
+    });
+
+    window.handleAuthClick = function() {
+      if (userLoggedIn) {
+        signOut(auth);
+        resetForm();
+        showStatus('loginStatus', 'Sesión cerrada correctamente.', 'success');
+      }
+    };
+
+    window.login = async function() {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        showStatus('loginStatus', '', '');
+      } catch (error) {
+        showStatus('loginStatus', 'Error de autenticación: ' + error.message, 'error');
+      }
+    };
+
+    window.saveAlbum = async function(event) {
+      event.preventDefault();
+      if (!userLoggedIn) return;
+
+      const id = document.getElementById('albumId').value;
+      const albumData = {
+        library: document.getElementById('albumLibrary').value,
+        author: document.getElementById('albumAuthor').value.trim(),
+        title: document.getElementById('albumTitleInput').value.trim(),
+        cover: document.getElementById('albumCover').value.trim(),
+        link: document.getElementById('albumLink').value.trim() || '',
+        bandcamp: document.getElementById('albumBandcamp').value.trim() || '',
+        youtube: document.getElementById('albumYoutube').value.trim() || '',
+        year: document.getElementById('albumReleaseYear').value,
+        month: document.getElementById('albumReleaseMonth').value
+      };
+
+      try {
+        if (id) {
+          await updateDoc(doc(db, 'albums', id), albumData);
+          showStatus('formStatus', 'Álbum actualizado correctamente.', 'success');
+        } else {
+          await addDoc(collection(db, 'albums'), albumData);
+          showStatus('formStatus', 'Álbum añadido correctamente.', 'success');
+        }
+        resetForm(false);
+      } catch (error) {
+        showStatus('formStatus', 'Error al guardar: ' + error.message, 'error');
+      }
+    };
+
+    window.editAlbum = function(id) {
+      if (!userLoggedIn) return;
+      const album = albums.find(a => a.id === id);
+      if (!album) return;
+
+      document.getElementById('albumId').value = album.id;
+      document.getElementById('albumLibrary').value = album.library || 'rap';
+      document.getElementById('albumAuthor').value = album.author || '';
+      document.getElementById('albumTitleInput').value = album.title || '';
+      document.getElementById('albumCover').value = album.cover || '';
+      document.getElementById('albumLink').value = album.link || '';
+      document.getElementById('albumBandcamp').value = album.bandcamp || '';
+      document.getElementById('albumYoutube').value = album.youtube || '';
+      document.getElementById('albumReleaseYear').value = album.year || '2026';
+      document.getElementById('albumReleaseMonth').value = album.month || '01';
+      document.getElementById('formTitle').innerText = 'Editar lanzamiento';
+      showStatus('formStatus', '', '');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.deleteAlbum = async function(id) {
+      if (!userLoggedIn) return;
+      if (!confirm('¿Seguro que deseas eliminar este lanzamiento?')) return;
+
+      try {
+        await deleteDoc(doc(db, 'albums', id));
+        showStatus('formStatus', 'Álbum eliminado correctamente.', 'success');
+        if (document.getElementById('albumId').value === id) {
+          resetForm(false);
+        }
+      } catch (error) {
+        showStatus('formStatus', 'Error al eliminar: ' + error.message, 'error');
+      }
+    };
+
+    window.resetForm = function(clearStatus = true) {
+      document.getElementById('albumForm').reset();
+      document.getElementById('albumId').value = '';
+      document.getElementById('albumLibrary').value = 'rap';
+      document.getElementById('formTitle').innerText = 'Añadir nuevo lanzamiento';
+      if (clearStatus) {
+        showStatus('formStatus', '', '');
+      }
+    };
+
+    window.renderAdminList = function() {
+      const list = document.getElementById('adminList');
+      const searchValue = (document.getElementById('adminSearch')?.value || '').toLowerCase().trim();
+      const libraryFilter = document.getElementById('adminLibraryFilter')?.value || 'all';
+      const sortDirection = document.getElementById('adminSort')?.value || 'desc';
+
+      if (!userLoggedIn) {
+        list.innerHTML = '<div class="empty-state">Inicia sesión para ver y gestionar los álbumes registrados.</div>';
+        return;
+      }
+
+      const filteredAlbums = albums.filter(album => {
+        const albumLibrary = album.library || 'rap';
+        const matchesLibrary = libraryFilter === 'all' || albumLibrary === libraryFilter;
+        const haystack = `${album.author || ''} ${album.title || ''}`.toLowerCase();
+        const matchesSearch = !searchValue || haystack.includes(searchValue);
+        return matchesLibrary && matchesSearch;
+      });
+
+      filteredAlbums.sort((a, b) => {
+        const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
+        const dateB = parseInt((b.year || '0000') + (b.month || '00'), 10);
+        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      if (filteredAlbums.length === 0) {
+        list.innerHTML = '<div class="empty-state">No hay álbumes que coincidan con los filtros actuales.</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+
+      filteredAlbums.forEach(album => {
+        const albumLibrary = album.library || 'rap';
+        const monthName = mesesNombres[album.month] || 'Mes desconocido';
+        const yearLabel = album.year || 'Año desconocido';
+        const card = document.createElement('article');
+        card.className = 'admin-card';
+
+        let linksHtml = '';
+        if (album.link) {
+          linksHtml += `<a class="link-badge spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">Spotify</a>`;
+        }
+        if (album.bandcamp) {
+          linksHtml += `<a class="link-badge bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">Bandcamp</a>`;
+        }
+        if (album.youtube) {
+          linksHtml += `<a class="link-badge youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">YouTube</a>`;
+        }
+
+        card.innerHTML = `
+          <img class="admin-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/200x200?text=Sin+Portada'">
+          <div>
+            <span class="pill ${albumLibrary}">${albumLibrary === 'rap' ? 'Rap' : 'R&B'}</span>
+            <h3>${album.title || 'Sin título'}</h3>
+            <div class="meta">${album.author || 'Autor desconocido'}</div>
+            <div class="details">
+              <span>📅 ${monthName} de ${yearLabel}</span>
+              <span>📚 ${albumLibrary === 'rap' ? 'Biblioteca Rap' : 'Biblioteca R&B'}</span>
+            </div>
+            ${linksHtml ? `<div class="link-row">${linksHtml}</div>` : ''}
+            <div class="admin-actions">
+              <button class="btn btn-secondary" onclick="editAlbum('${album.id}')">Editar</button>
+              <button class="btn btn-danger" onclick="deleteAlbum('${album.id}')">Borrar</button>
+            </div>
+          </div>
+        `;
+
+        list.appendChild(card);
+      });
+    };
+
+    function showStatus(elementId, message, type) {
+      const el = document.getElementById(elementId);
+      el.className = 'status-box';
+      if (!message) {
+        el.textContent = '';
+        return;
+      }
+      el.textContent = message;
+      el.classList.add(type);
+    }
+  </script>
+</body>
+</html>

@@ -1,858 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lanzamientos de Rap Español | Malditos Raperos</title>
-    <style>
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: #1f2833;
-            --accent-color: #66fcf1;
-            --accent-hover: #45f3e5;
-            --text-color: #c5c6c7;
-            --text-title: #ffffff;
-            --text-muted: #858585;
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            
-            /* Colores de las plataformas */
-            --spotify-color: #1DB954;
-            --bandcamp-color: #1da1f2;
-            --youtube-color: #FF0000;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca rap español</title>
+  <style>
+    :root {
+      --bg-color: #0b0c10;
+      --card-bg: #1f2833;
+      --accent-color: #66fcf1;
+      --accent-hover: #45f3e5;
+      --text-color: #c5c6c7;
+      --text-title: #ffffff;
+      --text-muted: #858585;
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0b0c10 0%, #111827 100%);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex: 1;
-        }
+    .home-card {
+      width: 100%;
+      max-width: 760px;
+      background: rgba(31, 40, 51, 0.95);
+      border-radius: 20px;
+      padding: 42px 28px;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+    }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 0 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 20px;
-        }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(102, 252, 241, 0.12);
+      color: var(--accent-color);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
 
-        h1 { 
-            color: var(--text-title);
-            font-size: 1.75rem; 
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
+    h1 {
+      color: var(--text-title);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+    }
 
-        .breadcrumb {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 620px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
 
-        .breadcrumb a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: var(--transition);
-        }
+    .nav-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 26px;
+    }
 
-        .breadcrumb a:hover {
-            color: var(--accent-color);
-        }
+    .nav-card {
+      text-decoration: none;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 20px;
+      color: var(--text-title);
+      transition: var(--transition);
+      display: block;
+    }
 
-        .breadcrumb span.separator {
-            color: rgba(255, 255, 255, 0.2);
-        }
+    .nav-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(102, 252, 241, 0.28);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+    }
 
-        .breadcrumb span.current {
-            color: var(--text-color);
-        }
+    .nav-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: var(--text-title);
+    }
 
-        .btn {
-            background-color: var(--accent-color);
-            color: #0b0c10;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
+    .nav-card p {
+      color: var(--text-muted);
+      line-height: 1.55;
+      font-size: 0.96rem;
+    }
 
-        .btn:hover { 
-            background-color: var(--accent-hover);
-            transform: translateY(-1px);
-        }
-        
-        .btn-secondary { 
-            background-color: rgba(255, 255, 255, 0.08); 
-            color: var(--text-title);
-        }
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .btn-danger { 
-            background-color: #ff4a4a; 
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #ff3333;
-        }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: var(--accent-color);
+      color: #0b0c10;
+      font-weight: 700;
+      transition: var(--transition);
+      border: none;
+    }
 
-        /* Sección de Filtros y Buscadores */
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 35px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            align-items: center;
-        }
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
 
-        select, input.search-input {
-            background: #121212;
-            color: var(--text-title);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: var(--transition);
-        }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+    }
 
-        select:focus, input.search-input:focus {
-            border-color: var(--accent-color);
-        }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
 
-        input.search-input {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        /* Paginación */
-        .pagination-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 35px;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .pagination-info {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .pagination-limit {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        /* Grid de Álbumes */
-        .albums-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 30px;
-            margin-bottom: 5px;
-        }
-
-        .album-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .album-card:hover { 
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-            border-color: rgba(102, 252, 241, 0.2);
-        }
-
-        .album-cover-container {
-            width: 100%;
-            aspect-ratio: 1;
-            overflow: hidden;
-            position: relative;
-            background: #121212;
-        }
-
-        .album-cover {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .album-card:hover .album-cover {
-            transform: scale(1.04);
-        }
-
-        .album-info {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .album-title { 
-            font-size: 1.15rem; 
-            color: var(--text-title);
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 4px;
-        }
-        
-        .album-author { 
-            color: var(--accent-color); 
-            font-size: 0.95rem; 
-            font-weight: 500;
-        }
-        
-        .album-date { 
-            color: var(--text-muted); 
-            font-size: 0.85rem; 
-            margin-top: 5px;
-        }
-
-        /* Contenedor de enlaces múltiples de escucha */
-        .album-links-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .album-link-btn {
-            text-align: center;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: block;
-            transition: var(--transition);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .album-link-btn.spotify {
-            background: rgba(29, 185, 84, 0.15);
-            border-color: rgba(29, 185, 84, 0.3);
-            color: #1DB954;
-        }
-        .album-link-btn.spotify:hover {
-            background: var(--spotify-color);
-            color: #0b0c10;
-        }
-
-        .album-link-btn.bandcamp {
-            background: rgba(30, 161, 242, 0.15);
-            border-color: rgba(30, 161, 242, 0.3);
-            color: #62b4ec;
-        }
-        .album-link-btn.bandcamp:hover {
-            background: #1da1f2;
-            color: #0b0c10;
-        }
-
-        .album-link-btn.youtube {
-            background: rgba(255, 0, 0, 0.15);
-            border-color: rgba(255, 0, 0, 0.3);
-            color: #ff4a4a;
-        }
-        .album-link-btn.youtube:hover {
-            background: var(--youtube-color);
-            color: #ffffff;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 8px;
-        }
-        .admin-actions button { flex: 1; padding: 8px; font-size: 0.8rem; border-radius: 6px; }
-
-        /* Modales */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: #1f2833;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            width: 100%;
-            max-width: 460px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-content h2 { 
-            margin-bottom: 20px; 
-            color: var(--text-title);
-            font-weight: 700;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label { 
-            margin-bottom: 6px; 
-            color: var(--text-color);
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .form-group input, .form-group select {
-            padding: 10px 12px;
-            background: #121212;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-title);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--accent-color);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 24px;
-        }
-
-        .admin-badge {
-            background: var(--accent-color);
-            color: #0b0c10;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 12px;
-            vertical-align: middle;
-        }
-        
-        .no-results { 
-            grid-column: 1 / -1; 
-            text-align: center; 
-            color: var(--text-muted); 
-            padding: 60px 20px; 
-            font-size: 1.1rem;
-        }
-
-        footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px 0;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 40px;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            input.search-input, select, .filters .btn-secondary {
-                width: 100%;
-            }
-            #addAlbumBtn {
-                margin-left: 0 !important;
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
+    .footer-note {
+      margin-top: 28px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
+  <main class="home-card">
+    <span class="eyebrow">Malditos Raperos</span>
+    <h1>Biblioteca rap español</h1>
+    <p class="subtitle">
+      Accede a las bibliotecas de lanzamientos de rap y r&amp;b español desde una única portada.
+      La administración queda centralizada en una sola página para evitar duplicar la lógica de altas, edición y borrado.
+    </p>
 
-    <div class="container">
-        <header>
-            <div>
-                <h1>Malditos Raperos <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span></h1>
-            </div>
-            <button id="authBtn" class="btn btn-secondary" onclick="handleAuthClick()">Admin</button>
-        </header>
+    <section class="nav-links">
+      <a class="nav-card" href="biblioteca.html?library=rap">
+        <h2>Listado de álbumes de rap español</h2>
+        <p>Consulta los lanzamientos de rap, filtra por autor, título, año y mes, y navega por páginas.</p>
+      </a>
 
-        <nav class="breadcrumb">
-            <a href="#">Inicio</a>
-            <span class="separator">/</span>
-            <span class="current">Lanzamientos de Rap Español</span>
-        </nav>
+      <a class="nav-card" href="biblioteca.html?library=rb">
+        <h2>Listado de álbumes de r&amp;b español</h2>
+        <p>Consulta la biblioteca de r&amp;b con el mismo formato visual y la misma experiencia de navegación.</p>
+      </a>
+    </section>
 
-        <!-- Filtros, Buscadores, Ordenación y Limpieza -->
-        <section class="filters">
-            <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
-            <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
+    <div class="actions">
+      <a class="btn btn-secondary" href="biblioteca.html?library=rap">Entrar en la biblioteca</a>
 
-            <select id="filterYear" onchange="resetPageAndRender()">
-                <option value="all">Todos los años</option>
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-            </select>
-
-            <select id="filterMonth" onchange="resetPageAndRender()">
-                <option value="all">Todos los meses</option>
-                <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
-                <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
-                <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
-                <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-            </select>
-
-            <select id="sortDirection" onchange="resetPageAndRender()">
-                <option value="desc">Más recientes primero</option>
-                <option value="asc">Más antiguos primero</option>
-            </select>
-
-            <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar Filtros</button>
-
-            <button id="addAlbumBtn" class="btn" style="display: none; margin-left: auto;" onclick="openAddModal()">+ Añadir Álbum</button>
-        </section>
-
-        <!-- Listado de Álbumes -->
-        <main class="albums-grid" id="albumsGrid">
-            <div class="no-results">Cargando lanzamientos...</div>
-        </main>
-
-        <!-- Barra de Paginación -->
-        <section class="pagination-container">
-            <div class="pagination-limit">
-                <span>Mostrar:</span>
-                <select id="itemsPerPage" onchange="resetPageAndRender()">
-                    <option value="4">4 por página</option>
-                    <option value="8" selected>8 por página</option>
-                    <option value="12">12 por página</option>
-                    <option value="24">24 por página</option>
-                </select>
-            </div>
-            
-            <div class="pagination-controls">
-                <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">« Ant.</button>
-                <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
-                <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. »</button>
-            </div>
-        </section>
     </div>
 
-    <footer>
-        Base de datos del rap español by Malditos Raperos
-    </footer>
-
-    <!-- Modales -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <h2>Login Administrator</h2>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="correo@ejemplo.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
-                <button class="btn" onclick="login()">Entrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario de Álbum con nuevos campos Multiplataforma -->
-    <div id="albumModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Añadir Nuevo Lanzamiento</h2>
-            <form id="albumForm" onsubmit="saveAlbum(event)">
-                <input type="hidden" id="albumId">
-                <div class="form-group">
-                    <label for="albumAuthor">Autor / Autores</label>
-                    <input type="text" id="albumAuthor" required placeholder="Ej: Violadores del Verso">
-                </div>
-                <div class="form-group">
-                    <label for="albumTitleInput">Título del Álbum</label>
-                    <input type="text" id="albumTitleInput" required placeholder="Ej: Vivir para contarlo">
-                </div>
-                <div class="form-group">
-                    <label for="albumCover">URL de la Portada</label>
-                    <input type="url" id="albumCover" required placeholder="https://ejemplo.com/portada.jpg">
-                </div>
-                
-                <!-- Links de Escucha -->
-                <div class="form-group">
-                    <label for="albumLink">Link de Spotify</label>
-                    <input type="url" id="albumLink" placeholder="https://open.spotify.com/album/...">
-                </div>
-                <div class="form-group">
-                    <label for="albumBandcamp">Link de Bandcamp (Opcional)</label>
-                    <input type="url" id="albumBandcamp" placeholder="https://artista.bandcamp.com/album/...">
-                </div>
-                <div class="form-group">
-                    <label for="albumYoutube">Link de YouTube (Opcional)</label>
-                    <input type="url" id="albumYoutube" placeholder="https://www.youtube.com/playlist?list=...">
-                </div>
-
-                <div class="form-group">
-                    <label for="albumReleaseYear">Año</label>
-                    <select id="albumReleaseYear" required>
-                        <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="albumReleaseMonth">Mes</label>
-                    <select id="albumReleaseMonth" required>
-                        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
-                        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
-                        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
-                        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('albumModal')">Cancelar</button>
-                    <button type="submit" class="btn">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
-            authDomain: "malditosraperos-c9198.firebaseapp.com",
-            projectId: "malditosraperos-c9198",
-            storageBucket: "malditosraperos-c9198.firebasestorage.app",
-            messagingSenderId: "78058247623",
-            appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
-            measurementId: "G-GQGTE0P3RS"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let albums = [];
-        let userLoggedIn = false;
-        let currentPage = 1;
-
-        const mesesNombres = {
-            "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
-            "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
-        };
-
-        onSnapshot(collection(db, "albums"), (snapshot) => {
-            albums = [];
-            snapshot.forEach((doc) => {
-                albums.push({ id: doc.id, ...doc.data() });
-            });
-            renderAlbums();
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            userLoggedIn = !!user;
-            const authBtn = document.getElementById('authBtn');
-            const addAlbumBtn = document.getElementById('addAlbumBtn');
-            const adminBadge = document.getElementById('adminBadge');
-
-            if (user) {
-                authBtn.innerText = "Logout";
-                authBtn.classList.remove('btn-secondary');
-                authBtn.classList.add('btn-danger');
-                addAlbumBtn.style.display = "block";
-                adminBadge.style.display = "inline-block";
-            } else {
-                authBtn.innerText = "Login Admin";
-                authBtn.classList.remove('btn-danger');
-                authBtn.classList.add('btn-secondary');
-                addAlbumBtn.style.display = "none";
-                adminBadge.style.display = "none";
-            }
-            renderAlbums();
-        });
-
-        window.resetPageAndRender = function() {
-            currentPage = 1;
-            renderAlbums();
-            scrollToTop();
-        }
-
-        window.changePage = function(direction) {
-            currentPage += direction;
-            renderAlbums();
-            scrollToTop();
-        }
-
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        window.clearFilters = function() {
-            document.getElementById('searchAuthor').value = '';
-            document.getElementById('searchTitle').value = '';
-            document.getElementById('filterYear').value = 'all';
-            document.getElementById('filterMonth').value = 'all';
-            document.getElementById('sortDirection').value = 'desc';
-            resetPageAndRender();
-        }
-
-        window.renderAlbums = function() {
-            const grid = document.getElementById('albumsGrid');
-            const yearFilter = document.getElementById('filterYear').value;
-            const monthFilter = document.getElementById('filterMonth').value;
-            const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-            const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
-            const sortDirection = document.getElementById('sortDirection').value;
-            const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
-            
-            grid.innerHTML = '';
-
-            // 1. Filtrar
-            const filteredAlbums = albums.filter(album => {
-                const matchYear = yearFilter === 'all' || album.year === yearFilter;
-                const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-                const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-                const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
-                
-                return matchYear && matchMonth && matchAuthor && matchTitle;
-            });
-
-            // 2. Ordenación
-            filteredAlbums.sort((a, b) => {
-                const dateA = parseInt(a.year + a.month, 10);
-                const dateB = parseInt(b.year + b.month, 10);
-                return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-            });
-
-            // 3. Paginación
-            const totalItems = filteredAlbums.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-
-            document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-            document.getElementById('prevPageBtn').disabled = currentPage === 1;
-            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
-
-            if (paginatedAlbums.length === 0) {
-                grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
-                return;
-            }
-
-            // 4. Renderizado con múltiples enlaces condicionales
-            paginatedAlbums.forEach(album => {
-                const card = document.createElement('div');
-                card.className = 'album-card';
-
-                // Generar los botones dinámicamente si el enlace existe
-                let linksHtml = '<div class="album-links-container">';
-                if (album.link) {
-                    linksHtml += `<a class="album-link-btn spotify" href="${album.link}" target="_blank">🟢 Spotify</a>`;
-                }
-                if (album.bandcamp) {
-                    linksHtml += `<a class="album-link-btn bandcamp" href="${album.bandcamp}" target="_blank">🔵 Bandcamp</a>`;
-                }
-                if (album.youtube) {
-                    linksHtml += `<a class="album-link-btn youtube" href="${album.youtube}" target="_blank">🔴 YouTube</a>`;
-                }
-                // Si el álbum de pura casualidad no tiene ningún link guardado
-                if (!album.link && !album.bandcamp && !album.youtube) {
-                    linksHtml += `<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>`;
-                }
-                linksHtml += '</div>';
-
-                card.innerHTML = `
-                    <div class="album-cover-container">
-                        <img class="album-cover" src="${album.cover}" alt="Portada" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
-                    </div>
-                    <div class="album-info">
-                        <div>
-                            <p class="album-title">${album.title}</p>
-                            <p class="album-author">${album.author}</p>
-                            <p class="album-date">📅 ${mesesNombres[album.month]} de ${album.year}</p>
-                        </div>
-                        <div>
-                            ${linksHtml}
-                            ${userLoggedIn ? `
-                                <div class="admin-actions">
-                                    <button class="btn btn-secondary" onclick="openEditModal('${album.id}')">Editar</button>
-                                    <button class="btn btn-danger" onclick="deleteAlbum('${album.id}')">Borrar</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // Acciones de Auth
-        window.handleAuthClick = function() {
-            if (userLoggedIn) {
-                signOut(auth);
-            } else {
-                openModal('loginModal');
-            }
-        }
-
-        window.login = async function() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                closeModal('loginModal');
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-            } catch (error) {
-                alert("Error de autenticación: " + error.message);
-            }
-        }
-
-        // Crear o Editar en Firebase incluyendo los nuevos campos
-        window.saveAlbum = async function(event) {
-            event.preventDefault();
-            if (!userLoggedIn) return;
-
-            const id = document.getElementById('albumId').value;
-            const albumData = {
-                author: document.getElementById('albumAuthor').value,
-                title: document.getElementById('albumTitleInput').value,
-                cover: document.getElementById('albumCover').value,
-                link: document.getElementById('albumLink').value || "",
-                bandcamp: document.getElementById('albumBandcamp').value || "",
-                youtube: document.getElementById('albumYoutube').value || "",
-                year: document.getElementById('albumReleaseYear').value,
-                month: document.getElementById('albumReleaseMonth').value
-            };
-
-            try {
-                if (id) {
-                    await updateDoc(doc(db, "albums", id), albumData);
-                } else {
-                    await addDoc(collection(db, "albums"), albumData);
-                }
-                closeModal('albumModal');
-                document.getElementById('albumForm').reset();
-            } catch (error) {
-                alert("Error al guardar: " + error.message);
-            }
-        }
-
-        window.deleteAlbum = async function(id) {
-            if (confirm("¿Seguro que deseas eliminar este lanzamiento?")) {
-                try {
-                    await deleteDoc(doc(db, "albums", id));
-                } catch (error) {
-                    alert("Error al eliminar: " + error.message);
-                }
-            }
-        }
-
-        window.openAddModal = function() {
-            document.getElementById('albumForm').reset();
-            document.getElementById('albumId').value = '';
-            document.getElementById('modalTitle').innerText = "Añadir Nuevo Lanzamiento";
-            openModal('albumModal');
-        }
-
-        window.openEditModal = function(id) {
-            const album = albums.find(a => a.id === id);
-            if (!album) return;
-
-            document.getElementById('albumId').value = album.id;
-            document.getElementById('albumAuthor').value = album.author;
-            document.getElementById('albumTitleInput').value = album.title;
-            document.getElementById('albumCover').value = album.cover;
-            
-            // Cargar los campos de enlaces evaluando si existen
-            document.getElementById('albumLink').value = album.link || "";
-            document.getElementById('albumBandcamp').value = album.bandcamp || "";
-            document.getElementById('albumYoutube').value = album.youtube || "";
-            
-            document.getElementById('albumReleaseYear').value = album.year;
-            document.getElementById('albumReleaseMonth').value = album.month;
-
-            document.getElementById('modalTitle').innerText = "Editar Lanzamiento";
-            openModal('albumModal');
-        }
-
-        window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
-        window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
-    </script>
+<p class="footer-note">
+  Base de datos musical by Malditos Raperos
+  <br>
+  <a href="admin.html" style="color:#3e3b3b; text-decoration:none; font-size:0.8rem;">Acceso Admin</a>
+</p>
+  </main>
 </body>
 </html>

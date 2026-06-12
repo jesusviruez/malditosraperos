@@ -302,6 +302,55 @@
       margin-top: 40px;
       width: 100%;
     }
+        .footer-note {
+      margin-top: 28px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .contact-block {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .contact-block p {
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--text-title);
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: var(--transition);
+      font-size: 0.86rem;
+    }
+    .contact-link:hover {
+      color: #0b0c10;
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+    .contact-icon {
+      width: 15px;
+      height: 15px;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
 
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: stretch; }

@@ -104,30 +104,26 @@ def extraer_de_spotify(spotify_url: str):
 def get_metadata(url: str):
     if not url:
         raise HTTPException(status_code=400, detail="Falta el parámetro 'url'")
-        
-    # Paso 1: Buscar el enlace de Spotify mediante la portada
-    spotify_link = scraping_inverso_google(url)
     
-    # Si la URL que nos pasaron ya era de Spotify o Google falló, pero la estructura contenía el link:
-    if not spotify_link and "spotify.com" in url:
-        # A veces el mismo link de googleusercontent contiene metadatos si se limpia, 
-        # pero asumimos que necesitamos buscarlo.
-        pass
-
-    # Backup: Si el scraping de Google falla (porque pide captcha), podemos devolver una estructura limpia 
-    # para que el usuario al menos no rompa el flujo de la app.
+    # SI EL USUARIO PEGA DIRECTAMENTE UN LINK DE SPOTIFY:
+    if "open.spotify.com/album/" in url:
+        spotify_link = url
+    else:
+        # SI PEGA LA URL DE LA IMAGEN (GOOGLEUSERCONTENT):
+        spotify_link = scraping_inverso_google(url)
+    
+    # Si no es un link directo y la búsqueda inversa falló
     if not spotify_link:
-        # Retornamos datos vacíos pero legibles para que el frontend responda sin caerse
         return {
             "author": "",
             "title": "",
             "link": "",
             "year": "2026",
             "month": "01",
-            "note": "No se pudo sincronizar automáticamente con Google. Introduce los datos manualmente."
+            "note": "No se pudo identificar la portada automáticamente. Introduce los datos a mano."
         }
         
-    # Paso 2: Extraer la información limpia desde Spotify
+    # Extraer la información limpia desde la página de Spotify
     metadata = extraer_de_spotify(spotify_link)
     if not metadata:
          raise HTTPException(status_code=500, detail="No se pudo extraer la info de Spotify")

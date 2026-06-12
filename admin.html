@@ -566,18 +566,23 @@
       }
     };
 
-    window.login = async function() {
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        document.getElementById('email').value = '';
-        document.getElementById('password').value = '';
-        showStatus('loginStatus', '', '');
-      } catch (error) {
-        showStatus('loginStatus', 'Error de autenticación: ' + error.message, 'error');
-      }
-    };
+window.login = async function(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    showStatus('loginStatus', '', '');
+  } catch (error) {
+    showStatus('loginStatus', 'Error de autenticación: ' + error.message, 'error');
+  }
+};
 
     window.saveAlbum = async function(event) {
       event.preventDefault();

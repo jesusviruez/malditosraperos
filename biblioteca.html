@@ -119,14 +119,18 @@
       transform: translateY(-1px);
     }
 
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn-secondary, .switch-link.secondary {
       background-color: rgba(255, 255, 255, 0.08);
       color: var(--text-title);
     }
 
-    .btn-secondary:hover, .switch-link.secondary:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
+    .btn-secondary:hover, .switch-link.secondary:hover { background-color: rgba(255, 255, 255, 0.15); }
 
     .switch-link.active {
       background-color: var(--accent-color);
@@ -158,23 +162,6 @@
 
     select:focus, input.search-input:focus { border-color: var(--accent-color); }
     input.search-input { flex: 1; min-width: 180px; }
-
-    .pagination-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 35px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: var(--border-radius);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .pagination-controls { display: flex; gap: 8px; align-items: center; }
-    .pagination-info { font-size: 0.9rem; color: var(--text-muted); }
-    .pagination-limit { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
 
     .albums-grid {
       display: grid;
@@ -212,6 +199,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
       transition: var(--transition);
     }
 
@@ -266,7 +254,6 @@
       border-color: rgba(29, 185, 84, 0.3);
       color: #1DB954;
     }
-
     .album-link-btn.spotify:hover { background: var(--spotify-color); color: #0b0c10; }
 
     .album-link-btn.bandcamp {
@@ -274,7 +261,6 @@
       border-color: rgba(30, 161, 242, 0.3);
       color: #62b4ec;
     }
-
     .album-link-btn.bandcamp:hover { background: #1da1f2; color: #0b0c10; }
 
     .album-link-btn.youtube {
@@ -282,8 +268,21 @@
       border-color: rgba(255, 0, 0, 0.3);
       color: #ff4a4a;
     }
-
     .album-link-btn.youtube:hover { background: var(--youtube-color); color: #ffffff; }
+
+    .album-admin-actions { margin-top: 10px; }
+
+    .album-edit-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+      border: 1px solid rgba(102, 252, 241, 0.28);
+    }
+
+    .album-edit-btn:hover {
+      background: var(--accent-color);
+      color: #0b0c10;
+    }
 
     .no-results {
       grid-column: 1 / -1;
@@ -292,6 +291,212 @@
       padding: 60px 20px;
       font-size: 1.1rem;
     }
+
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 35px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pagination-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .pagination-info { font-size: 0.9rem; color: var(--text-muted); }
+    .pagination-limit { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(102, 252, 241, 0.25);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h2 { color: var(--text-title); font-size: 1.35rem; }
+
+    .modal-close {
+      background: transparent;
+      color: var(--text-title);
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-form { display: grid; gap: 14px; }
+
+    .modal-form label {
+      display: grid;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .modal-form input,
+    .modal-form select {
+      width: 100%;
+      background: #121212;
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .modal-form input:focus,
+    .modal-form select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+
+    .status-toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10000;
+      min-width: 260px;
+      max-width: calc(100% - 48px);
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.96);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .status-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .status-toast.success {
+      border-color: rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error {
+      border-color: rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      font-weight: 900;
+      font-size: 1.15rem;
+      transform: scale(0.7);
+    }
+
+    .status-toast.show .status-toast-icon {
+      animation: toastPop 0.35s ease forwards;
+    }
+
+    .status-toast.success .status-toast-icon {
+      background: rgba(29, 185, 84, 0.16);
+      color: #1DB954;
+      border: 1px solid rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error .status-toast-icon {
+      background: rgba(255, 74, 74, 0.16);
+      color: #ff4a4a;
+      border: 1px solid rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-message {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    @keyframes toastPop {
+      0% { transform: scale(0.6) rotate(-8deg); }
+      70% { transform: scale(1.12) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    .cookie-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 600px;
+      background-color: var(--card-bg);
+      border: 1px solid rgba(102, 252, 241, 0.3);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      z-index: 9998;
+      backdrop-filter: blur(8px);
+    }
+
+    .cookie-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      text-align: left;
+    }
+
+    .cookie-content p {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      line-height: 1.45;
+    }
+
+    .cookie-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-cookie { padding: 8px 16px; font-size: 0.85rem; }
 
     footer {
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -302,11 +507,6 @@
       margin-top: 40px;
       width: 100%;
     }
-        .footer-note {
-      margin-top: 28px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
 
     .contact-block {
       margin-bottom: 20px;
@@ -316,10 +516,9 @@
       font-size: 0.9rem;
       text-align: center;
     }
-    .contact-block p {
-      margin-bottom: 12px;
-      line-height: 1.45;
-    }
+
+    .contact-block p { margin-bottom: 12px; line-height: 1.45; }
+
     .contact-links {
       display: flex;
       justify-content: center;
@@ -327,6 +526,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
     .contact-link {
       display: inline-flex;
       align-items: center;
@@ -340,12 +540,14 @@
       transition: var(--transition);
       font-size: 0.86rem;
     }
+
     .contact-link:hover {
       color: #0b0c10;
       background: var(--accent-color);
       border-color: var(--accent-color);
       transform: translateY(-2px);
     }
+
     .contact-icon {
       width: 15px;
       height: 15px;
@@ -362,55 +564,20 @@
       .pagination-controls { justify-content: center; }
     }
 
-    /* Estilos para el Banner de Cookies */
-.cookie-banner {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
-  max-width: 600px;
-  background-color: var(--card-bg);
-  border: 1px solid rgba(102, 252, 241, 0.3);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  z-index: 9999;
-  backdrop-filter: blur(8px);
-}
+    @media (max-width: 600px) {
+      .modal-box { padding: 18px; }
+      .modal-actions { flex-direction: column; }
+      .modal-actions .btn { width: 100%; }
+      .cookie-buttons { flex-direction: column; }
+      .btn-cookie { width: 100%; }
 
-.cookie-content {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  text-align: left;
-}
-
-.cookie-content p {
-  font-size: 0.9rem;
-  color: var(--text-color);
-  line-height: 1.45;
-}
-
-.cookie-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn-cookie {
-  padding: 8px 16px;
-  font-size: 0.85rem;
-}
-
-@media (max-width: 480px) {
-  .cookie-buttons {
-    flex-direction: column;
-  }
-  .btn-cookie {
-    width: 100%;
-  }
-}
+      .status-toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -439,12 +606,19 @@
     <section class="filters">
       <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
       <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
+
       <select id="filterYear" onchange="resetPageAndRender()">
         <option value="all">Todos los años</option>
         <option value="2026">2026</option>
         <option value="2025">2025</option>
         <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+
       </select>
+
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
         <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
@@ -452,10 +626,12 @@
         <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
         <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
       </select>
+
       <select id="sortDirection" onchange="resetPageAndRender()">
         <option value="desc">Más recientes primero</option>
         <option value="asc">Más antiguos primero</option>
       </select>
+
       <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar filtros</button>
     </section>
 
@@ -463,102 +639,142 @@
       <div class="no-results">Cargando lanzamientos...</div>
     </main>
 
-<section class="pagination-container">
-  <div class="pagination-limit">
-    <span>Mostrar:</span>
-    <select id="itemsPerPage" onchange="resetPageAndRender()">
-      <option value="4">4 por página</option>
-      <option value="8" selected>8 por página</option>
-      <option value="12">12 por página</option>
-      <option value="24">24 por página</option>
-    </select>
+    <section class="pagination-container">
+      <div class="pagination-limit">
+        <span>Mostrar:</span>
+        <select id="itemsPerPage" onchange="resetPageAndRender()">
+          <option value="4">4 por página</option>
+          <option value="8" selected>8 por página</option>
+          <option value="12">12 por página</option>
+          <option value="24">24 por página</option>
+        </select>
+      </div>
+
+      <div class="pagination-controls">
+        <button id="firstPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToPage(1)">« Primera</button>
+        <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">‹ Ant.</button>
+        <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
+        <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. ›</button>
+        <button id="lastPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToLastPage()">Última »</button>
+      </div>
+    </section>
   </div>
 
-  <div class="pagination-controls">
-    <button id="firstPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToPage(1)">« Primera</button>
-    <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">‹ Ant.</button>
-    <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
-    <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. ›</button>
-    <button id="lastPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToLastPage()">Última »</button>
-  </div>
-</section>
+  <div id="editAlbumModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Editar disco</h2>
+        <button type="button" class="modal-close" onclick="closeEditAlbumModal()">×</button>
+      </div>
 
+      <form id="editAlbumForm" class="modal-form">
+        <input type="hidden" id="editAlbumId">
+
+        <label>Autor <input type="text" id="editAuthor" required></label>
+        <label>Título <input type="text" id="editTitle" required></label>
+        <label>Año <input type="text" id="editYear" placeholder="2025" required></label>
+
+        <label>
+          Mes
+          <select id="editMonth" required>
+            <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+            <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+            <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select>
+        </label>
+
+        <label>
+          Biblioteca
+          <select id="editLibrary" required>
+            <option value="rap">Rap</option>
+            <option value="rb">R&amp;B</option>
+          </select>
+        </label>
+
+        <label>URL portada <input type="url" id="editCover" placeholder="https://..."></label>
+        <label>Spotify <input type="url" id="editLink" placeholder="https://open.spotify.com/..."></label>
+        <label>Bandcamp <input type="url" id="editBandcamp" placeholder="https://..."></label>
+        <label>YouTube <input type="url" id="editYoutube" placeholder="https://..."></label>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
+          <button type="submit" class="btn">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <footer>Base de datos musical by Malditos Raperos</footer>
 
-        <section class="contact-block" aria-label="Contacto">
-        <p>Si quieres que tu trabajo aparezca aquí, no dudes en contactar.</p>
-        <div class="contact-links">
-          <a class="contact-link" href="https://x.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="X de Malditos Raperos">
-            <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2h3.3l-7.2 8.2L23.5 22h-6.6l-5.2-6.8L5.8 22H2.5l7.7-8.8L2 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.8 3.9H5.9L17.7 20Z"/></svg>
-            Twitter
-          </a>
-          <a class="contact-link" href="https://www.instagram.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Malditos Raperos">
-            <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm8.7 2.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/></svg>
-            Instagram
-          </a>
-          <a class="contact-link" href="mailto:malditosraperos@gmail.com" aria-label="Enviar correo a Malditos Raperos">
-            <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm8 8.7L20 7.5V6l-8 5.2L4 6v1.5l8 5.2Z"/></svg>
-            Email
-          </a>
-        </div>
-      </section>
-  
+  <section class="contact-block" aria-label="Contacto">
+    <p>Si quieres que tu trabajo aparezca aquí, no dudes en contactar.</p>
+    <div class="contact-links">
+      <a class="contact-link" href="https://x.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="X de Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2h3.3l-7.2 8.2L23.5 22h-6.6l-5.2-6.8L5.8 22H2.5l7.7-8.8L2 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.8 3.9H5.9L17.7 20Z"/></svg>
+        Twitter
+      </a>
+      <a class="contact-link" href="https://www.instagram.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm8.7 2.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/></svg>
+        Instagram
+      </a>
+      <a class="contact-link" href="mailto:malditosraperos@gmail.com" aria-label="Enviar correo a Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm8 8.7L20 7.5V6l-8 5.2L4 6v1.5l8 5.2Z"/></svg>
+        Email
+      </a>
+    </div>
+  </section>
+
+
+  <div id="statusToast" class="status-toast" aria-live="polite" aria-atomic="true">
+    <div id="statusToastIcon" class="status-toast-icon">✓</div>
+    <div id="statusToastMessage" class="status-toast-message">Actualizado correctamente</div>
+  </div>
+
+  <div id="cookieBanner" class="cookie-banner" style="display: none;">
+    <div class="cookie-content">
+      <p>Utilizamos cookies propias y de terceros, como Google Analytics, para analizar el tráfico de la biblioteca.</p>
+      <div class="cookie-buttons">
+        <button id="acceptCookies" class="btn btn-cookie">Aceptar todas</button>
+        <button id="rejectCookies" class="btn btn-secondary btn-cookie">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-// Importamos también la función de analíticas para poder desactivarla si el usuario rechaza
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      onSnapshot,
+      doc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
-  authDomain: "malditosraperos-c9198.firebaseapp.com",
-  projectId: "malditosraperos-c9198",
-  storageBucket: "malditosraperos-c9198.firebasestorage.app",
-  messagingSenderId: "78058247623",
-  appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
-  measurementId: "G-GQGTE0P3RS" // <- El origen de la necesidad del aviso
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+      authDomain: "malditosraperos-c9198.firebaseapp.com",
+      projectId: "malditosraperos-c9198",
+      storageBucket: "malditosraperos-c9198.firebasestorage.app",
+      messagingSenderId: "78058247623",
+      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+      measurementId: "G-GQGTE0P3RS"
+    };
 
-// Inicializar la App Base
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-// --- LÓGICA DE CONTROL DE COOKIES ---
-const banner = document.getElementById('cookieBanner');
-const acceptBtn = document.getElementById('acceptCookies');
-const rejectBtn = document.getElementById('rejectCookies');
+    const ADMIN_EMAILS = [
+      'malditosraperos@gmail.com'
+    ];
 
-// Comprobamos la decisión previa del usuario
-const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
-
-if (!cookieDecision) {
-  // Si no ha decidido, mostramos el banner
-  banner.style.display = 'block';
-} else if (cookieDecision === 'accepted') {
-  // Si ya aceptó en el pasado, activamos Analytics
-  getAnalytics(app);
-}
-
-// Acción: Aceptar
-acceptBtn.addEventListener('click', () => {
-  localStorage.setItem('cookiesMalditosRaperos', 'accepted');
-  banner.style.display = 'none';
-  getAnalytics(app); // Se activa en caliente
-});
-
-// Acción: Rechazar
-rejectBtn.addEventListener('click', () => {
-  localStorage.setItem('cookiesMalditosRaperos', 'rejected');
-  banner.style.display = 'none';
-  // No llamamos a getAnalytics(), por lo que Google no trackeará a este usuario
-});
-// --- FIN LÓGICA DE COOKIES ---
-
-let albums = [];
-let currentPage = 1;
-// ... El resto de tu código de Firebase (onSnapshot, mesesNombres, etc.) se queda exactamente igual.
+    let isAdmin = false;
+    let albums = [];
+    let currentPage = 1;
+    let statusToastTimeout = null;
 
     const mesesNombres = {
       "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
@@ -591,13 +807,130 @@ let currentPage = 1;
     document.getElementById('rbSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rb');
     document.getElementById('rbSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rb');
 
+    initCookieBanner();
+
+    onAuthStateChanged(auth, (user) => {
+      isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+      document.body.classList.toggle('is-admin', isAdmin);
+      renderAlbums();
+    });
+
     onSnapshot(collection(db, 'albums'), (snapshot) => {
       albums = [];
-      snapshot.forEach((doc) => {
-        albums.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach((documentSnapshot) => {
+        albums.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
       });
       renderAlbums();
     });
+
+    function initCookieBanner() {
+      const banner = document.getElementById('cookieBanner');
+      const acceptBtn = document.getElementById('acceptCookies');
+      const rejectBtn = document.getElementById('rejectCookies');
+
+      if (!banner || !acceptBtn || !rejectBtn) return;
+
+      const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
+
+      if (!cookieDecision) {
+        banner.style.display = 'block';
+      } else if (cookieDecision === 'accepted') {
+        getAnalytics(app);
+      }
+
+      acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'accepted');
+        banner.style.display = 'none';
+        getAnalytics(app);
+      });
+
+      rejectBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'rejected');
+        banner.style.display = 'none';
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll('`', '&#096;');
+    }
+
+    function getSafeCoverUrl(album) {
+      return album.cover || album.image || album.coverUrl || album.portada || '';
+    }
+
+
+    function showStatusToast(type, message) {
+      const toast = document.getElementById('statusToast');
+      const icon = document.getElementById('statusToastIcon');
+      const messageElement = document.getElementById('statusToastMessage');
+
+      if (!toast || !icon || !messageElement) return;
+
+      clearTimeout(statusToastTimeout);
+      toast.classList.remove('success', 'error', 'show');
+
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      messageElement.textContent = message;
+      toast.classList.add(type === 'success' ? 'success' : 'error');
+
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      statusToastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getFilteredAlbums() {
+      const yearFilter = document.getElementById('filterYear').value;
+      const monthFilter = document.getElementById('filterMonth').value;
+      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+
+      return albums.filter(album => {
+        const albumLibrary = album.library || 'rap';
+        const matchLibrary = albumLibrary === CURRENT_LIBRARY;
+        const matchYear = yearFilter === 'all' || album.year === yearFilter;
+        const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+        return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+      });
+    }
+
+    function buildAlbumLinksHtml(album) {
+      let linksHtml = '<div class="album-links-container">';
+
+      if (album.link) {
+        linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
+      }
+      if (album.bandcamp) {
+        linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
+      }
+      if (album.youtube) {
+        linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
+      }
+      if (!album.link && !album.bandcamp && !album.youtube) {
+        linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
+      }
+
+      linksHtml += '</div>';
+      return linksHtml;
+    }
 
     window.resetPageAndRender = function() {
       currentPage = 1;
@@ -610,40 +943,20 @@ let currentPage = 1;
       renderAlbums();
       scrollToTop();
     };
+
     window.goToPage = function(page) {
-  currentPage = page;
-  renderAlbums();
-  scrollToTop();
-};
+      currentPage = page;
+      renderAlbums();
+      scrollToTop();
+    };
 
-window.goToLastPage = function() {
-  const yearFilter = document.getElementById('filterYear').value;
-  const monthFilter = document.getElementById('filterMonth').value;
-  const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-  const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
-  const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
-
-  const filteredAlbums = albums.filter(album => {
-    const albumLibrary = album.library || 'rap';
-    const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-    const matchYear = yearFilter === 'all' || album.year === yearFilter;
-    const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-    const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-    const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
-
-    return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
-  });
-
-  const totalPages = Math.ceil(filteredAlbums.length / itemsPerPage) || 1;
-  currentPage = totalPages;
-  renderAlbums();
-  scrollToTop();
-};
-
-
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.goToLastPage = function() {
+      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
+      const filteredAlbums = getFilteredAlbums();
+      currentPage = Math.ceil(filteredAlbums.length / itemsPerPage) || 1;
+      renderAlbums();
+      scrollToTop();
+    };
 
     window.clearFilters = function() {
       document.getElementById('searchAuthor').value = '';
@@ -654,37 +967,14 @@ window.goToLastPage = function() {
       resetPageAndRender();
     };
 
-    function getFilteredAlbums() {
-  const yearFilter = document.getElementById('filterYear').value;
-  const monthFilter = document.getElementById('filterMonth').value;
-  const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-  const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
-
-  return albums.filter(album => {
-    const albumLibrary = album.library || 'rap';
-    const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-    const matchYear = yearFilter === 'all' || album.year === yearFilter;
-    const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-    const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-    const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
-    return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
-  });
-}
-
-
     window.renderAlbums = function() {
       const grid = document.getElementById('albumsGrid');
-      const yearFilter = document.getElementById('filterYear').value;
-      const monthFilter = document.getElementById('filterMonth').value;
-      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
       const sortDirection = document.getElementById('sortDirection').value;
       const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
 
       grid.innerHTML = '';
 
-     const filteredAlbums = getFilteredAlbums();
-
+      const filteredAlbums = getFilteredAlbums();
 
       filteredAlbums.sort((a, b) => {
         const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
@@ -694,15 +984,15 @@ window.goToLastPage = function() {
 
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
       if (currentPage > totalPages) currentPage = totalPages;
       if (currentPage < 1) currentPage = 1;
 
-document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-document.getElementById('firstPageBtn').disabled = currentPage === 1;
-document.getElementById('prevPageBtn').disabled = currentPage === 1;
-document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
-
+      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+      document.getElementById('firstPageBtn').disabled = currentPage === 1;
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+      document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
 
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
@@ -717,50 +1007,127 @@ document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
         const card = document.createElement('div');
         card.className = 'album-card';
 
-        let linksHtml = '<div class="album-links-container">';
-        if (album.link) {
-          linksHtml += `<a class="album-link-btn spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
-        }
-        if (album.bandcamp) {
-          linksHtml += `<a class="album-link-btn bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
-        }
-        if (album.youtube) {
-          linksHtml += `<a class="album-link-btn youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
-        }
-        if (!album.link && !album.bandcamp && !album.youtube) {
-          linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
-        }
-        linksHtml += '</div>';
-
+        const linksHtml = buildAlbumLinksHtml(album);
         const monthName = mesesNombres[album.month] || 'Mes desconocido';
         const yearLabel = album.year || 'Año desconocido';
+        const coverUrl = getSafeCoverUrl(album);
+        const albumId = escapeAttribute(album.id);
+        const title = escapeHtml(album.title || 'Sin título');
+        const author = escapeHtml(album.author || 'Autor desconocido');
 
         card.innerHTML = `
           <div class="album-cover-container">
-            <img class="album-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
+            <img
+              class="album-cover"
+              src="${escapeAttribute(coverUrl)}"
+              alt="Portada de ${title}"
+              loading="lazy"
+              onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=Sin+Portada';"
+            >
           </div>
+
           <div class="album-info">
             <div>
-              <p class="album-title">${album.title || 'Sin título'}</p>
-              <p class="album-author">${album.author || 'Autor desconocido'}</p>
-              <p class="album-date">📅 ${monthName} de ${yearLabel}</p>
+              <p class="album-title">${title}</p>
+              <p class="album-author">${author}</p>
+              <p class="album-date">📅 ${escapeHtml(monthName)} de ${escapeHtml(yearLabel)}</p>
             </div>
-            <div>${linksHtml}</div>
+
+            <div>
+              ${linksHtml}
+
+              ${isAdmin ? `
+                <div class="album-admin-actions">
+                  <button
+                    type="button"
+                    class="btn album-edit-btn"
+                    onclick="openEditAlbumModal('${albumId}')"
+                  >
+                    ✏️ Editar disco
+                  </button>
+                </div>
+              ` : ''}
+            </div>
           </div>
         `;
 
         grid.appendChild(card);
       });
     };
+
+    window.openEditAlbumModal = function(albumId) {
+      if (!isAdmin) {
+        showStatusToast('error', 'No tienes permisos para editar discos.');
+        return;
+      }
+
+      const album = albums.find(item => item.id === albumId);
+
+      if (!album) {
+        showStatusToast('error', 'No se ha encontrado el disco.');
+        return;
+      }
+
+      document.getElementById('editAlbumId').value = album.id;
+      document.getElementById('editAuthor').value = album.author || '';
+      document.getElementById('editTitle').value = album.title || '';
+      document.getElementById('editYear').value = album.year || '';
+      document.getElementById('editMonth').value = album.month || '01';
+      document.getElementById('editLibrary').value = album.library || CURRENT_LIBRARY || 'rap';
+      document.getElementById('editCover').value = getSafeCoverUrl(album);
+      document.getElementById('editLink').value = album.link || '';
+      document.getElementById('editBandcamp').value = album.bandcamp || '';
+      document.getElementById('editYoutube').value = album.youtube || '';
+      document.getElementById('editAlbumModal').style.display = 'flex';
+    };
+
+    window.closeEditAlbumModal = function() {
+      document.getElementById('editAlbumModal').style.display = 'none';
+    };
+
+    document.getElementById('editAlbumModal').addEventListener('click', function(event) {
+      if (event.target.id === 'editAlbumModal') {
+        closeEditAlbumModal();
+      }
+    });
+
+    document.getElementById('editAlbumForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      if (!isAdmin) {
+        showStatusToast('error', 'No tienes permisos para guardar cambios.');
+        return;
+      }
+
+      const albumId = document.getElementById('editAlbumId').value;
+
+      if (!albumId) {
+        showStatusToast('error', 'No se ha encontrado el ID del disco.');
+        return;
+      }
+
+      const updatedAlbum = {
+        author: document.getElementById('editAuthor').value.trim(),
+        title: document.getElementById('editTitle').value.trim(),
+        year: document.getElementById('editYear').value.trim(),
+        month: document.getElementById('editMonth').value,
+        library: document.getElementById('editLibrary').value,
+        cover: document.getElementById('editCover').value.trim(),
+        link: document.getElementById('editLink').value.trim(),
+        bandcamp: document.getElementById('editBandcamp').value.trim(),
+        youtube: document.getElementById('editYoutube').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        await updateDoc(doc(db, 'albums', albumId), updatedAlbum);
+        closeEditAlbumModal();
+        showStatusToast('success', 'Disco actualizado correctamente.');
+      } catch (error) {
+        console.error('Error al actualizar el disco:', error);
+        showStatusToast('error', 'No se ha podido actualizar el disco.');
+      }
+    });
   </script>
-  <div id="cookieBanner" class="cookie-banner" style="display: none;">
-  <div class="cookie-content">
-    <p>Utilizamos cookies propias y de terceros (como Google Analytics) para analizar el tráfico de la biblioteca.</p>
-    <div class="cookie-buttons">
-      <button id="acceptCookies" class="btn btn-cookie">Aceptar todas</button>
-      <button id="rejectCookies" class="btn btn-secondary btn-cookie">Rechazar</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

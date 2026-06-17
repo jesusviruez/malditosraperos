@@ -361,6 +361,56 @@
       .pagination-container { flex-direction: column; align-items: stretch; }
       .pagination-controls { justify-content: center; }
     }
+
+    /* Estilos para el Banner de Cookies */
+.cookie-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 600px;
+  background-color: var(--card-bg);
+  border: 1px solid rgba(102, 252, 241, 0.3);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+
+.cookie-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.cookie-content p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  line-height: 1.45;
+}
+
+.cookie-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cookie {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .cookie-buttons {
+    flex-direction: column;
+  }
+  .btn-cookie {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
@@ -456,24 +506,59 @@
       </section>
   
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// Importamos también la función de analíticas para poder desactivarla si el usuario rechaza
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
-      authDomain: "malditosraperos-c9198.firebaseapp.com",
-      projectId: "malditosraperos-c9198",
-      storageBucket: "malditosraperos-c9198.firebasestorage.app",
-      messagingSenderId: "78058247623",
-      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
-      measurementId: "G-GQGTE0P3RS"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+  authDomain: "malditosraperos-c9198.firebaseapp.com",
+  projectId: "malditosraperos-c9198",
+  storageBucket: "malditosraperos-c9198.firebasestorage.app",
+  messagingSenderId: "78058247623",
+  appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+  measurementId: "G-GQGTE0P3RS" // <- El origen de la necesidad del aviso
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+// Inicializar la App Base
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    let albums = [];
-    let currentPage = 1;
+// --- LÓGICA DE CONTROL DE COOKIES ---
+const banner = document.getElementById('cookieBanner');
+const acceptBtn = document.getElementById('acceptCookies');
+const rejectBtn = document.getElementById('rejectCookies');
+
+// Comprobamos la decisión previa del usuario
+const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
+
+if (!cookieDecision) {
+  // Si no ha decidido, mostramos el banner
+  banner.style.display = 'block';
+} else if (cookieDecision === 'accepted') {
+  // Si ya aceptó en el pasado, activamos Analytics
+  getAnalytics(app);
+}
+
+// Acción: Aceptar
+acceptBtn.addEventListener('click', () => {
+  localStorage.setItem('cookiesMalditosRaperos', 'accepted');
+  banner.style.display = 'none';
+  getAnalytics(app); // Se activa en caliente
+});
+
+// Acción: Rechazar
+rejectBtn.addEventListener('click', () => {
+  localStorage.setItem('cookiesMalditosRaperos', 'rejected');
+  banner.style.display = 'none';
+  // No llamamos a getAnalytics(), por lo que Google no trackeará a este usuario
+});
+// --- FIN LÓGICA DE COOKIES ---
+
+let albums = [];
+let currentPage = 1;
+// ... El resto de tu código de Firebase (onSnapshot, mesesNombres, etc.) se queda exactamente igual.
 
     const mesesNombres = {
       "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",

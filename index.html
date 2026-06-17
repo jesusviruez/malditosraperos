@@ -191,6 +191,56 @@
       display: inline-block;
       flex: 0 0 auto;
     }
+
+    /* Estilos para el Banner de Cookies */
+.cookie-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 600px;
+  background-color: var(--card-bg);
+  border: 1px solid rgba(102, 252, 241, 0.3);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+
+.cookie-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.cookie-content p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  line-height: 1.45;
+}
+
+.cookie-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cookie {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .cookie-buttons {
+    flex-direction: column;
+  }
+  .btn-cookie {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
@@ -253,4 +303,32 @@
   </div>
 </div>
 </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const banner = document.getElementById('cookieBanner');
+      const acceptBtn = document.getElementById('acceptCookies');
+      const rejectBtn = document.getElementById('rejectCookies');
+
+      // Comprobamos si el usuario ya aceptó o rechazó las cookies anteriormente
+      const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
+
+      // Si no ha tomado ninguna decisión, mostramos el banner
+      if (!cookieDecision) {
+        banner.style.display = 'block';
+      }
+
+      // Acción al pulsar "Aceptar todas"
+      acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'accepted');
+        banner.style.display = 'none';
+        // Al recargar o navegar a biblioteca.html, Firebase se activará automáticamente
+      });
+
+      // Acción al pulsar "Rechazar"
+      rejectBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'rejected');
+        banner.style.display = 'none';
+      });
+    });
+  </script>
 </html>

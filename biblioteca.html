@@ -410,6 +410,27 @@
   .btn-cookie {
     width: 100%;
   }
+
+  .album-admin-actions {
+  margin-top: 10px;
+  display: none;
+}
+
+body.is-admin .album-admin-actions {
+  display: block;
+}
+
+.album-edit-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-title);
+  border: 1px solid rgba(102, 252, 241, 0.28);
+}
+
+.album-edit-btn:hover {
+  background: var(--accent-color);
+  color: #0b0c10;
+}
 }
   </style>
 </head>
@@ -508,6 +529,7 @@
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 // Importamos también la función de analíticas para poder desactivarla si el usuario rechaza
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -524,7 +546,17 @@ const firebaseConfig = {
 // Inicializar la App Base
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+// Pon aquí el correo o correos que tendrán permiso de edición
+const ADMIN_EMAILS = [
+  'malditosraperos@gmail.com'
+];
+
+let isAdmin = false;
+let albums = [];
+
+    
 // --- LÓGICA DE CONTROL DE COOKIES ---
 const banner = document.getElementById('cookieBanner');
 const acceptBtn = document.getElementById('acceptCookies');
@@ -556,7 +588,6 @@ rejectBtn.addEventListener('click', () => {
 });
 // --- FIN LÓGICA DE COOKIES ---
 
-let albums = [];
 let currentPage = 1;
 // ... El resto de tu código de Firebase (onSnapshot, mesesNombres, etc.) se queda exactamente igual.
 
@@ -591,6 +622,11 @@ let currentPage = 1;
     document.getElementById('rbSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rb');
     document.getElementById('rbSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rb');
 
+    onAuthStateChanged(auth, (user) => {
+  isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+  document.body.classList.toggle('is-admin', isAdmin);
+  renderAlbums();
+});
     onSnapshot(collection(db, 'albums'), (snapshot) => {
       albums = [];
       snapshot.forEach((doc) => {
@@ -745,8 +781,14 @@ document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
               <p class="album-author">${album.author || 'Autor desconocido'}</p>
               <p class="album-date">📅 ${monthName} de ${yearLabel}</p>
             </div>
-            <div>${linksHtml}</div>
-          </div>
+<div>
+  ${linksHtml}
+  <div class="album-admin-actions">
+    <a class="btn albumncodeURIComponent(album.id)}&library=${encodeURIComponent(CURRENT_LIBRARY)}
+      ✏️ Editar disco
+    </a>
+  </div>
+</div>          </div>
         `;
 
         grid.appendChild(card);

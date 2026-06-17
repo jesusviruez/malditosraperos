@@ -624,6 +624,9 @@ let currentPage = 1;
 
     onAuthStateChanged(auth, (user) => {
   isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+      console.log("USER:", user);
+console.log("EMAIL:", user?.email);
+console.log("IS ADMIN:", isAdmin);
   document.body.classList.toggle('is-admin', isAdmin);
   renderAlbums();
 });

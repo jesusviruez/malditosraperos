@@ -432,6 +432,117 @@ body.is-admin .album-admin-actions {
   color: #0b0c10;
 }
 }
+
+    .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(102, 252, 241, 0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  padding: 22px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  color: var(--text-title);
+  font-size: 1.35rem;
+}
+
+.modal-close {
+  background: transparent;
+  color: var(--text-title);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-form {
+  display: grid;
+  gap: 14px;
+}
+
+.modal-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.modal-form input,
+.modal-form select {
+  width: 100%;
+  background: #121212;
+  color: var(--text-title);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.modal-form input:focus,
+.modal-form select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.album-admin-actions {
+  margin-top: 10px;
+}
+
+.album-edit-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-title);
+  border: 1px solid rgba(102, 252, 241, 0.28);
+}
+
+.album-edit-btn:hover {
+  background: var(--accent-color);
+  color: #0b0c10;
+}
+
+@media (max-width: 600px) {
+  .modal-box {
+    padding: 18px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
@@ -505,7 +616,84 @@ body.is-admin .album-admin-actions {
 </section>
 
   </div>
+<div id="editAlbumModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Editar disco</h2>
+      <button type="button" class="modal-close" onclick="closeEditAlbumModal()">×</button>
+    </div>
 
+    <form id="editAlbumForm" class="modal-form">
+      <input type="hidden" id="editAlbumId">
+
+      <label>
+        Autor
+        <input type="text" id="editAuthor" required>
+      </label>
+
+      <label>
+        Título
+        <input type="text" id="editTitle" required>
+      </label>
+
+      <label>
+        Año
+        <input type="text" id="editYear" placeholder="2025" required>
+      </label>
+
+      <label>
+        Mes
+        <select id="editMonth" required>
+          <option value="01">Enero</option>
+          <option value="02">Febrero</option>
+          <option value="03">Marzo</option>
+          <option value="04">Abril</option>
+          <option value="05">Mayo</option>
+          <option value="06">Junio</option>
+          <option value="07">Julio</option>
+          <option value="08">Agosto</option>
+          <option value="09">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+      </label>
+
+      <label>
+        Biblioteca
+        <select id="editLibrary" required>
+          <option value="rap">Rap</option>
+          <option value="rb">R&B</option>
+        </select>
+      </label>
+
+      <label>
+        URL portada
+        <input type="url" id="editCover" placeholder="https://...">
+      </label>
+
+      <label>
+        Spotify
+        <input type="url" id="editLink" placeholder="https://open.spotify.com/...">
+      </label>
+
+      <label>
+        Bandcamp
+        <input type="url" id="editBandcamp" placeholder="https://...">
+      </label>
+
+      <label>
+        YouTube
+        <input type="url" id="editYoutube" placeholder="https://...">
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
+        <button type="submit" class="btn">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
   <footer>Base de datos musical by Malditos Raperos</footer>
 
         <section class="contact-block" aria-label="Contacto">
@@ -528,7 +716,13 @@ body.is-admin .album-admin-actions {
   
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+  getFirestore, 
+  collection, 
+  onSnapshot,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 // Importamos también la función de analíticas para poder desactivarla si el usuario rechaza
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -655,6 +849,45 @@ console.log("IS ADMIN:", isAdmin);
   scrollToTop();
 };
 
+    document.getElementById('editAlbumForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  if (!isAdmin) {
+    alert('No tienes permisos para guardar cambios.');
+    return;
+  }
+
+  const albumId = document.getElementById('editAlbumId').value;
+
+  if (!albumId) {
+    alert('No se ha encontrado el ID del disco.');
+    return;
+  }
+
+  const updatedAlbum = {
+    author: document.getElementById('editAuthor').value.trim(),
+    title: document.getElementById('editTitle').value.trim(),
+    year: document.getElementById('editYear').value.trim(),
+    month: document.getElementById('editMonth').value,
+    library: document.getElementById('editLibrary').value,
+    cover: document.getElementById('editCover').value.trim(),
+    link: document.getElementById('editLink').value.trim(),
+    bandcamp: document.getElementById('editBandcamp').value.trim(),
+    youtube: document.getElementById('editYoutube').value.trim(),
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    await updateDoc(doc(db, 'albums', albumId), updatedAlbum);
+
+    closeEditAlbumModal();
+    alert('Disco actualizado correctamente.');
+  } catch (error) {
+    console.error('Error al actualizar el disco:', error);
+    alert('No se ha podido actualizar el disco. Revisa la consola.');
+  }
+});
+    
 window.goToLastPage = function() {
   const yearFilter = document.getElementById('filterYear').value;
   const monthFilter = document.getElementById('filterMonth').value;
@@ -774,34 +1007,71 @@ document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
         const monthName = mesesNombres[album.month] || 'Mes desconocido';
         const yearLabel = album.year || 'Año desconocido';
 
-        card.innerHTML = `
-          <div class="album-cover-container">
-            <img class="album-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'">
-          </div>
-          <div class="album-info">
-            <div>
-              <p class="album-title">${album.title || 'Sin título'}</p>
-              <p class="album-author">${album.author || 'Autor desconocido'}</p>
-              <p class="album-date">📅 ${monthName} de ${yearLabel}</p>
-            </div>
-<div>
-  ${linksHtml}
-  ${isAdmin ? `
-    <a 
-      class="album-link-btn" 
-      style="margin-top:8px; background:rgba(102,252,241,0.15); color:#66fcf1; border-color:rgba(102,252,241,0.35);"
-      href="admin.html?edit=${encodeURIComponent(album.id)}&library=${encodeURIComponent(CURRENT_LIBRARY)}"
-    >
-      ✏️ Editar disco
-    </a>
-  ` : ''}
-</div>
-</div>          </div>
-        `;
+card.innerHTML = `
+  <div class="album-cover-container">
+    <img 
+      class
+  </div>
+
+  <div class="album-info">
+    <div>
+      <p class="album-title">${album.title || 'Sin título'}</p>
+      <p class="album-author">${album.author || 'Autor desconocido'}</p>
+      <p class="album-date">📅 ${monthName} de ${yearLabel}</p>
+    </div>
+
+    <div>
+      ${linksHtml}
+
+      ${isAdmin ? `
+        <div class="album-admin-actions">
+          <button 
+            type="button"
+            class="btn album-edit-btn"
+            onclick="openEditAlbumModal('${album.id}')"
+          >
+            ✏️ Editar disco
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  </div>
+`;
 
         grid.appendChild(card);
       });
     };
+
+    window.openEditAlbumModal = function(albumId) {
+  if (!isAdmin) {
+    alert('No tienes permisos para editar discos.');
+    return;
+  }
+
+  const album = albums.find(item => item.id === albumId);
+
+  if (!album) {
+    alert('No se ha encontrado el disco.');
+    return;
+  }
+
+  document.getElementById('editAlbumId').value = album.id;
+  document.getElementById('editAuthor').value = album.author || '';
+  document.getElementById('editTitle').value = album.title || '';
+  document.getElementById('editYear').value = album.year || '';
+  document.getElementById('editMonth').value = album.month || '01';
+  document.getElementById('editLibrary').value = album.library || CURRENT_LIBRARY || 'rap';
+  document.getElementById('editCover').value = album.cover || '';
+  document.getElementById('editLink').value = album.link || '';
+  document.getElementById('editBandcamp').value = album.bandcamp || '';
+  document.getElementById('editYoutube').value = album.youtube || '';
+
+  document.getElementById('editAlbumModal').style.display = 'flex';
+};
+
+window.closeEditAlbumModal = function() {
+  document.getElementById('editAlbumModal').style.display = 'none';
+};
   </script>
   <div id="cookieBanner" class="cookie-banner" style="display: none;">
   <div class="cookie-content">

@@ -384,6 +384,82 @@
       margin-top: 8px;
     }
 
+
+    .status-toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10000;
+      min-width: 260px;
+      max-width: calc(100% - 48px);
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.96);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .status-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .status-toast.success {
+      border-color: rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error {
+      border-color: rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      font-weight: 900;
+      font-size: 1.15rem;
+      transform: scale(0.7);
+    }
+
+    .status-toast.show .status-toast-icon {
+      animation: toastPop 0.35s ease forwards;
+    }
+
+    .status-toast.success .status-toast-icon {
+      background: rgba(29, 185, 84, 0.16);
+      color: #1DB954;
+      border: 1px solid rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error .status-toast-icon {
+      background: rgba(255, 74, 74, 0.16);
+      color: #ff4a4a;
+      border: 1px solid rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-message {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    @keyframes toastPop {
+      0% { transform: scale(0.6) rotate(-8deg); }
+      70% { transform: scale(1.12) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
     .cookie-banner {
       position: fixed;
       bottom: 20px;
@@ -494,6 +570,13 @@
       .modal-actions .btn { width: 100%; }
       .cookie-buttons { flex-direction: column; }
       .btn-cookie { width: 100%; }
+
+      .status-toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -637,6 +720,12 @@
     </div>
   </section>
 
+
+  <div id="statusToast" class="status-toast" aria-live="polite" aria-atomic="true">
+    <div id="statusToastIcon" class="status-toast-icon">✓</div>
+    <div id="statusToastMessage" class="status-toast-message">Actualizado correctamente</div>
+  </div>
+
   <div id="cookieBanner" class="cookie-banner" style="display: none;">
     <div class="cookie-content">
       <p>Utilizamos cookies propias y de terceros, como Google Analytics, para analizar el tráfico de la biblioteca.</p>
@@ -680,6 +769,7 @@
     let isAdmin = false;
     let albums = [];
     let currentPage = 1;
+    let statusToastTimeout = null;
 
     const mesesNombres = {
       "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
@@ -770,6 +860,30 @@
 
     function getSafeCoverUrl(album) {
       return album.cover || album.image || album.coverUrl || album.portada || '';
+    }
+
+
+    function showStatusToast(type, message) {
+      const toast = document.getElementById('statusToast');
+      const icon = document.getElementById('statusToastIcon');
+      const messageElement = document.getElementById('statusToastMessage');
+
+      if (!toast || !icon || !messageElement) return;
+
+      clearTimeout(statusToastTimeout);
+      toast.classList.remove('success', 'error', 'show');
+
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      messageElement.textContent = message;
+      toast.classList.add(type === 'success' ? 'success' : 'error');
+
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      statusToastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
     }
 
     function scrollToTop() {
@@ -938,14 +1052,14 @@
 
     window.openEditAlbumModal = function(albumId) {
       if (!isAdmin) {
-        alert('No tienes permisos para editar discos.');
+        showStatusToast('error', 'No tienes permisos para editar discos.');
         return;
       }
 
       const album = albums.find(item => item.id === albumId);
 
       if (!album) {
-        alert('No se ha encontrado el disco.');
+        showStatusToast('error', 'No se ha encontrado el disco.');
         return;
       }
 
@@ -976,14 +1090,14 @@
       event.preventDefault();
 
       if (!isAdmin) {
-        alert('No tienes permisos para guardar cambios.');
+        showStatusToast('error', 'No tienes permisos para guardar cambios.');
         return;
       }
 
       const albumId = document.getElementById('editAlbumId').value;
 
       if (!albumId) {
-        alert('No se ha encontrado el ID del disco.');
+        showStatusToast('error', 'No se ha encontrado el ID del disco.');
         return;
       }
 
@@ -1003,10 +1117,10 @@
       try {
         await updateDoc(doc(db, 'albums', albumId), updatedAlbum);
         closeEditAlbumModal();
-        alert('Disco actualizado correctamente.');
+        showStatusToast('success', 'Disco actualizado correctamente.');
       } catch (error) {
         console.error('Error al actualizar el disco:', error);
-        alert('No se ha podido actualizar el disco. Revisa la consola.');
+        showStatusToast('error', 'No se ha podido actualizar el disco.');
       }
     });
   </script>

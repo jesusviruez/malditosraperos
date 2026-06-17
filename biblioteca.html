@@ -786,11 +786,16 @@ document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
             </div>
 <div>
   ${linksHtml}
-  <div class="album-admin-actions">
-    <a class="btn albumncodeURIComponent(album.id)}&library=${encodeURIComponent(CURRENT_LIBRARY)}
+  ${isAdmin ? `
+    <a 
+      class="album-link-btn" 
+      style="margin-top:8px; background:rgba(102,252,241,0.15); color:#66fcf1; border-color:rgba(102,252,241,0.35);"
+      href="admin.html?edit=${encodeURIComponent(album.id)}&library=${encodeURIComponent(CURRENT_LIBRARY)}"
+    >
       ✏️ Editar disco
     </a>
-  </div>
+  ` : ''}
+</div>
 </div>          </div>
         `;
 

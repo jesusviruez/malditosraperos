@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Biblioteca rap español</title>
-
   <style>
     :root {
       --bg-color: #0b0c10;
@@ -15,172 +14,1156 @@
       --text-title: #ffffff;
       --text-muted: #858585;
       --border-radius: 12px;
-      --transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --spotify-color: #1DB954;
+      --bandcamp-color: #1da1f2;
+      --youtube-color: #FF0000;
     }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: var(--bg-color);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
       color: var(--text-color);
-      font-family: sans-serif;
-      padding: 20px;
+      line-height: 1.5;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 30px 0 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .header-copy h1 {
+      color: var(--text-title);
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header-copy p {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .breadcrumb a:hover { color: var(--accent-color); }
+    .breadcrumb span.separator { color: rgba(255, 255, 255, 0.2); }
+    .breadcrumb span.current { color: var(--text-color); }
+
+    .library-switch {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn, .switch-link {
+      background-color: var(--accent-color);
+      color: #0b0c10;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover, .switch-link:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary, .switch-link.secondary {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+    }
+
+    .btn-secondary:hover, .switch-link.secondary:hover { background-color: rgba(255, 255, 255, 0.15); }
+
+    .switch-link.active {
+      background-color: var(--accent-color);
+      color: #0b0c10;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 35px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 16px;
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+    }
+
+    select, input.search-input {
+      background: #121212;
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    select:focus, input.search-input:focus { border-color: var(--accent-color); }
+    input.search-input { flex: 1; min-width: 180px; }
 
     .albums-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 30px;
+      margin-bottom: 5px;
     }
 
     .album-card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 15px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    .btn {
-      padding: 8px 10px;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      margin-top: 6px;
+    .album-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+      border-color: rgba(102, 252, 241, 0.2);
     }
+
+    .album-cover-container {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+      background: #121212;
+    }
+
+    .album-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: var(--transition);
+    }
+
+    .album-card:hover .album-cover { transform: scale(1.04); }
+
+    .album-info {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .album-title {
+      font-size: 1.15rem;
+      color: var(--text-title);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .album-author {
+      color: var(--accent-color);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .album-date {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .album-links-container { display: flex; flex-direction: column; gap: 6px; }
+
+    .album-link-btn {
+      text-align: center;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: block;
+      transition: var(--transition);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .album-link-btn.spotify {
+      background: rgba(29, 185, 84, 0.15);
+      border-color: rgba(29, 185, 84, 0.3);
+      color: #1DB954;
+    }
+    .album-link-btn.spotify:hover { background: var(--spotify-color); color: #0b0c10; }
+
+    .album-link-btn.bandcamp {
+      background: rgba(30, 161, 242, 0.15);
+      border-color: rgba(30, 161, 242, 0.3);
+      color: #62b4ec;
+    }
+    .album-link-btn.bandcamp:hover { background: #1da1f2; color: #0b0c10; }
+
+    .album-link-btn.youtube {
+      background: rgba(255, 0, 0, 0.15);
+      border-color: rgba(255, 0, 0, 0.3);
+      color: #ff4a4a;
+    }
+    .album-link-btn.youtube:hover { background: var(--youtube-color); color: #ffffff; }
+
+    .album-admin-actions { margin-top: 10px; }
 
     .album-edit-btn {
-      background: #2a2a2a;
-      color: white;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-title);
+      border: 1px solid rgba(102, 252, 241, 0.28);
+    }
+
+    .album-edit-btn:hover {
+      background: var(--accent-color);
+      color: #0b0c10;
     }
 
     .album-delete-btn {
-      border: 1px solid rgba(255, 74, 74, 0.4);
-      color: #ff4a4a;
-      background: transparent;
+  border: 1px solid rgba(255, 74, 74, 0.4);
+  color: #ff4a4a;
+}
+
+.album-delete-btn:hover {
+  background: #ff4a4a;
+  color: #ffffff;
+}
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-muted);
+      padding: 60px 20px;
+      font-size: 1.1rem;
     }
 
-    .album-delete-btn:hover {
-      background: #ff4a4a;
-      color: white;
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 35px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pagination-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .pagination-info { font-size: 0.9rem; color: var(--text-muted); }
+    .pagination-limit { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(102, 252, 241, 0.25);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h2 { color: var(--text-title); font-size: 1.35rem; }
+
+    .modal-close {
+      background: transparent;
+      color: var(--text-title);
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-form { display: grid; gap: 14px; }
+
+    .modal-form label {
+      display: grid;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .modal-form input,
+    .modal-form select {
+      width: 100%;
+      background: #121212;
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .modal-form input:focus,
+    .modal-form select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+
+    .status-toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10000;
+      min-width: 260px;
+      max-width: calc(100% - 48px);
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.96);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .status-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .status-toast.success {
+      border-color: rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error {
+      border-color: rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      font-weight: 900;
+      font-size: 1.15rem;
+      transform: scale(0.7);
+    }
+
+    .status-toast.show .status-toast-icon {
+      animation: toastPop 0.35s ease forwards;
+    }
+
+    .status-toast.success .status-toast-icon {
+      background: rgba(29, 185, 84, 0.16);
+      color: #1DB954;
+      border: 1px solid rgba(29, 185, 84, 0.45);
+    }
+
+    .status-toast.error .status-toast-icon {
+      background: rgba(255, 74, 74, 0.16);
+      color: #ff4a4a;
+      border: 1px solid rgba(255, 74, 74, 0.45);
+    }
+
+    .status-toast-message {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    @keyframes toastPop {
+      0% { transform: scale(0.6) rotate(-8deg); }
+      70% { transform: scale(1.12) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    .cookie-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 600px;
+      background-color: var(--card-bg);
+      border: 1px solid rgba(102, 252, 241, 0.3);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      z-index: 9998;
+      backdrop-filter: blur(8px);
+    }
+
+    .cookie-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      text-align: left;
+    }
+
+    .cookie-content p {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      line-height: 1.45;
+    }
+
+    .cookie-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-cookie { padding: 8px 16px; font-size: 0.85rem; }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 40px;
+      width: 100%;
+    }
+
+    .contact-block {
+      margin-bottom: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .contact-block p { margin-bottom: 12px; line-height: 1.45; }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--text-title);
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: var(--transition);
+      font-size: 0.86rem;
+    }
+
+    .contact-link:hover {
+      color: #0b0c10;
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .contact-icon {
+      width: 15px;
+      height: 15px;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: stretch; }
+      .header-actions { justify-content: stretch; }
+      .filters { flex-direction: column; align-items: stretch; }
+      input.search-input, select, .filters .btn-secondary { width: 100%; }
+      .pagination-container { flex-direction: column; align-items: stretch; }
+      .pagination-controls { justify-content: center; }
+    }
+
+    @media (max-width: 600px) {
+      .modal-box { padding: 18px; }
+      .modal-actions { flex-direction: column; }
+      .modal-actions .btn { width: 100%; }
+      .cookie-buttons { flex-direction: column; }
+      .btn-cookie { width: 100%; }
+
+      .status-toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        max-width: none;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="container">
+    <header>
+      <div class="header-copy">
+        <h1 id="pageTitle">Biblioteca rap español</h1>
+        <p id="pageSubtitle">Cargando biblioteca...</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-secondary" href="index.html">Inicio</a>
+      </div>
+    </header>
 
-<h1>Biblioteca</h1>
+    <nav class="breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="separator">/</span>
+      <span class="current" id="breadcrumbCurrent">Biblioteca</span>
+    </nav>
 
-<div id="albumsGrid" class="albums-grid"></div>
+    <section class="library-switch">
+      <a id="rapSwitch" class="switch-link secondary" href="biblioteca.html?library=rap">Rap</a>
+      <a id="rbSwitch" class="switch-link secondary" href="biblioteca.html?library=rb">R&amp;B</a>
+    </section>
 
-<script type="module">
+    <section class="filters">
+      <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
+      <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  doc,
+      <select id="filterYear" onchange="resetPageAndRender()">
+        <option value="all">Todos los años</option>
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+
+      </select>
+
+      <select id="filterMonth" onchange="resetPageAndRender()">
+        <option value="all">Todos los meses</option>
+        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+
+      <select id="sortDirection" onchange="resetPageAndRender()">
+        <option value="desc">Más recientes primero</option>
+        <option value="asc">Más antiguos primero</option>
+      </select>
+
+      <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar filtros</button>
+    </section>
+
+    <main class="albums-grid" id="albumsGrid">
+      <div class="no-results">Cargando lanzamientos...</div>
+    </main>
+
+    <section class="pagination-container">
+      <div class="pagination-limit">
+        <span>Mostrar:</span>
+        <select id="itemsPerPage" onchange="resetPageAndRender()">
+          <option value="4">4 por página</option>
+          <option value="8" selected>8 por página</option>
+          <option value="12">12 por página</option>
+          <option value="24">24 por página</option>
+        </select>
+      </div>
+
+      <div class="pagination-controls">
+        <button id="firstPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToPage(1)">« Primera</button>
+        <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">‹ Ant.</button>
+        <span id="paginationInfo" class="pagination-info">Página 1 de 1</span>
+        <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(1)">Sig. ›</button>
+        <button id="lastPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToLastPage()">Última »</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="editAlbumModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Editar disco</h2>
+        <button type="button" class="modal-close" onclick="closeEditAlbumModal()">×</button>
+      </div>
+
+      <form id="editAlbumForm" class="modal-form">
+        <input type="hidden" id="editAlbumId">
+
+        <label>Autor <input type="text" id="editAuthor" required></label>
+        <label>Título <input type="text" id="editTitle" required></label>
+        <label>Año <input type="text" id="editYear" placeholder="2025" required></label>
+
+        <label>
+          Mes
+          <select id="editMonth" required>
+            <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+            <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+            <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select>
+        </label>
+
+        <label>
+          Biblioteca
+          <select id="editLibrary" required>
+            <option value="rap">Rap</option>
+            <option value="rb">R&amp;B</option>
+          </select>
+        </label>
+
+        <label>URL portada <input type="url" id="editCover" placeholder="https://..."></label>
+        <label>Spotify <input type="url" id="editLink" placeholder="https://open.spotify.com/..."></label>
+        <label>Bandcamp <input type="url" id="editBandcamp" placeholder="https://..."></label>
+        <label>YouTube <input type="url" id="editYoutube" placeholder="https://..."></label>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
+          <button type="submit" class="btn">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>Base de datos musical by Malditos Raperos</footer>
+
+  <section class="contact-block" aria-label="Contacto">
+    <p>Si quieres que tu trabajo aparezca aquí, no dudes en contactar.</p>
+    <div class="contact-links">
+      <a class="contact-link" href="https://x.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="X de Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2h3.3l-7.2 8.2L23.5 22h-6.6l-5.2-6.8L5.8 22H2.5l7.7-8.8L2 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.8 3.9H5.9L17.7 20Z"/></svg>
+        Twitter
+      </a>
+      <a class="contact-link" href="https://www.instagram.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm8.7 2.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/></svg>
+        Instagram
+      </a>
+      <a class="contact-link" href="mailto:malditosraperos@gmail.com" aria-label="Enviar correo a Malditos Raperos">
+        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm8 8.7L20 7.5V6l-8 5.2L4 6v1.5l8 5.2Z"/></svg>
+        Email
+      </a>
+    </div>
+  </section>
+
+
+  <div id="statusToast" class="status-toast" aria-live="polite" aria-atomic="true">
+    <div id="statusToastIcon" class="status-toast-icon">✓</div>
+    <div id="statusToastMessage" class="status-toast-message">Actualizado correctamente</div>
+  </div>
+
+  <div id="cookieBanner" class="cookie-banner" style="display: none;">
+    <div class="cookie-content">
+      <p>Utilizamos cookies propias y de terceros, como Google Analytics, para analizar el tráfico de la biblioteca.</p>
+      <div class="cookie-buttons">
+        <button id="acceptCookies" class="btn btn-cookie">Aceptar todas</button>
+        <button id="rejectCookies" class="btn btn-secondary btn-cookie">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import {
+  getFirestore,  
+  collection,  
+  onSnapshot,  
+  doc,  
+  updateDoc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
+      authDomain: "malditosraperos-c9198.firebaseapp.com",
+      projectId: "malditosraperos-c9198",
+      storageBucket: "malditosraperos-c9198.firebasestorage.app",
+      messagingSenderId: "78058247623",
+      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
+      measurementId: "G-GQGTE0P3RS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const ADMIN_EMAILS = [
+      'malditosraperos@gmail.com'
+    ];
+
+    let isAdmin = false;
+    let albums = [];
+    let currentPage = 1;
+    let statusToastTimeout = null;
+
+    const mesesNombres = {
+      "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
+      "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+    };
+
+    const libraryConfig = {
+      rap: {
+        title: 'Listado de álbumes de rap español',
+        subtitle: 'Consulta los lanzamientos de rap español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de rap español'
+      },
+      rb: {
+        title: 'Listado de álbumes de r&b español',
+        subtitle: 'Consulta los lanzamientos de r&b español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de r&b español'
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const CURRENT_LIBRARY = params.get('library') === 'rb' ? 'rb' : 'rap';
+    const currentConfig = libraryConfig[CURRENT_LIBRARY];
+
+    document.title = `Biblioteca rap español | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
+    document.getElementById('pageTitle').innerText = currentConfig.title;
+    document.getElementById('pageSubtitle').innerText = currentConfig.subtitle;
+    document.getElementById('breadcrumbCurrent').innerText = currentConfig.breadcrumb;
+    document.getElementById('rapSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rap');
+    document.getElementById('rapSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rap');
+    document.getElementById('rbSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rb');
+    document.getElementById('rbSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rb');
+
+    initCookieBanner();
+
+    onAuthStateChanged(auth, (user) => {
+      isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+      document.body.classList.toggle('is-admin', isAdmin);
+      renderAlbums();
+    });
+
+    onSnapshot(collection(db, 'albums'), (snapshot) => {
+      albums = [];
+      snapshot.forEach((documentSnapshot) => {
+        albums.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
+      });
+      renderAlbums();
+    });
+
+    function initCookieBanner() {
+      const banner = document.getElementById('cookieBanner');
+      const acceptBtn = document.getElementById('acceptCookies');
+      const rejectBtn = document.getElementById('rejectCookies');
+
+      if (!banner || !acceptBtn || !rejectBtn) return;
+
+      const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
+
+      if (!cookieDecision) {
+        banner.style.display = 'block';
+      } else if (cookieDecision === 'accepted') {
+        getAnalytics(app);
+      }
+
+      acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'accepted');
+        banner.style.display = 'none';
+        getAnalytics(app);
+      });
+
+      rejectBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesMalditosRaperos', 'rejected');
+        banner.style.display = 'none';
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll('`', '&#096;');
+    }
+
+    function getSafeCoverUrl(album) {
+      return album.cover || album.image || album.coverUrl || album.portada || '';
+    }
 
 
-const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "xxx.firebaseapp.com",
-  projectId: "xxx"
-};
+    function showStatusToast(type, message) {
+      const toast = document.getElementById('statusToast');
+      const icon = document.getElementById('statusToastIcon');
+      const messageElement = document.getElementById('statusToastMessage');
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+      if (!toast || !icon || !messageElement) return;
 
-const ADMIN_EMAILS = ['malditosraperos@gmail.com'];
+      clearTimeout(statusToastTimeout);
+      toast.classList.remove('success', 'error', 'show');
 
-let isAdmin = false;
-let albums = [];
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      messageElement.textContent = message;
+      toast.classList.add(type === 'success' ? 'success' : 'error');
 
-/* =========================
-   AUTH
-========================= */
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
 
-onAuthStateChanged(auth, (user) => {
-  isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
-  renderAlbums();
-});
+      statusToastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
+    }
 
-/* =========================
-   DATA
-========================= */
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-onSnapshot(collection(db, 'albums'), (snapshot) => {
-  albums = [];
-  snapshot.forEach(docSnap => {
-    albums.push({ id: docSnap.id, ...docSnap.data() });
-  });
-  renderAlbums();
-});
+    function getFilteredAlbums() {
+      const yearFilter = document.getElementById('filterYear').value;
+      const monthFilter = document.getElementById('filterMonth').value;
+      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
+      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
 
-/* =========================
-   RENDER
-========================= */
+      return albums.filter(album => {
+        const albumLibrary = album.library || 'rap';
+        const matchLibrary = albumLibrary === CURRENT_LIBRARY;
+        const matchYear = yearFilter === 'all' || album.year === yearFilter;
+        const matchMonth = monthFilter === 'all' || album.month === monthFilter;
+        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
+        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+        return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+      });
+    }
 
-function renderAlbums() {
-  const grid = document.getElementById("albumsGrid");
-  grid.innerHTML = "";
+    function buildAlbumLinksHtml(album) {
+      let linksHtml = '<div class="album-links-container">';
 
-  albums.forEach(album => {
+      if (album.link) {
+        linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
+      }
+      if (album.bandcamp) {
+        linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
+      }
+      if (album.youtube) {
+        linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
+      }
+      if (!album.link && !album.bandcamp && !album.youtube) {
+        linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
+      }
 
-    const card = document.createElement("div");
-    card.className = "album-card";
+      linksHtml += '</div>';
+      return linksHtml;
+    }
 
-    card.innerHTML = `
-      <h3>${album.title}</h3>
-      <p>${album.author}</p>
+    window.resetPageAndRender = function() {
+      currentPage = 1;
+      renderAlbums();
+      scrollToTop();
+    };
 
-      ${isAdmin ? `
-        <button class="btn album-edit-btn">
-          ✏️ Editar
-        </button>
+    window.changePage = function(direction) {
+      currentPage += direction;
+      renderAlbums();
+      scrollToTop();
+    };
 
-        <button 
-          class="btn album-delete-btn"
-          onclick="deleteAlbum('${album.id}')"
-        >
-          🗑️ Eliminar disco
-        </button>
-      ` : ""}
-    `;
+    window.goToPage = function(page) {
+      currentPage = page;
+      renderAlbums();
+      scrollToTop();
+    };
 
-    grid.appendChild(card);
-  });
-}
+    window.goToLastPage = function() {
+      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
+      const filteredAlbums = getFilteredAlbums();
+      currentPage = Math.ceil(filteredAlbums.length / itemsPerPage) || 1;
+      renderAlbums();
+      scrollToTop();
+    };
 
-/* =========================
-   DELETE
-========================= */
+    window.clearFilters = function() {
+      document.getElementById('searchAuthor').value = '';
+      document.getElementById('searchTitle').value = '';
+      document.getElementById('filterYear').value = 'all';
+      document.getElementById('filterMonth').value = 'all';
+      document.getElementById('sortDirection').value = 'desc';
+      resetPageAndRender();
+    };
 
+    window.renderAlbums = function() {
+      const grid = document.getElementById('albumsGrid');
+      const sortDirection = document.getElementById('sortDirection').value;
+      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
+
+      grid.innerHTML = '';
+
+      const filteredAlbums = getFilteredAlbums();
+
+      filteredAlbums.sort((a, b) => {
+        const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
+        const dateB = parseInt((b.year || '0000') + (b.month || '00'), 10);
+        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      const totalItems = filteredAlbums.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+      document.getElementById('firstPageBtn').disabled = currentPage === 1;
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+      document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
+
+      if (paginatedAlbums.length === 0) {
+        grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
+        return;
+      }
+
+      paginatedAlbums.forEach(album => {
+        const card = document.createElement('div');
+        card.className = 'album-card';
+
+        const linksHtml = buildAlbumLinksHtml(album);
+        const monthName = mesesNombres[album.month] || 'Mes desconocido';
+        const yearLabel = album.year || 'Año desconocido';
+        const coverUrl = getSafeCoverUrl(album);
+        const albumId = escapeAttribute(album.id);
+        const title = escapeHtml(album.title || 'Sin título');
+        const author = escapeHtml(album.author || 'Autor desconocido');
+
+        card.innerHTML = `
+          <div class="album-cover-container">
+            <img
+              class="album-cover"
+              src="${escapeAttribute(coverUrl)}"
+              alt="Portada de ${title}"
+              loading="lazy"
+              onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=Sin+Portada';"
+            >
+          </div>
+
+          <div class="album-info">
+            <div>
+              <p class="album-title">${title}</p>
+              <p class="album-author">${author}</p>
+              <p class="album-date">📅 ${escapeHtml(monthName)} de ${escapeHtml(yearLabel)}</p>
+            </div>
+
+            <div>
+              ${linksHtml}
+
+             ${isAdmin ? `
+  <div class="album-admin-actions">  
+    <button  
+      type="button"  
+      class="btn album-edit-btn"  
+      onclick="openEditAlbumModal('${albumId}')"  
+    >  
+      ✏️ Editar disco  
+    </button>  
+
+    <button  
+      type="button"  
+      class="btn btn-secondary album-delete-btn"  
+      onclick="deleteAlbum('${albumId}')"  
+      style="margin-top:6px;"  
+    >  
+      🗑️ Eliminar disco  
+    </button>  
+  </div>  
+` : ''}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    };
+
+    window.openEditAlbumModal = function(albumId) {
+      if (!isAdmin) {
+        showStatusToast('error', 'No tienes permisos para editar discos.');
+        return;
+      }
+
+      const album = albums.find(item => item.id === albumId);
+
+      if (!album) {
+        showStatusToast('error', 'No se ha encontrado el disco.');
+        return;
+      }
+
+      document.getElementById('editAlbumId').value = album.id;
+      document.getElementById('editAuthor').value = album.author || '';
+      document.getElementById('editTitle').value = album.title || '';
+      document.getElementById('editYear').value = album.year || '';
+      document.getElementById('editMonth').value = album.month || '01';
+      document.getElementById('editLibrary').value = album.library || CURRENT_LIBRARY || 'rap';
+      document.getElementById('editCover').value = getSafeCoverUrl(album);
+      document.getElementById('editLink').value = album.link || '';
+      document.getElementById('editBandcamp').value = album.bandcamp || '';
+      document.getElementById('editYoutube').value = album.youtube || '';
+      document.getElementById('editAlbumModal').style.display = 'flex';
+    };
+
+    window.closeEditAlbumModal = function() {
+      document.getElementById('editAlbumModal').style.display = 'none';
+    };
 window.deleteAlbum = async function(albumId) {
-
   if (!isAdmin) {
-    alert("No tienes permisos");
+    showStatusToast('error', 'No tienes permisos para eliminar discos.');
     return;
   }
 
-  const confirmDelete = confirm("¿Eliminar disco?");
+  const confirmDelete = confirm('¿Seguro que quieres eliminar este disco?');
   if (!confirmDelete) return;
 
   try {
-    await deleteDoc(doc(db, "albums", albumId));
-    alert("Eliminado");
-  } catch (e) {
-    console.error(e);
-    alert("Error al eliminar");
+    await deleteDoc(doc(db, 'albums', albumId));
+    showStatusToast('success', 'Disco eliminado correctamente.');
+  } catch (error) {
+    console.error('Error al eliminar el disco:', error);
+    showStatusToast('error', 'No se ha podido eliminar el disco.');
   }
 };
+    document.getElementById('editAlbumModal').addEventListener('click', function(event) {
+      if (event.target.id === 'editAlbumModal') {
+        closeEditAlbumModal();
+      }
+    });
 
-</script>
+    document.getElementById('editAlbumForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
 
+      if (!isAdmin) {
+        showStatusToast('error', 'No tienes permisos para guardar cambios.');
+        return;
+      }
+
+      const albumId = document.getElementById('editAlbumId').value;
+
+      if (!albumId) {
+        showStatusToast('error', 'No se ha encontrado el ID del disco.');
+        return;
+      }
+
+      const updatedAlbum = {
+        author: document.getElementById('editAuthor').value.trim(),
+        title: document.getElementById('editTitle').value.trim(),
+        year: document.getElementById('editYear').value.trim(),
+        month: document.getElementById('editMonth').value,
+        library: document.getElementById('editLibrary').value,
+        cover: document.getElementById('editCover').value.trim(),
+        link: document.getElementById('editLink').value.trim(),
+        bandcamp: document.getElementById('editBandcamp').value.trim(),
+        youtube: document.getElementById('editYoutube').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        await updateDoc(doc(db, 'albums', albumId), updatedAlbum);
+        closeEditAlbumModal();
+        showStatusToast('success', 'Disco actualizado correctamente.');
+      } catch (error) {
+        console.error('Error al actualizar el disco:', error);
+        showStatusToast('error', 'No se ha podido actualizar el disco.');
+      }
+    });
+  </script>
 </body>
 </html>

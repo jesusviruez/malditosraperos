@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Biblioteca rap español</title>
+
   <style>
     :root {
       --bg-color: #0b0c10;
@@ -14,949 +15,172 @@
       --text-title: #ffffff;
       --text-muted: #858585;
       --border-radius: 12px;
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      --spotify-color: #1DB954;
-      --bandcamp-color: #1da1f2;
-      --youtube-color: #FF0000;
-      --danger-color: #ff4a4a;
+      --transition: all 0.3s cubic-bezier(.25,.8,.25,1);
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-color);
+      background: var(--bg-color);
       color: var(--text-color);
-      line-height: 1.5;
-      padding: 0 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vi;
+      font-family: sans-serif;
+      padding: 20px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 40px 0;
-    }
-
-    header {
-      margin-bottom: 40px;
-      text-align: center;
-    }
-
-    h1 {
-      color: var(--text-title);
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-    }
-
-    /* Biblioteca Layout */
-    .library-layout {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 30px;
-    }
-
-    @media (max-width: 900px) {
-      .library-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Sidebar / Filtros */
-    .sidebar {
-      background-color: var(--card-bg);
-      padding: 24px;
-      border-radius: var(--border-radius);
-      height: fit-content;
-      position: sticky;
-      top: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .filter-group {
-      margin-bottom: 24px;
-    }
-
-    .filter-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .filter-group h3 {
-      color: var(--text-title);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    .search-wrapper {
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 12px 16px;
-      background-color: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      color: var(--text-title);
-      font-size: 0.95rem;
-      transition: var(--transition);
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 2px rgba(102, 252, 241, 0.2);
-    }
-
-    .filter-options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .filter-btn {
-      background: none;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: left;
-      font-size: 0.95rem;
-      transition: var(--transition);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .filter-btn:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .filter-btn.active {
-      background-color: var(--accent-color);
-      color: var(--bg-color);
-      border-color: var(--accent-color);
-      font-weight: 600;
-    }
-
-    .count-badge {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-    }
-
-    .filter-btn.active .count-badge {
-      background-color: rgba(0, 0, 0, 0.15);
-    }
-
-    /* Grid de Álbumes */
     .albums-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+      gap: 20px;
     }
 
     .album-card {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      position: relative;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 15px;
     }
 
-    .album-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-      border-color: rgba(102, 252, 241, 0.2);
-    }
-
-    .cover-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 100%; /* Aspect ratio 1:1 */
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .album-cover {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: var(--transition);
-    }
-
-    .album-info {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .album-title {
-      color: var(--text-title);
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .album-author {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .album-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: auto;
-      margin-bottom: 12px;
-    }
-
-    .pill {
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .pill.rap { background-color: rgba(102, 252, 241, 0.1); color: var(--accent-color); }
-    .pill.rnb { background-color: rgba(218, 112, 214, 0.1); color: orchid; }
-
-    /* Enlaces / Plataformas */
-    .album-links {
-      display: flex;
-      gap: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 12px;
-    }
-
-    .platform-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.05);
-      color: var(--text-color);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .platform-link:hover {
-      transform: scale(1.1);
-    }
-
-    .platform-link.spotify:hover { background-color: var(--spotify-color); color: white; }
-    .platform-link.bandcamp:hover { background-color: var(--bandcamp-color); color: white; }
-    .platform-link.youtube:hover { background-color: var(--youtube-color); color: white; }
-
-    .platform-link svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    /* Estado vacío o error */
-    .empty-state {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 60px 20px;
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-    }
-
-    .empty-state h3 {
-      color: var(--text-title);
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      color: var(--text-muted);
-    }
-
-    /* Botón general */
     .btn {
-      background-color: var(--accent-color);
-      color: var(--bg-color);
+      padding: 8px 10px;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
       cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .btn:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* Modal / Formulario de Edición */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      width: 100%;
-      max-width: 550px;
-      max-height: 90vi;
-      overflow-y: auto;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
-    .modal-overlay.active .modal-card {
-      transform: scale(1);
-    }
-
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      color: var(--text-title);
-      font-size: 1.3rem;
-    }
-
-    .close-modal-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .close-modal-btn:hover {
-      color: var(--text-title);
-    }
-
-    .modal-body {
-      padding: 24px;
-    }
-
-    /* Estilos del formulario dentro del modal */
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      color: var(--text-title);
-      font-size: 0.85rem;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px 14px;
-      background-color: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      color: var(--text-title);
-      font-size: 0.95rem;
-      transition: var(--transition);
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-
-    .btn-secondary {
-      background-color: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-    }
-
-    .btn-secondary:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Toast Notifications */
-    .toast-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1100;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toast {
-      background-color: #1f2833;
-      color: #fff;
-      padding: 12px 24px;
       border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border-left: 4px solid var(--accent-color);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transform: translateX(120%);
-      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      margin-top: 6px;
     }
 
-    .toast.active {
-      transform: translateX(0);
+    .album-edit-btn {
+      background: #2a2a2a;
+      color: white;
     }
 
-    .toast.error {
-      border-left-color: #ff4a4a;
+    .album-delete-btn {
+      border: 1px solid rgba(255, 74, 74, 0.4);
+      color: #ff4a4a;
+      background: transparent;
     }
 
-    .toast.success {
-      border-left-color: #1DB954;
+    .album-delete-btn:hover {
+      background: #ff4a4a;
+      color: white;
     }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <header>
-      <h1>BBLTK RAP ESPAÑOL</h1>
-      <p class="subtitle">Catálogo de álbumes y maquetas del rap en España</p>
-    </header>
+<h1>Biblioteca</h1>
 
-    <div class="library-layout">
-      <aside class="sidebar">
-        <div class="filter-group">
-          <h3>Buscar</h3>
-          <div class="search-wrapper">
-            <input 
-              type="text" 
-              id="searchInput" 
-              class="search-input" 
-              placeholder="Artista, álbum o año..."
-            >
-          </div>
-        </div>
+<div id="albumsGrid" class="albums-grid"></div>
 
-        <div class="filter-group">
-          <h3>Biblioteca</h3>
-          <div class="filter-options">
-            <button class="filter-btn active" id="filter-all">
-              <span>Todo</span>
-              <span class="count-badge" id="count-all">0</span>
-            </button>
-            <button class="filter-btn" id="filter-rap">
-              <span>Rap</span>
-              <span class="count-badge" id="count-rap">0</span>
-            </button>
-            <button class="filter-btn" id="filter-rnb">
-              <span>R&B</span>
-              <span class="count-badge" id="count-rnb">0</span>
-            </button>
-          </div>
-        </div>
-      </aside>
+<script type="module">
 
-      <main class="albums-grid" id="albumsGrid">
-        <div class="empty-state">
-          <h3>Cargando biblioteca...</h3>
-          <p>Conectando con la base de datos en tiempo real.</p>
-        </div>
-      </main>
-    </div>
-  </div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  doc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  <div class="modal-overlay" id="editModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2>✏️ Editar metadatos del disco</h2>
-        <button type="button" class="close-modal-btn" onclick="closeEditAlbumModal()">&times;</button>
-      </div>
-      <form id="editAlbumForm">
-        <div class="modal-body">
-          <input type="hidden" id="editAlbumId">
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editAuthor">Artista / Grupo *</label>
-              <input type="text" id="editAuthor" required>
-            </div>
-            <div class="form-group">
-              <label for="editTitle">Título del Álbum *</label>
-              <input type="text" id="editTitle" required>
-            </div>
-          </div>
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editYear">Año de Lanzamiento *</label>
-              <input type="number" id="editYear" min="1980" max="2030" required>
-            </div>
-            <div class="form-group">
-              <label for="editMonth">Mes de Lanzamiento</label>
-              <select id="editMonth">
-                <option value="01">Enero</option>
-                <option value="02">Febrero</option>
-                <option value="03">Marzo</option>
-                <option value="04">Abril</option>
-                <option value="05">Mayo</option>
-                <option value="06">Junio</option>
-                <option value="07">Julio</option>
-                <option value="08">Agosto</option>
-                <option value="09">Septiembre</option>
-                <option value="10">Octubre</option>
-                <option value="11">Noviembre</option>
-                <option value="12">Diciembre</option>
-              </select>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <label for="editLibrary">Sección de la Biblioteca *</label>
-            <select id="editLibrary" required>
-              <option value="rap">Rap</option>
-              <option value="rnb">R&B / Soul / Otros</option>
-            </select>
-          </div>
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "xxx.firebaseapp.com",
+  projectId: "xxx"
+};
 
-          <div class="form-group">
-            <label for="editCover">URL de la Portada (Imagen)</label>
-            <input type="url" id="editCover" placeholder="https://...">
-          </div>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-          <div class="form-group">
-            <label for="editLink">Enlace de Spotify</label>
-            <input type="url" id="editLink" placeholder="https://open.spotify.com/album/...">
-          </div>
+const ADMIN_EMAILS = ['malditosraperos@gmail.com'];
 
-          <div class="form-group">
-            <label for="editBandcamp">Enlace de Bandcamp</label>
-            <input type="url" id="editBandcamp" placeholder="https://....bandcamp.com/album/...">
-          </div>
+let isAdmin = false;
+let albums = [];
 
-          <div class="form-group">
-            <label for="editYoutube">Enlace de YouTube / Playlist</label>
-            <input type="url" id="editYoutube" placeholder="https://www.youtube.com/playlist?...">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
-          <button type="submit" class="btn">Guardar Cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
+/* =========================
+   AUTH
+========================= */
 
-  <div class="toast-container" id="toastContainer"></div>
+onAuthStateChanged(auth, (user) => {
+  isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+  renderAlbums();
+});
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      onSnapshot,
-      doc,
-      updateDoc,
-      deleteDoc
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+/* =========================
+   DATA
+========================= */
 
-    // --- CONFIGURACIÓN DE TU FIREBASE ---
-    // Asegúrate de enlazar tus credenciales correctas aquí
-    const firebaseConfig = {
-      apiKey: "AIzaSyA...",
-      authDomain: "biblioteca-rap.firebaseapp.com",
-      projectId: "biblioteca-rap",
-      storageBucket: "biblioteca-rap.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:12345:web:abcd"
-    };
+onSnapshot(collection(db, 'albums'), (snapshot) => {
+  albums = [];
+  snapshot.forEach(docSnap => {
+    albums.push({ id: docSnap.id, ...docSnap.data() });
+  });
+  renderAlbums();
+});
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+/* =========================
+   RENDER
+========================= */
 
-    // Estado global de la aplicación
-    let allAlbums = [];       // Almacén en bruto de Firestore
-    let currentFilter = 'all'; // Filtro de sección activo ('all', 'rap', 'rnb')
-    let searchQuery = '';     // Filtro de texto activo
-    let isAdmin = false;       // El usuario logueado es el admin?
+function renderAlbums() {
+  const grid = document.getElementById("albumsGrid");
+  grid.innerHTML = "";
 
-    // ID del Administrador (Modifica por tu UID de usuario real)
-    const ADMIN_UID = "o79b8H5h9oN3KREx6FidG9w4CZy1"; 
+  albums.forEach(album => {
 
-    // Monitorear Autenticación en tiempo real
-    onAuthStateChanged(auth, (user) => {
-      if (user && user.uid === ADMIN_UID) {
-        isAdmin = true;
-        console.log("[✓] Modo administrador activado para biblioteca.");
-      } else {
-        isAdmin = false;
-        console.log("[i] Modo visitante (Lectura pública).");
-      }
-      // Re-renderizamos los álbumes actuales para reflejar los controles de edición de inmediato
-      if(allAlbums.length > 0) window.renderAlbums();
-    });
+    const card = document.createElement("div");
+    card.className = "album-card";
 
-    // Escuchar la Colección 'albums' en Tiempo Real desde Firestore
-    const albumsCollectionRef = collection(db, 'albums');
-    onSnapshot(albumsCollectionRef, (snapshot) => {
-      allAlbums = [];
-      snapshot.forEach((doc) => {
-        allAlbums.push({ id: doc.id, ...doc.data() });
-      });
+    card.innerHTML = `
+      <h3>${album.title}</h3>
+      <p>${album.author}</p>
 
-      // Ordenar por año descendente y luego por mes desc
-      allAlbums.sort((a, b) => {
-        const yearA = parseInt(a.year) || 0;
-        const yearB = parseInt(b.year) || 0;
-        if (yearB !== yearA) return yearB - yearA;
-        return (b.month || '').localeCompare(a.month || '');
-      });
+      ${isAdmin ? `
+        <button class="btn album-edit-btn">
+          ✏️ Editar
+        </button>
 
-      // Calcular y refrescar contadores en el menú lateral
-      updateSidebarBadges();
-      // Renderizar el catálogo en el grid principal
-      window.renderAlbums();
-    }, (error) => {
-      console.error("Error cargando Firestore:", error);
-      document.getElementById('albumsGrid').innerHTML = `
-        <div class="empty-state">
-          <h3>Error en la sincronización</h3>
-          <p>No se han podido descargar los registros del catálogo.</p>
-        </div>
-      `;
-    });
+        <button 
+          class="btn album-delete-btn"
+          onclick="deleteAlbum('${album.id}')"
+        >
+          🗑️ Eliminar disco
+        </button>
+      ` : ""}
+    `;
 
-    // --- FUNCIONES DE FILTRADO Y RENDERIZADO ---
+    grid.appendChild(card);
+  });
+}
 
-    function updateSidebarBadges() {
-      const total = allAlbums.length;
-      const rapCount = allAlbums.filter(a => a.library === 'rap').length;
-      const rnbCount = allAlbums.filter(a => a.library === 'rnb').length;
+/* =========================
+   DELETE
+========================= */
 
-      document.getElementById('count-all').textContent = total;
-      document.getElementById('count-rap').textContent = rapCount;
-      document.getElementById('count-rnb').textContent = rnbCount;
-    }
+window.deleteAlbum = async function(albumId) {
 
-    window.renderAlbums = function() {
-      const grid = document.getElementById('albumsGrid');
-      grid.innerHTML = '';
+  if (!isAdmin) {
+    alert("No tienes permisos");
+    return;
+  }
 
-      // Aplicar filtros encadenados (Sección + Buscador de texto)
-      const filtered = allAlbums.filter(album => {
-        // 1. Filtro lateral de sección
-        if (currentFilter !== 'all' && album.library !== currentFilter) return false;
-        
-        // 2. Filtro de búsqueda por texto
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          const title = (album.title || '').toLowerCase();
-          const author = (album.author || '').toLowerCase();
-          const year = (album.year || '').toString();
-          return title.includes(q) || author.includes(q) || year.includes(q);
-        }
-        return true;
-      });
+  const confirmDelete = confirm("¿Eliminar disco?");
+  if (!confirmDelete) return;
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-state">
-            <h3>Sin resultados</h3>
-            <p>No hay discos que coincidan con los filtros aplicados actualmente.</p>
-          </div>
-        `;
-        return;
-      }
+  try {
+    await deleteDoc(doc(db, "albums", albumId));
+    alert("Eliminado");
+  } catch (e) {
+    console.error(e);
+    alert("Error al eliminar");
+  }
+};
 
-      // Mapear meses numéricos a nombres para la tarjeta
-      const mesesNombres = {
-        "01": "Ene", "02": "Feb", "03": "Mar", "04": "Abr", "05": "May", "06": "Jun",
-        "07": "Jul", "08": "Ago", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dic"
-      };
+</script>
 
-      filtered.forEach(album => {
-        const albumId = album.id;
-        const title = album.title || 'Sin título';
-        const author = album.author || 'Artista Desconocido';
-        const year = album.year || '----';
-        const monthLabel = album.month && mesesNombres[album.month] ? mesesNombres[album.month] : '';
-        const dateString = monthLabel ? `${monthLabel} / ${year}` : year;
-
-        // Estructurar bloque de links a plataformas sociales
-        let linksHtml = '';
-        if (album.link) {
-          linksHtml += `
-            <a href="${album.link}" class="platform-link spotify" target="_blank" title="Escuchar en Spotify">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.67-.136-.746-.472-.075-.336.136-.67.472-.746 3.854-.88 7.15-.508 9.822 1.13.295.18.387.563.205.863zm1.224-2.724c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.412.125-.845-.107-.97-.52-.124-.412.108-.847.52-.97 3.676-1.114 8.243-.573 11.343 1.334.366.226.486.704.26 1.072zm.105-2.836C14.492 8.71 8.822 8.523 5.532 9.52c-.5.152-1.024-.13-1.176-.63-.153-.5.13-1.025.63-1.177 3.777-1.147 10.02-.933 14.004 1.43.45.267.6.845.333 1.295-.266.45-.844.6-1.295.333z"/></svg>
-            </a>`;
-        }
-        if (album.bandcamp) {
-          linksHtml += `
-            <a href="${album.bandcamp}" class="platform-link bandcamp" target="_blank" title="Escuchar en Bandcamp">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm8.25 10.33l-7.237 4.218a.332.332 0 0 1-.328-.002L3.753 11.66a.332.332 0 0 1 .004-.573l7.236-4.218a.332.332 0 0 1 .328.001l8.928 4.888a.332.332 0 0 1-.004.572z"/></svg>
-            </a>`;
-        }
-        if (album.youtube) {
-          linksHtml += `
-            <a href="${album.youtube}" class="platform-link youtube" target="_blank" title="Escuchar en YouTube">
-              <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.503 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.507 9.387.507 9.387.507s7.517 0 9.387-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            </a>`;
-        }
-
-        const card = document.createElement('article');
-        card.className = 'album-card';
-        card.innerHTML = `
-          <div class="cover-wrapper">
-            <img 
-              class="album-cover" 
-              src="${album.cover || ''}" 
-              alt="Portada de ${title}"
-              onerror="this.src='https://placehold.co/300x300?text=Sin+Portada'"
-            >
-          </div>
-          <div class="album-info">
-            <h3 class="album-title" title="${title}">${title}</h3>
-            <div class="album-author" title="${author}">${author}</div>
-            
-            <div class="album-meta">
-              <span class="pill ${album.library === 'rap' ? 'rap' : 'rnb'}">${album.library === 'rap' ? 'Rap' : 'R&B'}</span>
-              <span>${dateString}</span>
-            </div>
-
-            <div class="album-links">
-              ${linksHtml || '<span style="font-size:0.8rem; color:var(--text-muted);">Sin enlaces públicos</span>'}
-            </div>
-
-            ${isAdmin ? `
-              <div class="album-admin-actions" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-                <button
-                  type="button"
-                  class="btn album-edit-btn"
-                  onclick="openEditAlbumModal('${albumId}')"
-                  style="width: 100%;"
-                >
-                  ✏️ Editar disco
-                </button>
-                <button
-                  type="button"
-                  class="btn"
-                  onclick="deleteAlbum('${albumId}', \`${title}\`)"
-                  style="width: 100%; background-color: var(--danger-color, #ff4a4a); color: white; border: 1px solid rgba(255, 74, 74, 0.2);"
-                  onmouseover="this.style.backgroundColor='#ff3333'"
-                  onmouseout="this.style.backgroundColor='var(--danger-color, #ff4a4a)'"
-                >
-                  🗑️ Borrar disco
-                </button>
-              </div>
-            ` : ''}
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    };
-
-    // --- MANEJO DE EVENTOS EN FILTROS Y BUSCADOR ---
-
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim();
-      window.renderAlbums();
-    });
-
-    const filterButtons = {
-      'all': document.getElementById('filter-all'),
-      'rap': document.getElementById('filter-rap'),
-      'rnb': document.getElementById('filter-rnb')
-    };
-
-    Object.keys(filterButtons).forEach(key => {
-      filterButtons[key].addEventListener('click', () => {
-        Object.values(filterButtons).forEach(btn => btn.classList.remove('active'));
-        filterButtons[key].classList.add('active');
-        currentFilter = key;
-        window.renderAlbums();
-      });
-    });
-
-    // --- ACCIONES DE ADMINISTRADOR (MODAL) ---
-
-    window.openEditAlbumModal = function(id) {
-      const album = allAlbums.find(a => a.id === id);
-      if (!album) return;
-
-      document.getElementById('editAlbumId').value = id;
-      document.getElementById('editAuthor').value = album.author || '';
-      document.getElementById('editTitle').value = album.title || '';
-      document.getElementById('editYear').value = album.year || '';
-      document.getElementById('editMonth').value = album.month || '01';
-      document.getElementById('editLibrary').value = album.library || 'rap';
-      document.getElementById('editCover').value = album.cover || '';
-      document.getElementById('editLink').value = album.link || '';
-      document.getElementById('editBandcamp').value = album.bandcamp || '';
-      document.getElementById('editYoutube').value = album.youtube || '';
-
-      document.getElementById('editModal').classList.add('active');
-    };
-
-    window.closeEditAlbumModal = function() {
-      document.getElementById('editModal').classList.remove('active');
-      document.getElementById('editAlbumForm').reset();
-    };
-
-    // Procesar envío del formulario de actualización
-    document.getElementById('editAlbumForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      if (!isAdmin) {
-        showStatusToast('error', 'No tienes permisos para guardar cambios.');
-        return;
-      }
-
-      const albumId = document.getElementById('editAlbumId').value;
-      if (!albumId) {
-        showStatusToast('error', 'No se ha encontrado el ID del disco.');
-        return;
-      }
-
-      const updatedAlbum = {
-        author: document.getElementById('editAuthor').value.trim(),
-        title: document.getElementById('editTitle').value.trim(),
-        year: document.getElementById('editYear').value.trim(),
-        month: document.getElementById('editMonth').value,
-        library: document.getElementById('editLibrary').value,
-        cover: document.getElementById('editCover').value.trim(),
-        link: document.getElementById('editLink').value.trim(),
-        bandcamp: document.getElementById('editBandcamp').value.trim(),
-        youtube: document.getElementById('editYoutube').value.trim(),
-        updatedAt: new Date().toISOString()
-      };
-
-      try {
-        await updateDoc(doc(db, 'albums', albumId), updatedAlbum);
-        closeEditAlbumModal();
-        showStatusToast('success', 'Disco actualizado correctamente.');
-      } catch (error) {
-        console.error('Error al actualizar el disco:', error);
-        showStatusToast('error', 'No se ha podido actualizar el disco.');
-      }
-    });
-
-    // Función global para eliminar el álbum vinculada al botón
-    window.deleteAlbum = async function(albumId, albumTitle) {
-      if (!isAdmin) {
-        showStatusToast('error', 'No tienes permisos para eliminar discos.');
-        return;
-      }
-
-      // Cuadro de confirmación nativo para evitar accidentes fatales
-      const confirmar = confirm(`¿Estás completamente seguro de que quieres eliminar permanentemente el álbum "${albumTitle}"? Esta acción no se puede deshacer.`);
-      
-      if (!confirmar) return;
-
-      try {
-        // Ejecutamos la baja del documento referenciándolo por su ID único
-        await deleteDoc(doc(db, 'albums', albumId));
-        
-        // El onSnapshot de tu código se encargará automáticamente de refrescar la pantalla sin recargar la página
-        showStatusToast('success', 'Disco eliminado correctamente de la base de datos.');
-      } catch (error) {
-        console.error('Error al eliminar el disco:', error);
-        showStatusToast('error', 'No se ha podido eliminar el disco del servidor.');
-      }
-    };
-
-    // --- SISTEMA INTERNO DE COMPONENTE TOAST ---
-
-    function showStatusToast(type, message) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <span>${type === 'success' ? '✓' : '✕'}</span>
-        <span>${message}</span>
-      `;
-      container.appendChild(toast);
-
-      // Pequeño delay para disparar la animación de CSS (slide in)
-      setTimeout(() => toast.classList.add('active'), 10);
-
-      // Destruir el toast a los 4 segundos
-      setTimeout(() => {
-        toast.classList.remove('active');
-        setTimeout(() => toast.remove(), 300);
-      }, 4000);
-    }
-  </script>
 </body>
 </html>

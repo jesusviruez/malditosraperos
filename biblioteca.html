@@ -619,15 +619,7 @@
 
       <select id="filterYear" onchange="resetPageAndRender()">
         <option value="all">Todos los años</option>
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-        <option value="2022">2022</option>
-        <option value="2021">2021</option>
-        <option value="2020">2020</option>
-
-      </select>
+       </select>
 
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
@@ -831,6 +823,7 @@
       snapshot.forEach((documentSnapshot) => {
         albums.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
       });
+      populateYearFilter();
       renderAlbums();
     });
 
@@ -905,7 +898,36 @@
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+function populateYearFilter() {
+  const yearSelect = document.getElementById('filterYear');
 
+  // Guardar valor actual para no perderlo al refrescar
+  const currentValue = yearSelect.value;
+
+  // Obtener años únicos
+  const years = [...new Set(
+    albums.map(a => a.year).filter(y => y)
+  )];
+
+  // Ordenar desc (más recientes primero)
+  years.sort((a, b) => b.localeCompare(a));
+
+  // Resetear opciones
+  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+
+  // Añadir opciones
+  years.forEach(year => {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+  });
+
+  // Restaurar selección si sigue existiendo
+  if (years.includes(currentValue)) {
+    yearSelect.value = currentValue;
+  }
+}
     function getFilteredAlbums() {
       const yearFilter = document.getElementById('filterYear').value;
       const monthFilter = document.getElementById('filterMonth').value;

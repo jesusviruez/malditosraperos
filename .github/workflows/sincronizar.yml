@@ -25,4 +25,4 @@ jobs:
       run: node sync_blog.js
 
     - name: Corregir bibliotecas vacías
-      run: node check_libraries.js
+      run: node checklibraries.js

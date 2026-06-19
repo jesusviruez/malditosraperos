@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
-import { XMLParser } from "fast-xml-parser";
+import * as cheerio from "cheerio";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
@@ -16,7 +16,7 @@ const db = getFirestore(app);
 
 async function sincronizarVertedero() {
   try {
-    console.log("=== INICIANDO SCRIPT REORDENADO POR PORTADA ===");
+    console.log("=== INICIANDO SCRAPER HTML (FEED INTEGRADO DESACTIVADO) ===");
     console.log("Obteniendo álbumes actuales de Firestore para caché local...");
     
     const querySnapshot = await getDocs(collection(db, "albums"));
@@ -29,43 +29,42 @@ async function sincronizarVertedero() {
     });
 
     console.log(`Caché lista. ${cacheDiscosExistentes.size} álbumes cargados en memoria.`);
-    
-    // CAMBIO CLAVE: Añadimos orderby=updated para traer lo último que se ve en la portada del blog
-    console.log("Conectando con el Feed de Blogger ordenado por actualización...");
-    const blogUrl = "https://vertederoderimas.blogspot.com/feeds/posts/default?max-results=50&orderby=updated";
-    const response = await fetch(blogUrl);
-    const xmlData = await response.text(); 
-    
-    const parser = new XMLParser({ 
-      ignoreAttributes: false, 
-      attributeNamePrefix: "",
-      textNodeName: "text"
-    });
-    const jsonObj = parser.parse(xmlData);
-    
-    const entradas = jsonObj.feed?.entry || [];
-    const listaEntradas = Array.isArray(entradas) ? entradas : [entradas];
+    console.log("Descargando el contenido HTML de la portada del blog...");
 
-    if (listaEntradas.length === 0 || !listaEntradas[0]) {
-      console.log("No se encontraron entradas en el blog.");
+    // Descargamos directamente la página web principal que sí está siempre activa
+    const response = await fetch("https://vertederoderimas.blogspot.com/", {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+    });
+    const htmlData = await response.text();
+
+    // Cargamos el HTML en cheerio para poder buscar las entradas
+    const $ = cheerio.load(htmlData);
+    
+    // En las plantillas clásicas de Blogger, cada post está envuelto en la clase '.post'
+    const posts = $(".post");
+    console.log(`Se han encontrado ${posts.length} posts visibles en la portada web.`);
+
+    if (posts.length === 0) {
+      console.log("No se pudieron detectar entradas con la estructura esperada.");
       return;
     }
 
     let nuevosDiscosContador = 0;
 
-    for (const entrada of listaEntradas) {
-      let tituloEntrada = "";
-      if (entrada.title) {
-        tituloEntrada = typeof entrada.title === 'object' ? (entrada.title.text || entrada.title['#text'] || '') : entrada.title;
-      }
+    // Procesamos de abajo hacia arriba (los más viejos de la portada primero) para mantener orden temporal lógico
+    for (let i = posts.length - 1; i >= 0; i--) {
+      const postElement = $(posts[i]);
+
+      // 1. Obtener el título del post (Suele estar dentro de .post-title o h3)
+      let tituloEntrada = postElement.find(".post-title").text().trim() || postElement.find("h3").text().trim();
       
-      if (!tituloEntrada || typeof tituloEntrada !== 'string') continue;
+      if (!tituloEntrada) continue;
 
       let autor = "Desconocido";
       let tituloAlbum = "Sin título";
       let year = "2026"; // Año por defecto
 
-      // Regex optimizada para buscar el año (4 dígitos entre paréntesis) al final de la cadena
+      // Filtramos formatos de texto "Autor - Disco (Año)"
       const regexConAnio = /^(.*?)\s*-\s*(.*?)\s*\((\d{4})\)\s*$/;
       const regexSimple = /^(.*?)\s*-\s*(.*)/;
 
@@ -84,27 +83,21 @@ async function sincronizarVertedero() {
 
       const claveVerificacion = `${simplificarTexto(autor)}_${simplificarTexto(tituloAlbum)}`;
 
-      // Verificar contra la caché de Firestore
       if (cacheDiscosExistentes.has(claveVerificacion)) {
         console.log(`[Ya existe] Saltando: ${autor} - ${tituloAlbum}`);
-        continue; 
+        continue;
       }
 
-      const fechaPublicacionRaw = entrada.published || entrada.updated || new Date().toISOString();
-      const fechaPublicacion = new Date(fechaPublicacionRaw);
-      const mesIndex = String(fechaPublicacion.getMonth() + 1).padStart(2, '0');
-
+      // 2. Extraer la primera imagen de portada del post
       let portada = "https://placehold.co/200x200?text=Sin+Portada";
-      let contenido = "";
-      if (entrada.content) {
-        contenido = typeof entrada.content === 'object' ? (entrada.content.text || entrada.content['#text'] || '') : entrada.content;
+      const primeraImg = postElement.find(".post-body img").first();
+      if (primeraImg.length && primeraImg.attr("src")) {
+        portada = primeraImg.attr("src");
       }
-      
-      const imgRegex = /src=["'](https?:\/\/[^"']+)["']/i;
-      const imgMatch = contenido.match(imgRegex);
-      if (imgMatch && imgMatch[1]) {
-        portada = imgMatch[1];
-      }
+
+      // 3. Generar mes numérico basándonos en el mes actual del scraping 
+      // Ya que el HTML requiere parsear strings complejos de fechas según el idioma, usamos el actual.
+      const mesIndex = String(new Date().getMonth() + 1).padStart(2, '0');
 
       const nuevoAlbum = {
         library: "rap",
@@ -121,7 +114,7 @@ async function sincronizarVertedero() {
       };
 
       await addDoc(collection(db, "albums"), nuevoAlbum);
-      console.log(`+ ¡INSERTADO CON ÉXITO!: ${autor} - ${tituloAlbum} (${year})`);
+      console.log(`+ ¡INSERTADO CON ÉXITO DESDE WEB!: ${autor} - ${tituloAlbum} (${year})`);
       
       cacheDiscosExistentes.set(claveVerificacion, true);
       nuevosDiscosContador++;
@@ -130,7 +123,7 @@ async function sincronizarVertedero() {
     console.log(`Sincronización terminada. Se han añadido ${nuevosDiscosContador} álbumes nuevos.`);
 
   } catch (error) {
-    console.error("Hubo un error en la sincronización:", error);
+    console.error("Hubo un error crítico en el scraper HTML:", error);
   }
 }
 

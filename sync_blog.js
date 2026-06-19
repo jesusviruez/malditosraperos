@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 import { XMLParser } from "fast-xml-parser";
 
-// Tu configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
   authDomain: "malditosraperos-c9198.firebaseapp.com",
@@ -17,7 +16,7 @@ const db = getFirestore(app);
 
 async function sincronizarVertedero() {
   try {
-    console.log("=== INICIANDO SCRIPT VERSIÓN XML ===");
+    console.log("=== INICIANDO SCRIPT REORDENADO POR PORTADA ===");
     console.log("Obteniendo álbumes actuales de Firestore para caché local...");
     
     const querySnapshot = await getDocs(collection(db, "albums"));
@@ -30,36 +29,44 @@ async function sincronizarVertedero() {
     });
 
     console.log(`Caché lista. ${cacheDiscosExistentes.size} álbumes cargados en memoria.`);
-    console.log("Conectando con el Feed XML de Blogger...");
-
-    const blogUrl = "https://vertederoderimas.blogspot.com/feeds/posts/default?max-results=20";
+    
+    // CAMBIO CLAVE: Añadimos orderby=updated para traer lo último que se ve en la portada del blog
+    console.log("Conectando con el Feed de Blogger ordenado por actualización...");
+    const blogUrl = "https://vertederoderimas.blogspot.com/feeds/posts/default?max-results=50&orderby=updated";
     const response = await fetch(blogUrl);
     const xmlData = await response.text(); 
-    console.log("Feed descargado correctamente en formato Texto/XML. Parseando...");
-
-    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
+    
+    const parser = new XMLParser({ 
+      ignoreAttributes: false, 
+      attributeNamePrefix: "",
+      textNodeName: "text"
+    });
     const jsonObj = parser.parse(xmlData);
     
     const entradas = jsonObj.feed?.entry || [];
     const listaEntradas = Array.isArray(entradas) ? entradas : [entradas];
 
     if (listaEntradas.length === 0 || !listaEntradas[0]) {
-      console.log("No se encontraron entradas recientes en el blog.");
+      console.log("No se encontraron entradas en el blog.");
       return;
     }
 
     let nuevosDiscosContador = 0;
 
     for (const entrada of listaEntradas) {
-      const tituloEntrada = typeof entrada.title === 'object' ? (entrada.title['#text'] || entrada.title['$t'] || '') : entrada.title;
+      let tituloEntrada = "";
+      if (entrada.title) {
+        tituloEntrada = typeof entrada.title === 'object' ? (entrada.title.text || entrada.title['#text'] || '') : entrada.title;
+      }
       
-      if (!tituloEntrada) continue;
+      if (!tituloEntrada || typeof tituloEntrada !== 'string') continue;
 
       let autor = "Desconocido";
       let tituloAlbum = "Sin título";
-      let year = new Date().getFullYear().toString();
+      let year = "2026"; // Año por defecto
 
-      const regexConAnio = /^(.*?)\s*-\s*([^()]*?)\s*\((\d{4})\)/;
+      // Regex optimizada para buscar el año (4 dígitos entre paréntesis) al final de la cadena
+      const regexConAnio = /^(.*?)\s*-\s*(.*?)\s*\((\d{4})\)\s*$/;
       const regexSimple = /^(.*?)\s*-\s*(.*)/;
 
       if (regexConAnio.test(tituloEntrada)) {
@@ -77,7 +84,9 @@ async function sincronizarVertedero() {
 
       const claveVerificacion = `${simplificarTexto(autor)}_${simplificarTexto(tituloAlbum)}`;
 
+      // Verificar contra la caché de Firestore
       if (cacheDiscosExistentes.has(claveVerificacion)) {
+        console.log(`[Ya existe] Saltando: ${autor} - ${tituloAlbum}`);
         continue; 
       }
 
@@ -86,7 +95,11 @@ async function sincronizarVertedero() {
       const mesIndex = String(fechaPublicacion.getMonth() + 1).padStart(2, '0');
 
       let portada = "https://placehold.co/200x200?text=Sin+Portada";
-      const contenido = typeof entrada.content === 'object' ? (entrada.content['#text'] || '') : (entrada.content || '');
+      let contenido = "";
+      if (entrada.content) {
+        contenido = typeof entrada.content === 'object' ? (entrada.content.text || entrada.content['#text'] || '') : entrada.content;
+      }
+      
       const imgRegex = /src=["'](https?:\/\/[^"']+)["']/i;
       const imgMatch = contenido.match(imgRegex);
       if (imgMatch && imgMatch[1]) {
@@ -108,7 +121,7 @@ async function sincronizarVertedero() {
       };
 
       await addDoc(collection(db, "albums"), nuevoAlbum);
-      console.log(`+ Añadido con éxito: ${autor} - ${tituloAlbum} (${year})`);
+      console.log(`+ ¡INSERTADO CON ÉXITO!: ${autor} - ${tituloAlbum} (${year})`);
       
       cacheDiscosExistentes.set(claveVerificacion, true);
       nuevosDiscosContador++;

@@ -2,30 +2,25 @@ name: Sincronizar Álbumes Diariamente
 
 on:
   schedule:
-    # Se ejecuta todos los días a las 00:00 UTC
     - cron: '0 0 * * *'
-  workflow_dispatch: # Esto te permite ejecutar el script manualmente desde la web de GitHub si no quieres esperar a las 00:00
+  workflow_dispatch:
 
 jobs:
   sincronizar:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarga el código de tu repositorio en la máquina virtual
     - name: Checkout del repositorio
       uses: actions/checkout@v4
 
-    # 2. Configura el entorno de Node.js
     - name: Configurar Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        # He quitado la línea de "cache: 'npm'" para evitar el error
 
-    # 3. Instala las dependencias necesarias (Firebase)
     - name: Instalar dependencias
       run: npm install
 
-    # 4. Ejecuta tu script de sincronización
     - name: Ejecutar script de sincronización
       run: node sync_blog.js

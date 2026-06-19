@@ -22,6 +22,11 @@
       --youtube-color: #FF0000;
     }
 
+    #filterNoCoverBtn.active {
+  background-color: var(--danger-color);
+  color: white;
+}
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -476,19 +481,29 @@
         <h2>Álbumes registrados</h2>
         <p class="panel-intro">Edita o elimina cualquier lanzamiento desde una única lista centralizada.</p>
 
-        <div class="toolbar">
-          <input type="text" id="adminSearch" placeholder="🔍 Buscar por autor o título..." oninput="renderAdminList()">
-          <select id="adminLibraryFilter" onchange="renderAdminList()">
-            <option value="all">Todas las bibliotecas</option>
-            <option value="rap">Rap</option>
-            <option value="rb">R&amp;B</option>
-          </select>
-          <select id="adminSort" onchange="renderAdminList()">
-            <option value="desc">Más recientes primero</option>
-            <option value="asc">Más antiguos primero</option>
-          </select>
-        </div>
+       <div class="toolbar">
+  <input type="text" id="adminSearch" placeholder="🔍 Buscar por autor o título..." oninput="renderAdminList()">
 
+  <select id="adminLibraryFilter" onchange="renderAdminList()">
+    <option value="all">Todas las bibliotecas</option>
+    <option value="rap">Rap</option>
+    <option value="rb">R&B</option>
+  </select>
+
+  <select id="adminSort" onchange="renderAdminList()">
+    <option value="desc">Más recientes primero</option>
+    <option value="asc">Más antiguos primero</option>
+  </select>
+
+  <!-- ✅ NUEVO BOTON -->
+  <button 
+    id="filterNoCoverBtn"
+    class="btn btn-secondary"
+    onclick="toggleNoCoverFilter()"
+  >
+    📀 Sin portada
+  </button>
+</div>
         <div id="adminList" class="admin-list">
           <div class="empty-state">Cargando lanzamientos...</div>
         </div>
@@ -516,6 +531,7 @@
     const db = getFirestore(app);
 
     let albums = [];
+    let filterNoCover = false;
     let userLoggedIn = false;
 
     const mesesNombres = {
@@ -563,6 +579,16 @@
         showStatus('loginStatus', 'Sesión cerrada correctamente.', 'success');
       }
     };
+
+    window.toggleNoCoverFilter = function () {
+  filterNoCover = !filterNoCover;
+
+  const btn = document.getElementById('filterNoCoverBtn');
+  btn.classList.toggle('active', filterNoCover);
+
+  renderAdminList();
+};
+``
 
 async function login() {
   const email = document.getElementById('email').value.trim();
@@ -676,7 +702,12 @@ window.resetForm = function(clearStatus = true) {
         const matchesLibrary = libraryFilter === 'all' || albumLibrary === libraryFilter;
         const haystack = `${album.author || ''} ${album.title || ''}`.toLowerCase();
         const matchesSearch = !searchValue || haystack.includes(searchValue);
-        return matchesLibrary && matchesSearch;
+const hasNoCover = !album.cover;
+const matchesNoCover = !filterNoCover || hasNoCover;
+
+return matchesLibrary &&
+       matchesSearch &&
+       matchesNoCover;
       });
 
       filteredAlbums.sort((a, b) => {

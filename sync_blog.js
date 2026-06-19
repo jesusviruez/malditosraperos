@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import * as cheerio from "cheerio";
 
-// 1. Tu configuración de Firebase (Extraída de tu admin.html)
 const firebaseConfig = {
   apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
   authDomain: "malditosraperos-c9198.firebaseapp.com",
@@ -14,55 +14,58 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Mapeo de meses en texto a su formato numérico de dos dígitos "MM"
-const MESES_MAP = {
-  "enero": "01", "febrero": "02", "marzo": "03", "abril": "04", "mayo": "05", "junio": "06",
-  "julio": "07", "agosto": "08", "septiembre": "09", "octubre": "10", "noviembre": "11", "diciembre": "12"
-};
-
 async function sincronizarVertedero() {
   try {
+    console.log("=== INICIANDO SCRAPER HTML (FEED INTEGRADO DESACTIVADO) ===");
     console.log("Obteniendo álbumes actuales de Firestore para caché local...");
     
-    // === MINIMIZACIÓN DE CUOTA (PASO 1): Una única lectura para traer todos los discos ===
     const querySnapshot = await getDocs(collection(db, "albums"));
     const cacheDiscosExistentes = new Map();
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      // Creamos una clave única combinando autor y título simplificados en minúsculas
       const clave = `${simplificarTexto(data.author || '')}_${simplificarTexto(data.title || '')}`;
       cacheDiscosExistentes.set(clave, true);
     });
 
     console.log(`Caché lista. ${cacheDiscosExistentes.size} álbumes cargados en memoria.`);
+    console.log("Descargando el contenido HTML de la portada del blog...");
 
-    // === PASO 2: Leer las últimas entradas de Vertedero de Rimas usando la API pública de Blogger ===
-    console.log("Leyendo las últimas entradas del blog...");
-    // Solicitamos las últimas 20 entradas en formato JSON de forma nativa
-    const blogUrl = "https://vertederoderimas.blogspot.com/feeds/posts/default?alt=json&max-results=20";
-    const response = await fetch(blogUrl);
-    const feed = await response.json();
-    const entradas = feed.feed.entry || [];
+    // Descargamos directamente la página web principal que sí está siempre activa
+    const response = await fetch("https://vertederoderimas.blogspot.com/", {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+    });
+    const htmlData = await response.text();
 
-    if (entradas.length === 0) {
-      console.log("No se encontraron entradas recientes en el blog.");
+    // Cargamos el HTML en cheerio para poder buscar las entradas
+    const $ = cheerio.load(htmlData);
+    
+    // En las plantillas clásicas de Blogger, cada post está envuelto en la clase '.post'
+    const posts = $(".post");
+    console.log(`Se han encontrado ${posts.length} posts visibles en la portada web.`);
+
+    if (posts.length === 0) {
+      console.log("No se pudieron detectar entradas con la estructura esperada.");
       return;
     }
 
     let nuevosDiscosContador = 0;
 
-    // === PASO 3: Procesar entradas y verificar en la caché ===
-    for (const entrada of entradas) {
-      const tituloEntrada = entrada.title.$t; // Ej: "Chysteman - Uh (2026)" o "Violadores del Verso - Vivir para contarlo"
+    // Procesamos de abajo hacia arriba (los más viejos de la portada primero) para mantener orden temporal lógico
+    for (let i = posts.length - 1; i >= 0; i--) {
+      const postElement = $(posts[i]);
+
+      // 1. Obtener el título del post (Suele estar dentro de .post-title o h3)
+      let tituloEntrada = postElement.find(".post-title").text().trim() || postElement.find("h3").text().trim();
       
-      // Intentamos extraer Autor, Título del álbum y Año usando expresiones regulares comunes en blogs de rap
-      // Formato típico: "Autor - Título (Año)" o "Autor - Título"
+      if (!tituloEntrada) continue;
+
       let autor = "Desconocido";
       let tituloAlbum = "Sin título";
-      let year = new Date().getFullYear().toString(); // Año actual por defecto
+      let year = "2026"; // Año por defecto
 
-      const regexConAnio = /^(.*?)\s*-\s*([^()]*?)\s*\((\d{4})\)/;
+      // Filtramos formatos de texto "Autor - Disco (Año)"
+      const regexConAnio = /^(.*?)\s*-\s*(.*?)\s*\((\d{4})\)\s*$/;
       const regexSimple = /^(.*?)\s*-\s*(.*)/;
 
       if (regexConAnio.test(tituloEntrada)) {
@@ -75,57 +78,44 @@ async function sincronizarVertedero() {
         autor = matches[1].trim();
         tituloAlbum = matches[2].trim();
       } else {
-        // Si no cumple el formato "Autor - Título", usamos la entrada completa como título
         tituloAlbum = tituloEntrada.trim();
       }
 
-      // Generar clave de verificación para nuestra caché en memoria
       const claveVerificacion = `${simplificarTexto(autor)}_${simplificarTexto(tituloAlbum)}`;
 
-      // === COMPROBACIÓN LOCAL: 0 llamadas extra a Firebase ===
       if (cacheDiscosExistentes.has(claveVerificacion)) {
-        // El disco ya existe, pasamos al siguiente sin hacer nada
+        console.log(`[Ya existe] Saltando: ${autor} - ${tituloAlbum}`);
         continue;
       }
 
-      // Obtener el mes de publicación de la entrada del blog para el campo 'month'
-      // La fecha viene en formato ISO: "2026-06-19T08:15:00.000Z"
-      const fechaPublicacion = new Date(entrada.published.$t);
-      const mesIndex = String(fechaPublicacion.getMonth() + 1).padStart(2, '0'); // "01", "02", etc.
-
-      // Intentar buscar una imagen dentro del contenido de la entrada para la portada
+      // 2. Extraer la primera imagen de portada del post
       let portada = "https://placehold.co/200x200?text=Sin+Portada";
-      const contenido = entrada.content ? entrada.content.$t : '';
-      const imgRegex = /src=["'](https?:\/\/[^"']+)["']/i;
-      const imgMatch = contenido.match(imgRegex);
-      if (imgMatch && imgMatch[1]) {
-        portada = imgMatch[1];
+      const primeraImg = postElement.find(".post-body img").first();
+      if (primeraImg.length && primeraImg.attr("src")) {
+        portada = primeraImg.attr("src");
       }
 
-      // El enlace de la entrada sirve como link de referencia alternativa o se deja vacío si no hay Spotify
-      const enlaceBlog = entrada.link.find(l => l.rel === 'alternate')?.href || '';
+      // 3. Generar mes numérico basándonos en el mes actual del scraping 
+      // Ya que el HTML requiere parsear strings complejos de fechas según el idioma, usamos el actual.
+      const mesIndex = String(new Date().getMonth() + 1).padStart(2, '0');
 
-      // Estructuramos el objeto respetando de forma estricta los campos de tu base de datos
-      // Nota: Al ser un blog de Rap, se asigna por defecto a la biblioteca "rap"
       const nuevoAlbum = {
         library: "rap",
         author: autor,
         title: tituloAlbum,
         cover: portada,
-        link: "", // El feed no nos da el Spotify directo, se puede rellenar a mano después o usar el del blog
+        link: "", 
         bandcamp: "",
         youtube: "",
         year: year,
         month: mesIndex,
-        createdAt: new Date().toISOString(), // Mantiene el orden de "último añadido en la BD" que configuramos
-        updatedAt: new Date().toISOString()  //
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      // === MINIMIZACIÓN DE CUOTA (PASO 4): Solo escribimos lo estrictamente necesario ===
       await addDoc(collection(db, "albums"), nuevoAlbum);
-      console.log(`+ Añadido con éxito: ${autor} - ${tituloAlbum} (${year})`);
+      console.log(`+ ¡INSERTADO CON ÉXITO DESDE WEB!: ${autor} - ${tituloAlbum} (${year})`);
       
-      // Agregamos a la caché local por si viene duplicado en el mismo feed
       cacheDiscosExistentes.set(claveVerificacion, true);
       nuevosDiscosContador++;
     }
@@ -133,18 +123,16 @@ async function sincronizarVertedero() {
     console.log(`Sincronización terminada. Se han añadido ${nuevosDiscosContador} álbumes nuevos.`);
 
   } catch (error) {
-    console.error("Hubo un error en la sincronización:", error);
+    console.error("Hubo un error crítico en el scraper HTML:", error);
   }
 }
 
-// Función auxiliar para normalizar textos (evitar fallos por espacios extras, mayúsculas o acentos)
 function simplificarTexto(texto) {
   return texto
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Elimina acentos
-    .replace(/[^a-z0-9]/g, "");     // Elimina todo lo que no sea letra o número
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 }
 
-// Ejecutar el script
 sincronizarVertedero();

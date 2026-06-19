@@ -618,7 +618,6 @@
       <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
 
       <select id="filterYear" onchange="resetPageAndRender()">
-        <option value="all">Todos los años</option>
        </select>
 
       <select id="filterMonth" onchange="resetPageAndRender()">
@@ -901,21 +900,23 @@
 function populateYearFilter() {
   const yearSelect = document.getElementById('filterYear');
 
-  // Guardar valor actual para no perderlo al refrescar
-  const currentValue = yearSelect.value;
-
   // Obtener años únicos
   const years = [...new Set(
     albums.map(a => a.year).filter(y => y)
   )];
 
-  // Ordenar desc (más recientes primero)
+  // Añadir el año actual aunque no exista aún en BD
+  const currentYear = new Date().getFullYear().toString();
+  if (!years.includes(currentYear)) {
+    years.push(currentYear);
+  }
+
+  // Ordenar desc
   years.sort((a, b) => b.localeCompare(a));
 
-  // Resetear opciones
-  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+  // Pintar opciones
+  yearSelect.innerHTML = '';
 
-  // Añadir opciones
   years.forEach(year => {
     const option = document.createElement('option');
     option.value = year;
@@ -923,10 +924,8 @@ function populateYearFilter() {
     yearSelect.appendChild(option);
   });
 
-  // Restaurar selección si sigue existiendo
-  if (years.includes(currentValue)) {
-    yearSelect.value = currentValue;
-  }
+  // ✅ seleccionar año actual por defecto
+  yearSelect.value = currentYear;
 }
     function getFilteredAlbums() {
       const yearFilter = document.getElementById('filterYear').value;

@@ -284,6 +284,16 @@
       color: #0b0c10;
     }
 
+    .album-delete-btn {
+  border: 1px solid rgba(255, 74, 74, 0.4);
+  color: #ff4a4a;
+}
+
+.album-delete-btn:hover {
+  background: #ff4a4a;
+  color: #ffffff;
+}
+
     .no-results {
       grid-column: 1 / -1;
       text-align: center;
@@ -609,15 +619,7 @@
 
       <select id="filterYear" onchange="resetPageAndRender()">
         <option value="all">Todos los años</option>
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-        <option value="2022">2022</option>
-        <option value="2021">2021</option>
-        <option value="2020">2020</option>
-
-      </select>
+       </select>
 
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
@@ -743,13 +745,14 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      onSnapshot,
-      doc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import {
+  getFirestore,  
+  collection,  
+  onSnapshot,  
+  doc,  
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -820,6 +823,7 @@
       snapshot.forEach((documentSnapshot) => {
         albums.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
       });
+      populateYearFilter();
       renderAlbums();
     });
 
@@ -894,7 +898,36 @@
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+function populateYearFilter() {
+  const yearSelect = document.getElementById('filterYear');
 
+  // Guardar valor actual para no perderlo al refrescar
+  const currentValue = yearSelect.value;
+
+  // Obtener años únicos
+  const years = [...new Set(
+    albums.map(a => a.year).filter(y => y)
+  )];
+
+  // Ordenar desc (más recientes primero)
+  years.sort((a, b) => b.localeCompare(a));
+
+  // Resetear opciones
+  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+
+  // Añadir opciones
+  years.forEach(year => {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+  });
+
+  // Restaurar selección si sigue existiendo
+  if (years.includes(currentValue)) {
+    yearSelect.value = currentValue;
+  }
+}
     function getFilteredAlbums() {
       const yearFilter = document.getElementById('filterYear').value;
       const monthFilter = document.getElementById('filterMonth').value;
@@ -976,11 +1009,33 @@
 
       const filteredAlbums = getFilteredAlbums();
 
-      filteredAlbums.sort((a, b) => {
-        const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
-        const dateB = parseInt((b.year || '0000') + (b.month || '00'), 10);
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-      });
+    filteredAlbums.sort((a, b) => {
+  // 1. Criterio principal: Año
+  const yearA = parseInt(a.year) || 0;
+  const yearB = parseInt(b.year) || 0;
+  if (yearA !== yearB) {
+    return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
+  }
+
+  // 2. Criterio secundario: Mes (si los años son iguales)
+  const monthA = parseInt(a.month) || 0;
+  const monthB = parseInt(b.month) || 0;
+  if (monthA !== monthB) {
+    return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
+  }
+
+  // 3. Criterio del "Desempate": Más reciente incluido en la BD primero
+  // Usamos 'updatedAt' o 'createdAt'. Si no existen, colapsa hacia cadenas vacías.
+  const timeA = a.createdAt || a.updatedAt || '';
+  const timeB = b.createdAt || b.updatedAt || '';
+  
+  // Al ser strings ISO (ej: "2026-06-19T..."), se pueden comparar alfabéticamente de forma segura
+  if (timeA !== timeB) {
+    return sortDirection === 'desc' ? timeB.localeCompare(timeA) : timeA.localeCompare(timeB);
+  }
+  
+  return 0;
+});
 
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
@@ -1036,17 +1091,26 @@
             <div>
               ${linksHtml}
 
-              ${isAdmin ? `
-                <div class="album-admin-actions">
-                  <button
-                    type="button"
-                    class="btn album-edit-btn"
-                    onclick="openEditAlbumModal('${albumId}')"
-                  >
-                    ✏️ Editar disco
-                  </button>
-                </div>
-              ` : ''}
+             ${isAdmin ? `
+  <div class="album-admin-actions">  
+    <button  
+      type="button"  
+      class="btn album-edit-btn"  
+      onclick="openEditAlbumModal('${albumId}')"  
+    >  
+      ✏️ Editar disco  
+    </button>  
+
+    <button  
+      type="button"  
+      class="btn btn-secondary album-delete-btn"  
+      onclick="deleteAlbum('${albumId}')"  
+      style="margin-top:6px;"  
+    >  
+      🗑️ Eliminar disco  
+    </button>  
+  </div>  
+` : ''}
             </div>
           </div>
         `;
@@ -1084,7 +1148,23 @@
     window.closeEditAlbumModal = function() {
       document.getElementById('editAlbumModal').style.display = 'none';
     };
+window.deleteAlbum = async function(albumId) {
+  if (!isAdmin) {
+    showStatusToast('error', 'No tienes permisos para eliminar discos.');
+    return;
+  }
 
+  const confirmDelete = confirm('¿Seguro que quieres eliminar este disco?');
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db, 'albums', albumId));
+    showStatusToast('success', 'Disco eliminado correctamente.');
+  } catch (error) {
+    console.error('Error al eliminar el disco:', error);
+    showStatusToast('error', 'No se ha podido eliminar el disco.');
+  }
+};
     document.getElementById('editAlbumModal').addEventListener('click', function(event) {
       if (event.target.id === 'editAlbumModal') {
         closeEditAlbumModal();

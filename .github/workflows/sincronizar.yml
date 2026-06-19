@@ -24,5 +24,3 @@ jobs:
     - name: Ejecutar script de sincronización
       run: node sync_blog.js
 
-    - name: Corregir bibliotecas vacías
-      run: node checklibraries.js

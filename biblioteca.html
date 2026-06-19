@@ -1009,11 +1009,33 @@ function populateYearFilter() {
 
       const filteredAlbums = getFilteredAlbums();
 
-      filteredAlbums.sort((a, b) => {
-        const dateA = parseInt((a.year || '0000') + (a.month || '00'), 10);
-        const dateB = parseInt((b.year || '0000') + (b.month || '00'), 10);
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-      });
+    filteredAlbums.sort((a, b) => {
+  // 1. Criterio principal: Año
+  const yearA = parseInt(a.year) || 0;
+  const yearB = parseInt(b.year) || 0;
+  if (yearA !== yearB) {
+    return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
+  }
+
+  // 2. Criterio secundario: Mes (si los años son iguales)
+  const monthA = parseInt(a.month) || 0;
+  const monthB = parseInt(b.month) || 0;
+  if (monthA !== monthB) {
+    return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
+  }
+
+  // 3. Criterio del "Desempate": Más reciente incluido en la BD primero
+  // Usamos 'updatedAt' o 'createdAt'. Si no existen, colapsa hacia cadenas vacías.
+  const timeA = a.createdAt || a.updatedAt || '';
+  const timeB = b.createdAt || b.updatedAt || '';
+  
+  // Al ser strings ISO (ej: "2026-06-19T..."), se pueden comparar alfabéticamente de forma segura
+  if (timeA !== timeB) {
+    return sortDirection === 'desc' ? timeB.localeCompare(timeA) : timeA.localeCompare(timeB);
+  }
+  
+  return 0;
+});
 
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;

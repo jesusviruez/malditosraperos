@@ -618,7 +618,8 @@
       <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
 
       <select id="filterYear" onchange="resetPageAndRender()">
-       </select>
+        <option value="all" selected>Todos los años</option>
+      </select>
 
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
@@ -899,24 +900,20 @@
     }
 function populateYearFilter() {
   const yearSelect = document.getElementById('filterYear');
+  const previousValue = yearSelect.value || 'all';
 
-  // Obtener años únicos
+  // Obtener años únicos normalizados como texto
   const years = [...new Set(
-    albums.map(a => a.year).filter(y => y)
+    albums
+      .map(a => String(a.year || '').trim())
+      .filter(y => y)
   )];
 
-  // Añadir el año actual aunque no exista aún en BD
-  const currentYear = new Date().getFullYear().toString();
-  if (!years.includes(currentYear)) {
-    years.push(currentYear);
-  }
+  // Ordenar descendente numéricamente cuando sea posible
+  years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
 
-  // Ordenar desc
-  years.sort((a, b) => b.localeCompare(a));
-
-  // Pintar opciones
-  yearSelect.innerHTML = '';
-
+  // Pintar opciones, dejando la opción sin año como valor por defecto
+  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
   years.forEach(year => {
     const option = document.createElement('option');
     option.value = year;
@@ -924,11 +921,12 @@ function populateYearFilter() {
     yearSelect.appendChild(option);
   });
 
-  // ✅ seleccionar año actual por defecto
-  yearSelect.value = currentYear;
+  // Mantener selección previa si existe; si no, dejar "Todos los años"
+  yearSelect.value = years.includes(previousValue) ? previousValue : 'all';
 }
     function getFilteredAlbums() {
-      const yearFilter = document.getElementById('filterYear').value;
+const rawYearFilter = document.getElementById('filterYear').value;
+const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
       const monthFilter = document.getElementById('filterMonth').value;
       const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
       const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
@@ -936,7 +934,7 @@ function populateYearFilter() {
       return albums.filter(album => {
         const albumLibrary = album.library || 'rap';
         const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-        const matchYear = yearFilter === 'all' || album.year === yearFilter;
+        const matchYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
         const matchMonth = monthFilter === 'all' || album.month === monthFilter;
         const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
         const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
@@ -993,7 +991,7 @@ function populateYearFilter() {
     window.clearFilters = function() {
       document.getElementById('searchAuthor').value = '';
       document.getElementById('searchTitle').value = '';
-      document.getElementById('filterYear').value = '2026';
+      document.getElementById('filterYear').value = 'all';
       document.getElementById('filterMonth').value = 'all';
       document.getElementById('sortDirection').value = 'desc';
       resetPageAndRender();

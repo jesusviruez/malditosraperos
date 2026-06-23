@@ -22,7 +22,9 @@
       --youtube-color: #FF0000;
     }
 
-    #filterNoCoverBtn.active {
+#filterNoCoverBtn.active, 
+#filterNoSpotifyBtn.active, 
+#filterNoYoutubeBtn.active {
   background-color: var(--danger-color);
   color: white;
 }
@@ -514,12 +516,28 @@
   </select>
 
   <!-- ✅ NUEVO BOTON -->
-  <button 
+<button 
     id="filterNoCoverBtn"
     class="btn btn-secondary"
     onclick="toggleNoCoverFilter()"
   >
     📀 Sin portada
+  </button>
+
+  <button 
+    id="filterNoSpotifyBtn"
+    class="btn btn-secondary"
+    onclick="toggleNoSpotifyFilter()"
+  >
+    🟢 Sin Spotify
+  </button>
+
+  <button 
+    id="filterNoYoutubeBtn"
+    class="btn btn-secondary"
+    onclick="toggleNoYoutubeFilter()"
+  >
+    🔴 Sin YouTube
   </button>
 </div>
         <div id="adminList" class="admin-list">
@@ -550,6 +568,8 @@
 
     let albums = [];
     let filterNoCover = false;
+    let filterNoSpotify = false; // <-- NUEVO
+    let filterNoYoutube = false; // <-- NUEVO
     let userLoggedIn = false;
 
     const mesesNombres = {
@@ -607,7 +627,21 @@
 
   renderAdminList();
 };
-``
+// NUEVO: Alternar filtro Sin Spotify
+    window.toggleNoSpotifyFilter = function () {
+      filterNoSpotify = !filterNoSpotify;
+      const btn = document.getElementById('filterNoSpotifyBtn');
+      btn.classList.toggle('active', filterNoSpotify);
+      renderAdminList();
+    };
+
+    // NUEVO: Alternar filtro Sin YouTube
+    window.toggleNoYoutubeFilter = function () {
+      filterNoYoutube = !filterNoYoutube;
+      const btn = document.getElementById('filterNoYoutubeBtn');
+      btn.classList.toggle('active', filterNoYoutube);
+      renderAdminList();
+    };
 
 async function login() {
   const email = document.getElementById('email').value.trim();
@@ -753,19 +787,30 @@ window.resetForm = function(clearStatus = true) {
         return;
       }
 
-      const filteredAlbums = albums.filter(album => {
+const filteredAlbums = albums.filter(album => {
         const albumLibrary = album.library || 'rap';
         const matchesLibrary = libraryFilter === 'all' || albumLibrary === libraryFilter;
         const haystack = `${album.author || ''} ${album.title || ''}`.toLowerCase();
         const matchesSearch = !searchValue || haystack.includes(searchValue);
         const matchesYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
-const hasNoCover = !album.cover;
-const matchesNoCover = !filterNoCover || hasNoCover;
+        
+        const hasNoCover = !album.cover;
+        const matchesNoCover = !filterNoCover || hasNoCover;
 
-return matchesLibrary &&
+        // NUEVO: Evaluación de enlaces faltantes
+        const hasNoSpotify = !album.link; 
+        const matchesNoSpotify = !filterNoSpotify || hasNoSpotify;
+
+        const hasNoYoutube = !album.youtube;
+        const matchesNoYoutube = !filterNoYoutube || hasNoYoutube;
+
+        // Combinar todas las condiciones en el retorno
+        return matchesLibrary &&
                matchesSearch &&
                matchesNoCover &&
-               matchesYear;
+               matchesYear &&
+               matchesNoSpotify &&
+               matchesNoYoutube;
       });
 
       filteredAlbums.sort((a, b) => {

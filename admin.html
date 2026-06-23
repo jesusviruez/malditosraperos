@@ -763,8 +763,9 @@ const hasNoCover = !album.cover;
 const matchesNoCover = !filterNoCover || hasNoCover;
 
 return matchesLibrary &&
-       matchesSearch &&
-       matchesNoCover;
+               matchesSearch &&
+               matchesNoCover &&
+               matchesYear;
       });
 
       filteredAlbums.sort((a, b) => {

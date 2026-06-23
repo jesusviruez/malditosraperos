@@ -618,8 +618,8 @@
       <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
 
       <select id="filterYear" onchange="resetPageAndRender()">
-        <option value="all">Todos los años</option>
-       </select>
+        <option value="all" selected>Todos los años</option>
+      </select>
 
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
@@ -898,24 +898,30 @@
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-function populateYearFilter() {
+
+    function populateYearFilter() {
   const yearSelect = document.getElementById('filterYear');
+  // Guardamos el valor previo, si es un año numérico. Si es "all" o vacío, por defecto "all"
+  const previousValue = yearSelect.value && yearSelect.value !== 'all' ? yearSelect.value : 'all';
 
-  // Guardar valor actual para no perderlo al refrescar
-  const currentValue = yearSelect.value;
-
-  // Obtener años únicos
+  // Obtener años únicos normalizados como texto
   const years = [...new Set(
-    albums.map(a => a.year).filter(y => y)
+    albums
+      .map(a => String(a.year || '').trim())
+      .filter(y => y)
   )];
 
-  // Ordenar desc (más recientes primero)
-  years.sort((a, b) => b.localeCompare(a));
+  // Ordenar descendente numéricamente cuando sea posible
+  years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
 
-  // Resetear opciones
-  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+  // Limpiar y pintar las opciones asegurando el nodo por defecto
+  yearSelect.innerHTML = '';
+  
+  const defaultOption = document.createElement('option');
+  defaultOption.value = 'all';
+  defaultOption.textContent = 'Todos los años';
+  yearSelect.appendChild(defaultOption);
 
-  // Añadir opciones
   years.forEach(year => {
     const option = document.createElement('option');
     option.value = year;
@@ -923,24 +929,45 @@ function populateYearFilter() {
     yearSelect.appendChild(option);
   });
 
-  // Restaurar selección si sigue existiendo
-  if (years.includes(currentValue)) {
-    yearSelect.value = currentValue;
+  // Forzar de manera segura el valor seleccionado
+  if (years.includes(previousValue)) {
+    yearSelect.value = previousValue;
+  } else {
+    yearSelect.value = 'all';
   }
 }
-    function getFilteredAlbums() {
-      const yearFilter = document.getElementById('filterYear').value;
+    
+function getFilteredAlbums() {
+      const rawYearFilter = document.getElementById('filterYear').value;
+      const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
       const monthFilter = document.getElementById('filterMonth').value;
-      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+
+      // Función interna para limpiar mayúsculas, espacios y tildes/acentos
+      const cleanString = (str) => {
+        return String(str ?? '')
+          .toLowerCase()
+          .trim()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, ""); // Remueve tildes, diéresis, etc.
+      };
+
+      // Limpiamos los textos que introduce el usuario en los buscadores
+      const searchAuthorValue = cleanString(document.getElementById('searchAuthor').value);
+      const searchTitleValue = cleanString(document.getElementById('searchTitle').value);
 
       return albums.filter(album => {
         const albumLibrary = album.library || 'rap';
         const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-        const matchYear = yearFilter === 'all' || album.year === yearFilter;
+        const matchYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
         const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+
+        // Limpiamos también las propiedades del álbum de la base de datos antes de comparar
+        const cleanAlbumAuthor = cleanString(album.author);
+        const cleanAlbumTitle = cleanString(album.title);
+
+        const matchAuthor = !searchAuthorValue || cleanAlbumAuthor.includes(searchAuthorValue);
+        const matchTitle = !searchTitleValue || cleanAlbumTitle.includes(searchTitleValue);
+
         return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
       });
     }
@@ -1010,32 +1037,41 @@ function populateYearFilter() {
       const filteredAlbums = getFilteredAlbums();
 
     filteredAlbums.sort((a, b) => {
-  // 1. Criterio principal: Año
-  const yearA = parseInt(a.year) || 0;
-  const yearB = parseInt(b.year) || 0;
-  if (yearA !== yearB) {
-    return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
-  }
+      // 1. Criterio principal: Año
+      const yearA = parseInt(a.year) || 0;
+      const yearB = parseInt(b.year) || 0;
+      if (yearA !== yearB) {
+        return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
+      }
 
-  // 2. Criterio secundario: Mes (si los años son iguales)
-  const monthA = parseInt(a.month) || 0;
-  const monthB = parseInt(b.month) || 0;
-  if (monthA !== monthB) {
-    return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
-  }
+      // 2. Criterio secundario: Mes (si los años son iguales)
+      const monthA = parseInt(a.month) || 0;
+      const monthB = parseInt(b.month) || 0;
+      if (monthA !== monthB) {
+        return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
+      }
 
-  // 3. Criterio del "Desempate": Más reciente incluido en la BD primero
-  // Usamos 'updatedAt' o 'createdAt'. Si no existen, colapsa hacia cadenas vacías.
-  const timeA = a.createdAt || a.updatedAt || '';
-  const timeB = b.createdAt || b.updatedAt || '';
-  
-  // Al ser strings ISO (ej: "2026-06-19T..."), se pueden comparar alfabéticamente de forma segura
-  if (timeA !== timeB) {
-    return sortDirection === 'desc' ? timeB.localeCompare(timeA) : timeA.localeCompare(timeB);
-  }
-  
-  return 0;
-});
+      // 3. Criterio de "Desempate" seguro: Convertir cualquier variante de fecha a milisegundos numéricos
+      const getMs = (album) => {
+        const dateVal = album.createdAt || album.updatedAt;
+        if (!dateVal) return 0;
+        // Si es un Timestamp de Firestore (.toDate() o tiene .seconds)
+        if (typeof dateVal.toDate === 'function') return dateVal.toDate().getTime();
+        if (dateVal.seconds) return dateVal.seconds * 1000;
+        // Si ya es un String ISO o un objeto Date estándar
+        const parsed = Date.parse(dateVal);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      const timeA = getMs(a);
+      const timeB = getMs(b);
+
+      if (timeA !== timeB) {
+        return sortDirection === 'desc' ? timeB - timeA : timeA - timeB;
+      }
+      
+      return 0;
+    });
 
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;

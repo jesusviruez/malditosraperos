@@ -898,9 +898,11 @@
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-function populateYearFilter() {
+
+    function populateYearFilter() {
   const yearSelect = document.getElementById('filterYear');
-  const previousValue = yearSelect.value || 'all';
+  // Guardamos el valor previo, si es un año numérico. Si es "all" o vacío, por defecto "all"
+  const previousValue = yearSelect.value && yearSelect.value !== 'all' ? yearSelect.value : 'all';
 
   // Obtener años únicos normalizados como texto
   const years = [...new Set(
@@ -912,8 +914,14 @@ function populateYearFilter() {
   // Ordenar descendente numéricamente cuando sea posible
   years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
 
-  // Pintar opciones, dejando la opción sin año como valor por defecto
-  yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+  // Limpiar y pintar las opciones asegurando el nodo por defecto
+  yearSelect.innerHTML = '';
+  
+  const defaultOption = document.createElement('option');
+  defaultOption.value = 'all';
+  defaultOption.textContent = 'Todos los años';
+  yearSelect.appendChild(defaultOption);
+
   years.forEach(year => {
     const option = document.createElement('option');
     option.value = year;
@@ -921,9 +929,14 @@ function populateYearFilter() {
     yearSelect.appendChild(option);
   });
 
-  // Mantener selección previa si existe; si no, dejar "Todos los años"
-  yearSelect.value = years.includes(previousValue) ? previousValue : 'all';
+  // Forzar de manera segura el valor seleccionado
+  if (years.includes(previousValue)) {
+    yearSelect.value = previousValue;
+  } else {
+    yearSelect.value = 'all';
+  }
 }
+    
     function getFilteredAlbums() {
 const rawYearFilter = document.getElementById('filterYear').value;
 const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';

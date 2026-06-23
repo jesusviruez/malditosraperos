@@ -130,6 +130,20 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    .filters select {
+  background: #121212;
+  color: var(--text-title);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.filters select:focus {
+  border-color: var(--accent-color);
+}
 
     .panel-grid {
       display: grid;
@@ -490,6 +504,10 @@
     <option value="rb">R&B</option>
   </select>
 
+         <select id="filterYear" onchange="renderAlbums()">
+        <option value="all">Todos los años</option>
+      </select>
+         
   <select id="adminSort" onchange="renderAdminList()">
     <option value="desc">Más recientes primero</option>
     <option value="asc">Más antiguos primero</option>
@@ -550,6 +568,7 @@
         albums.push({ id: doc.id, ...doc.data() });
       });
       renderAdminList();
+      populateYearFilter();
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -686,11 +705,48 @@ window.resetForm = function(clearStatus = true) {
   }
 };
 
+    // NUEVO: Función para rellenar el filtro de años dinámicamente
+    function populateYearFilter() {
+      const yearSelect = document.getElementById('filterYear');
+      if (!yearSelect) return;
+      
+      const previousValue = yearSelect.value || 'all';
+
+      // Obtener años únicos normalizados
+      const years = [...new Set(
+        albums
+          .map(a => String(a.year || '').trim())
+          .filter(y => y)
+      )];
+
+      // Ordenar de mayor a menor
+      years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
+
+      // Reconstruir opciones de forma limpia
+      yearSelect.innerHTML = '';
+      
+      const defaultOption = document.createElement('option');
+      defaultOption.value = 'all';
+      defaultOption.textContent = 'Todos los años';
+      yearSelect.appendChild(defaultOption);
+
+      years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      });
+
+      // Mantener la selección o volver a 'all'
+      yearSelect.value = years.includes(previousValue) ? previousValue : 'all';
+    }
+
     window.renderAdminList = function() {
       const list = document.getElementById('adminList');
       const searchValue = (document.getElementById('adminSearch')?.value || '').toLowerCase().trim();
       const libraryFilter = document.getElementById('adminLibraryFilter')?.value || 'all';
       const sortDirection = document.getElementById('adminSort')?.value || 'desc';
+      const yearFilter = document.getElementById('filterYear')?.value || 'all'; // <-- NUEVO
 
       if (!userLoggedIn) {
         list.innerHTML = '<div class="empty-state">Inicia sesión para ver y gestionar los álbumes registrados.</div>';
@@ -702,6 +758,7 @@ window.resetForm = function(clearStatus = true) {
         const matchesLibrary = libraryFilter === 'all' || albumLibrary === libraryFilter;
         const haystack = `${album.author || ''} ${album.title || ''}`.toLowerCase();
         const matchesSearch = !searchValue || haystack.includes(searchValue);
+        const matchesYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
 const hasNoCover = !album.cover;
 const matchesNoCover = !filterNoCover || hasNoCover;
 

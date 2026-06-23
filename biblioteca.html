@@ -937,20 +937,37 @@
   }
 }
     
-    function getFilteredAlbums() {
-const rawYearFilter = document.getElementById('filterYear').value;
-const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
+function getFilteredAlbums() {
+      const rawYearFilter = document.getElementById('filterYear').value;
+      const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
       const monthFilter = document.getElementById('filterMonth').value;
-      const searchAuthorValue = document.getElementById('searchAuthor').value.toLowerCase().trim();
-      const searchTitleValue = document.getElementById('searchTitle').value.toLowerCase().trim();
+
+      // Función interna para limpiar mayúsculas, espacios y tildes/acentos
+      const cleanString = (str) => {
+        return String(str ?? '')
+          .toLowerCase()
+          .trim()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, ""); // Remueve tildes, diéresis, etc.
+      };
+
+      // Limpiamos los textos que introduce el usuario en los buscadores
+      const searchAuthorValue = cleanString(document.getElementById('searchAuthor').value);
+      const searchTitleValue = cleanString(document.getElementById('searchTitle').value);
 
       return albums.filter(album => {
         const albumLibrary = album.library || 'rap';
         const matchLibrary = albumLibrary === CURRENT_LIBRARY;
         const matchYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
         const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-        const matchAuthor = !searchAuthorValue || (album.author && album.author.toLowerCase().includes(searchAuthorValue));
-        const matchTitle = !searchTitleValue || (album.title && album.title.toLowerCase().includes(searchTitleValue));
+
+        // Limpiamos también las propiedades del álbum de la base de datos antes de comparar
+        const cleanAlbumAuthor = cleanString(album.author);
+        const cleanAlbumTitle = cleanString(album.title);
+
+        const matchAuthor = !searchAuthorValue || cleanAlbumAuthor.includes(searchAuthorValue);
+        const matchTitle = !searchTitleValue || cleanAlbumTitle.includes(searchTitleValue);
+
         return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
       });
     }

@@ -470,6 +470,16 @@
         <p class="panel-intro">Usa el selector de biblioteca para decidir si el álbum se almacena en rap o en r&amp;b.</p>
 
         <form id="albumForm" onsubmit="saveAlbum(event)">
+
+          <div class="form-group" style="background: rgba(29, 185, 84, 0.1); padding: 12px; border-radius: 8px; border: 1px dashed var(--spotify-color); margin-bottom: 16px;">
+  <label for="spotifyUrlInput" style="color: var(--spotify-color);">⚡ Autocompletar con enlace de Spotify</label>
+  <div style="display: flex; gap: 8px;">
+    <input type="text" id="spotifyUrlInput" placeholder="https://open.spotify.com/album/...">
+    <button type="button" class="btn" style="background-color: var(--spotify-color); color: white;" onclick="autofillFromSpotify()">Importar</button>
+  </div>
+</div>
+
+          
           <input type="hidden" id="albumId">
 
           <div class="form-group">
@@ -693,6 +703,108 @@
     const authBtn = document.getElementById('authBtn');
     const loginPanel = document.getElementById('loginPanel');
     const adminPanel = document.getElementById('adminPanel');
+
+
+    // Configuración de credenciales de la API de Spotify
+const CLIENT_ID = '6836d9b9b27a41708808b80e1f22b0a4';
+const CLIENT_SECRET = 'f6dd36a167d844c6a99628fdb14079b0';
+
+// 1. Extraer el ID del álbum desde el enlace
+function getSpotifyAlbumId(url) {
+  const cleanUrl = url.trim();
+  // Maneja formatos tipo: https://open.spotify.com/album/4aady79g9g...?si=...
+  const match = cleanUrl.match(/album\/([a-zA-Z0-9]{22})/);
+  return match ? match[1] : null;
+}
+
+// 2. Obtener Token de Acceso temporal (Client Credentials Flow)
+async function getSpotifyAccessToken() {
+  const url = 'https://accounts.spotify.com/api/token';
+  // Las credenciales deben codificarse en Base64 según el estándar de Spotify
+  const creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${creds}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'grant_type=client_credentials'
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudo obtener el token de autenticación de Spotify.');
+  }
+
+  const data = await response.json();
+  return data.access_token; // Este token dura 1 hora
+}
+
+// 3. Función Principal vinculada al botón Importar
+window.autofillFromSpotify = async function() {
+  const urlInput = document.getElementById('spotifyUrlInput').value;
+  const albumId = getSpotifyAlbumId(urlInput);
+
+  if (!albumId) {
+    alert('Por favor, introduce un enlace válido de álbum de Spotify (https://open.spotify.com/album/...)');
+    return;
+  }
+
+  try {
+    // Conseguir token de acceso
+    const token = await getSpotifyAccessToken();
+
+    // Consultar datos del álbum en la API de Spotify
+    const response = await fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Álbum no encontrado en Spotify.');
+    }
+
+    const albumData = await response.json();
+
+    // --- PROCESAR E INYECTAR DATOS ---
+
+    // Artistas (si son varios, los une con comas o "feat.")
+    const authors = albumData.artists.map(artist => artist.name).join(', ');
+    document.getElementById('albumAuthor').value = authors;
+
+    // Título del álbum
+    document.getElementById('albumTitleInput').value = albumData.name;
+
+    // Portada (Spotify devuelve varias resoluciones. La posición [0] es la de mayor tamaño, normalmente 640x640)
+    if (albumData.images && albumData.images.length > 0) {
+      document.getElementById('albumCover').value = albumData.images[0].url;
+    }
+
+    // Guardar el propio link en su input correspondiente
+    if (document.getElementById('albumLink')) {
+      document.getElementById('albumLink').value = `https://open.spotify.com/album/${albumId}`;
+    }
+
+    // Procesar fecha de lanzamiento (Spotify suele devolver "YYYY-MM-DD" o a veces solo "YYYY")
+    if (albumData.release_date) {
+      const dateParts = albumData.release_date.split('-'); 
+      const year = dateParts[0];
+      const month = dateParts[1] || '01'; // Por si solo viene el año, ponemos enero por defecto
+
+      document.getElementById('albumReleaseYear').value = year;
+      document.getElementById('albumReleaseMonth').value = month;
+    }
+
+    alert('¡Datos de Spotify importados con éxito! Revisa los campos antes de guardar.');
+
+  } catch (error) {
+    console.error(error);
+    alert('Error al importar desde Spotify: ' + error.message);
+  }
+};
+
+    
 
     onSnapshot(collection(db, 'albums'), (snapshot) => {
       albums = [];

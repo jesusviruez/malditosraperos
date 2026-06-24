@@ -712,8 +712,11 @@ const CLIENT_SECRET = 'f6dd36a167d844c6a99628fdb14079b0';
 // 1. Extraer el ID del álbum desde el enlace
 function getSpotifyAlbumId(url) {
   const cleanUrl = url.trim();
-  // Maneja formatos tipo: https://open.spotify.com/album/4aady79g9g...?si=...
+  
+  // Esta expresión busca "album/" en cualquier parte de la URL, 
+  // saltándose lo que tenga delante (como /intl-es/), y captura los 22 caracteres alfanuméricos siguientes.
   const match = cleanUrl.match(/album\/([a-zA-Z0-9]{22})/);
+  
   return match ? match[1] : null;
 }
 

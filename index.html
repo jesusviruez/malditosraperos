@@ -29,6 +29,7 @@
       justify-content: center;
       padding: 24px;
     }
+    
 
     .home-card {
       width: 100%;
@@ -241,11 +242,32 @@
     width: 100%;
   }
 }
+
+    /* Estilos para el logo incrustado */
+.brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.brand-logo {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(102, 252, 241, 0.4); /* Sutil borde con el color accent */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
   </style>
 </head>
 <body>
   <main class="home-card">
-    <span class="eyebrow">Malditos Raperos</span>
+    <div class="brand-header">
+      <img src="https://pbs.twimg.com/profile_images/1907479564055457792/BlvNyQgX.jpg" alt="Logo Malditos Raperos" class="brand-logo">
+      <span class="eyebrow" style="margin-bottom: 0;">Malditos Raperos</span>
+    </div>
     <h1>Biblioteca rap español</h1>
     <p class="subtitle">
       Accede a las bibliotecas de lanzamientos de rap y r&amp;b español.

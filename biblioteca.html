@@ -1031,7 +1031,6 @@ function getFilteredAlbums() {
       const grid = document.getElementById('albumsGrid');
       const sortDirection = document.getElementById('sortDirection').value;
       const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
-
       grid.innerHTML = '';
 
       const filteredAlbums = getFilteredAlbums();
@@ -1084,8 +1083,7 @@ function getFilteredAlbums() {
       document.getElementById('prevPageBtn').disabled = currentPage === 1;
       document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
       document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
-
-      const startIndex = (currentPage - 1) * itemsPerPage;
+      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages} (${totalItems} resultados)`;
       const endIndex = startIndex + itemsPerPage;
       const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
 

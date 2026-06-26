@@ -1084,8 +1084,11 @@ function getFilteredAlbums() {
       document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
       document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
       document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages} (${totalItems} resultados)`;
+      
+      const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
+
 
       if (paginatedAlbums.length === 0) {
         grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';

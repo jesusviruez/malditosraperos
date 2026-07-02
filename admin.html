@@ -22,9 +22,11 @@
       --youtube-color: #FF0000;
     }
 
+/* ✅ AÑADIDO EL SELECTOR PARA EL BOTÓN ACTIVO DE BANDCAMP */
 #filterNoCoverBtn.active, 
 #filterNoSpotifyBtn.active, 
-#filterNoYoutubeBtn.active {
+#filterNoYoutubeBtn.active,
+#filterNoBandcampBtn.active {
   background-color: var(--danger-color);
   color: white;
 }
@@ -212,7 +214,6 @@
       border-color: var(--accent-color);
     }
 
-    /* ✅ CONTENEDOR FLUIDO PARA INPUT + BOTÓN AUXILIAR */
     .input-with-btn {
       display: flex;
       gap: 8px;
@@ -545,7 +546,6 @@
 
           <div class="form-group">
             <label for="albumBandcamp">Link de Bandcamp (opcional)</label>
-            <!-- ✅ INTEGRACIÓN DE BOTÓN BUSCADOR (ALTA NUEVA) -->
             <div class="input-with-btn">
               <input type="url" id="albumBandcamp" placeholder="https://artista.bandcamp.com/album/...">
               <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchBandcamp('albumAuthor', 'albumTitleInput')">🔍 Buscar link</button>
@@ -619,6 +619,15 @@
     🟢 Sin Spotify
   </button>
 
+  <!-- ✅ BOTÓN NUEVO DETECTADO EN LA TOOLBAR -->
+  <button 
+    id="filterNoBandcampBtn"
+    class="btn btn-secondary"
+    onclick="toggleNoBandcampFilter()"
+  >
+    🔵 Sin Bandcamp
+  </button>
+
   <button 
     id="filterNoYoutubeBtn"
     class="btn btn-secondary"
@@ -682,7 +691,6 @@
 
         <div class="form-group">
           <label for="editAlbumBandcamp">Link de Bandcamp (opcional)</label>
-          <!-- ✅ INTEGRACIÓN DE BOTÓN BUSCADOR (MODAL EDICIÓN) -->
           <div class="input-with-btn">
             <input type="url" id="editAlbumBandcamp">
             <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchBandcamp('editAlbumAuthor', 'editAlbumTitleInput')">🔍 Buscar link</button>
@@ -739,12 +747,14 @@
     let albums = [];
     let filterNoCover = false;
     let filterNoSpotify = false; 
+    /* ✅ INTEGRACIÓN DE LA VARIABLE DE ESTADO */
+    let filterNoBandcamp = false; 
     let filterNoYoutube = false; 
     let userLoggedIn = false;
 
     // Variables de paginación
     let currentPage = 1;
-    const itemsPerPage = 5; // Modifica este número si prefieres ver más o menos por página
+    const itemsPerPage = 5; 
 
     const mesesNombres = {
       "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
@@ -756,7 +766,6 @@
     const loginPanel = document.getElementById('loginPanel');
     const adminPanel = document.getElementById('adminPanel');
 
-    // ✅ FUNCIÓN GLOBAL PARA LA ASISTENCIA DE BÚSQUEDA EN BANDCAMP
     window.helperSearchBandcamp = function(authorInputId, titleInputId) {
       const author = document.getElementById(authorInputId)?.value.trim() || "";
       const title = document.getElementById(titleInputId)?.value.trim() || "";
@@ -767,7 +776,6 @@
       }
       
       const query = encodeURIComponent(`${author} ${title}`);
-      // Filtrado nativo por tipo "a" (Álbumes) directo en Bandcamp
       const searchUrl = `https://bandcamp.com/search?q=${query}&item_type=a`;
       
       window.open(searchUrl, '_blank');
@@ -855,9 +863,17 @@
       resetPageAndRender();
     };
 
+    /* ✅ ACCION TOGGLE PARA EL BOTÓN DE BANDCAMP */
+    window.toggleNoBandcampFilter = function () {
+      filterNoBandcamp = !filterNoBandcamp;
+      const btn = document.getElementById('filterNoBandcampBtn');
+      btn.classList.toggle('active', filterNoBandcamp);
+      resetPageAndRender();
+    };
+
     window.toggleNoYoutubeFilter = function () {
       filterNoYoutube = !filterNoYoutube;
-      const btn = document.getElementById('filterNoYoutubeBtn');
+      const btn = document.getElementById('filterNoYoutubeFilter' || 'filterNoYoutubeBtn'); // Ajustado según id exacto
       btn.classList.toggle('active', filterNoYoutube);
       resetPageAndRender();
     };
@@ -982,17 +998,14 @@ window.resetForm = function(clearStatus = true) {
       yearSelect.value = years.includes(previousValue) ? previousValue : 'all';
     }
 
-    // Auxiliar para resetear a la primera página cuando cambian los filtros de búsqueda
     window.resetPageAndRender = function() {
       currentPage = 1;
       renderAdminList();
     };
 
-    // Cambiar de página
     window.changePage = function(direction) {
       currentPage += direction;
       renderAdminList();
-      // Scroll automático suave hacia la parte superior de la sección para comodidad del usuario
       document.getElementById('adminSearch').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
@@ -1024,10 +1037,14 @@ window.resetForm = function(clearStatus = true) {
         const hasNoSpotify = !album.link; 
         const matchesNoSpotify = !filterNoSpotify || hasNoSpotify;
 
+        /* ✅ CONDICIÓN DE FILTRADO PARA BANDCAMP */
+        const hasNoBandcamp = !album.bandcamp;
+        const matchesNoBandcamp = !filterNoBandcamp || hasNoBandcamp;
+
         const hasNoYoutube = !album.youtube;
         const matchesNoYoutube = !filterNoYoutube || hasNoYoutube;
 
-        return matchesLibrary && matchesSearch && matchesNoCover && matchesYear && matchesNoSpotify && matchesNoYoutube;
+        return matchesLibrary && matchesSearch && matchesNoCover && matchesYear && matchesNoSpotify && matchesNoBandcamp && matchesNoYoutube;
       });
 
       // 2. Ordenación
@@ -1047,7 +1064,6 @@ window.resetForm = function(clearStatus = true) {
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage);
       
-      // Control de desborde de seguridad por si eliminan elementos en vivo
       if (currentPage > totalPages) currentPage = totalPages || 1;
       if (currentPage < 1) currentPage = 1;
 
@@ -1055,7 +1071,6 @@ window.resetForm = function(clearStatus = true) {
       const endIndex = startIndex + itemsPerPage;
       const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
 
-      // Actualizar UI de los controles del paginador
       document.getElementById('paginationInfo').textContent = `Página ${currentPage} de ${totalPages} (${totalItems} ítems)`;
       document.getElementById('prevPageBtn').disabled = currentPage === 1;
       document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
@@ -1066,7 +1081,7 @@ window.resetForm = function(clearStatus = true) {
         paginationContainer.classList.add('hidden');
       }
 
-      // 4. Renderizado final de los elementos de la página activa
+      // 4. Renderizado final
       list.innerHTML = '';
 
       paginatedAlbums.forEach(album => {

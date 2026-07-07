@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La Biblioteca</title>
+  <title>La Biblioteca de Malditos Raperos</title>
   <style>
     :root {
       --bg-color: #0b0c10;
@@ -594,7 +594,7 @@
   <div class="container">
     <header>
       <div class="header-copy">
-        <h1 id="pageTitle">Biblioteca rap</h1>
+        <h1 id="pageTitle">Biblioteca</h1>
         <p id="pageSubtitle">Cargando biblioteca...</p>
       </div>
       <div class="header-actions">
@@ -801,7 +801,7 @@
     const CURRENT_LIBRARY = params.get('library') === 'rb' ? 'rb' : 'rap';
     const currentConfig = libraryConfig[CURRENT_LIBRARY];
 
-    document.title = `Biblioteca rap | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
+    document.title = `Biblioteca | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
     document.getElementById('pageTitle').innerText = currentConfig.title;
     document.getElementById('pageSubtitle').innerText = currentConfig.subtitle;
     document.getElementById('breadcrumbCurrent').innerText = currentConfig.breadcrumb;

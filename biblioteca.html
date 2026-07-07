@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblioteca rap español</title>
+  <title>La Biblioteca</title>
   <style>
     :root {
       --bg-color: #0b0c10;
@@ -594,7 +594,7 @@
   <div class="container">
     <header>
       <div class="header-copy">
-        <h1 id="pageTitle">Biblioteca rap español</h1>
+        <h1 id="pageTitle">Biblioteca rap</h1>
         <p id="pageSubtitle">Cargando biblioteca...</p>
       </div>
       <div class="header-actions">
@@ -786,14 +786,14 @@
 
     const libraryConfig = {
       rap: {
-        title: 'Listado de álbumes de rap español',
-        subtitle: 'Consulta los lanzamientos de rap español almacenados en la biblioteca.',
-        breadcrumb: 'Listado de álbumes de rap español'
+        title: 'Listado de álbumes de rap',
+        subtitle: 'Consulta los lanzamientos de rap del panorama español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de rap '
       },
       rb: {
-        title: 'Listado de álbumes de r&b español',
-        subtitle: 'Consulta los lanzamientos de r&b español almacenados en la biblioteca.',
-        breadcrumb: 'Listado de álbumes de r&b español'
+        title: 'Listado de álbumes de r&b',
+        subtitle: 'Consulta los lanzamientos de r&b del panorama español almacenados en la biblioteca.',
+        breadcrumb: 'Listado de álbumes de r&b'
       }
     };
 
@@ -801,7 +801,7 @@
     const CURRENT_LIBRARY = params.get('library') === 'rb' ? 'rb' : 'rap';
     const currentConfig = libraryConfig[CURRENT_LIBRARY];
 
-    document.title = `Biblioteca rap español | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
+    document.title = `Biblioteca rap | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
     document.getElementById('pageTitle').innerText = currentConfig.title;
     document.getElementById('pageSubtitle').innerText = currentConfig.subtitle;
     document.getElementById('breadcrumbCurrent').innerText = currentConfig.breadcrumb;

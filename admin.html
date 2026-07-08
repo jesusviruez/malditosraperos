@@ -462,6 +462,17 @@
       cursor: pointer; transition: var(--transition);
     }
     .close-modal:hover { color: var(--danger-color); }
+    .album-author {
+  color: var(--accent-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.album-author:hover {
+  text-decoration: underline;
+}
   </style>
 </head>
 <body>
@@ -1107,7 +1118,17 @@ window.resetForm = function(clearStatus = true) {
           <div>
             <span class="pill ${albumLibrary}">${albumLibrary === 'rap' ? 'Rap' : 'R&B'}</span>
             <h3>${album.title || 'Sin título'}</h3>
-            <div class="meta">${album.author || 'Autor desconocido'}</div>
+            <div class="meta">
+            
+            <p
+  class="album-author"
+  onclick="filterByAuthor('${escapeAttribute(album.author || '')}')"
+  title="Ver todos los álbumes de este autor"
+>
+  ${author}
+</p>
+            
+            </div>
             <div class="details">
               <span>📅 ${monthName} de ${yearLabel}</span>
               <span>📚 ${albumLibrary === 'rap' ? 'Biblioteca Rap' : 'Biblioteca R&B'}</span>
@@ -1134,6 +1155,15 @@ window.resetForm = function(clearStatus = true) {
       el.textContent = message;
       el.classList.add(type);
     }
+
+    window.filterByAuthor = function(author) {
+  document.getElementById('searchAuthor').value = author;
+  currentPage = 1;
+  renderAlbums();
+  showStatusToast('success', `Mostrando discos de ${author}`);
+  scrollToTop();
+};
+``
   </script>
 </body>
 </html>

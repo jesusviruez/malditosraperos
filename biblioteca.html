@@ -228,6 +228,16 @@
       font-weight: 500;
     }
 
+    /* ✅ ESTILO PARA QUE EL AUTOR SEA CLICABLE */
+    .author-clickable {
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .author-clickable:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
     .album-date {
       color: var(--text-muted);
       font-size: 0.85rem;
@@ -285,14 +295,14 @@
     }
 
     .album-delete-btn {
-  border: 1px solid rgba(255, 74, 74, 0.4);
-  color: #ff4a4a;
-}
+      border: 1px solid rgba(255, 74, 74, 0.4);
+      color: #ff4a4a;
+    }
 
-.album-delete-btn:hover {
-  background: #ff4a4a;
-  color: #ffffff;
-}
+    .album-delete-btn:hover {
+      background: #ff4a4a;
+      color: #ffffff;
+    }
 
     .no-results {
       grid-column: 1 / -1;
@@ -394,7 +404,6 @@
       margin-top: 8px;
     }
 
-
     .status-toast {
       position: fixed;
       right: 24px;
@@ -422,13 +431,8 @@
       transform: translateY(0) scale(1);
     }
 
-    .status-toast.success {
-      border-color: rgba(29, 185, 84, 0.45);
-    }
-
-    .status-toast.error {
-      border-color: rgba(255, 74, 74, 0.45);
-    }
+    .status-toast.success { border-color: rgba(29, 185, 84, 0.45); }
+    .status-toast.error { border-color: rgba(255, 74, 74, 0.45); }
 
     .status-toast-icon {
       width: 34px;
@@ -443,9 +447,7 @@
       transform: scale(0.7);
     }
 
-    .status-toast.show .status-toast-icon {
-      animation: toastPop 0.35s ease forwards;
-    }
+    .status-toast.show .status-toast-icon { animation: toastPop 0.35s ease forwards; }
 
     .status-toast.success .status-toast-icon {
       background: rgba(29, 185, 84, 0.16);
@@ -459,10 +461,7 @@
       border: 1px solid rgba(255, 74, 74, 0.45);
     }
 
-    .status-toast-message {
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
+    .status-toast-message { font-size: 0.95rem; font-weight: 600; }
 
     @keyframes toastPop {
       0% { transform: scale(0.6) rotate(-8deg); }
@@ -486,26 +485,9 @@
       backdrop-filter: blur(8px);
     }
 
-    .cookie-content {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      text-align: left;
-    }
-
-    .cookie-content p {
-      font-size: 0.9rem;
-      color: var(--text-color);
-      line-height: 1.45;
-    }
-
-    .cookie-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
+    .cookie-content { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+    .cookie-content p { font-size: 0.9rem; color: var(--text-color); line-height: 1.45; }
+    .cookie-buttons { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
     .btn-cookie { padding: 8px 16px; font-size: 0.85rem; }
 
     footer {
@@ -558,12 +540,7 @@
       transform: translateY(-2px);
     }
 
-    .contact-icon {
-      width: 15px;
-      height: 15px;
-      display: inline-block;
-      flex: 0 0 auto;
-    }
+    .contact-icon { width: 15px; height: 15px; display: inline-block; flex: 0 0 auto; }
 
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: stretch; }
@@ -580,13 +557,7 @@
       .modal-actions .btn { width: 100%; }
       .cookie-buttons { flex-direction: column; }
       .btn-cookie { width: 100%; }
-
-      .status-toast {
-        left: 16px;
-        right: 16px;
-        bottom: 16px;
-        max-width: none;
-      }
+      .status-toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
     }
   </style>
 </head>
@@ -616,11 +587,9 @@
     <section class="filters">
       <input type="text" id="searchAuthor" class="search-input" placeholder="🔍 Buscar por autor..." oninput="resetPageAndRender()">
       <input type="text" id="searchTitle" class="search-input" placeholder="🔍 Buscar por título..." oninput="resetPageAndRender()">
-
       <select id="filterYear" onchange="resetPageAndRender()">
         <option value="all" selected>Todos los años</option>
       </select>
-
       <select id="filterMonth" onchange="resetPageAndRender()">
         <option value="all">Todos los meses</option>
         <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
@@ -628,12 +597,10 @@
         <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
         <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
       </select>
-
       <select id="sortDirection" onchange="resetPageAndRender()">
         <option value="desc">Más recientes primero</option>
         <option value="asc">Más antiguos primero</option>
       </select>
-
       <button id="clearFiltersBtn" class="btn btn-secondary" style="padding: 10px 16px;" onclick="clearFilters()">Limpiar filtros</button>
     </section>
 
@@ -651,7 +618,6 @@
           <option value="24">24 por página</option>
         </select>
       </div>
-
       <div class="pagination-controls">
         <button id="firstPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="goToPage(1)">« Primera</button>
         <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px;" onclick="changePage(-1)">‹ Ant.</button>
@@ -662,551 +628,374 @@
     </section>
   </div>
 
-  <div id="editAlbumModal" class="modal-overlay">
+  <div class="modal-overlay" id="editAlbumModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h2>Editar disco</h2>
-        <button type="button" class="modal-close" onclick="closeEditAlbumModal()">×</button>
+        <h2>Editar Lanzamiento</h2>
+        <button class="modal-close" onclick="closeEditAlbumModal()">&times;</button>
       </div>
-
       <form id="editAlbumForm" class="modal-form">
         <input type="hidden" id="editAlbumId">
-
-        <label>Autor <input type="text" id="editAuthor" required></label>
-        <label>Título <input type="text" id="editTitle" required></label>
-        <label>Año <input type="text" id="editYear" placeholder="2025" required></label>
-
         <label>
-          Mes
-          <select id="editMonth" required>
-            <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
-            <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
-            <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
-            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-          </select>
-        </label>
-
-        <label>
-          Biblioteca
+          <span>Biblioteca</span>
           <select id="editLibrary" required>
             <option value="rap">Rap</option>
             <option value="rb">R&amp;B</option>
           </select>
         </label>
-
-        <label>URL portada <input type="url" id="editCover" placeholder="https://..."></label>
-        <label>Spotify <input type="url" id="editLink" placeholder="https://open.spotify.com/..."></label>
-        <label>Bandcamp <input type="url" id="editBandcamp" placeholder="https://..."></label>
-        <label>YouTube <input type="url" id="editYoutube" placeholder="https://..."></label>
-
+        <label>
+          <span>Autor / Artista</span>
+          <input type="text" id="editAuthor" required>
+        </label>
+        <label>
+          <span>Título del álbum</span>
+          <input type="text" id="editTitle" required>
+        </label>
+        <label>
+          <span>URL de la portada</span>
+          <input type="url" id="editCover" required>
+        </label>
+        <label>
+          <span>Enlace de Spotify</span>
+          <input type="url" id="editLink">
+        </label>
+        <label>
+          <span>Enlace de Bandcamp (Opcional)</span>
+          <input type="url" id="editBandcamp">
+        </label>
+        <label>
+          <span>Enlace de YouTube (Opcional)</span>
+          <input type="url" id="editYoutube">
+        </label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <label>
+            <span>Año</span>
+            <input type="number" id="editYear" required min="1900" max="2100">
+          </label>
+          <label>
+            <span>Mes</span>
+            <select id="editMonth" required>
+              <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+              <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+              <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+              <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+          </label>
+        </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
-          <button type="submit" class="btn">Guardar cambios</button>
+          <button type="submit" class="btn">Guardar Cambios</button>
         </div>
       </form>
     </div>
   </div>
 
-  <footer>La Biblioteca es un proyecto de Malditos Raperos</footer>
-
-  <section class="contact-block" aria-label="Contacto">
-    <p>Si quieres que tu trabajo aparezca aquí, no dudes en contactar.</p>
-    <div class="contact-links">
-      <a class="contact-link" href="https://x.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="X de Malditos Raperos">
-        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2h3.3l-7.2 8.2L23.5 22h-6.6l-5.2-6.8L5.8 22H2.5l7.7-8.8L2 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.8 3.9H5.9L17.7 20Z"/></svg>
-        Twitter
-      </a>
-      <a class="contact-link" href="https://www.instagram.com/malditosraperos" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Malditos Raperos">
-        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm8.7 2.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/></svg>
-        Instagram
-      </a>
-      <a class="contact-link" href="mailto:malditosraperos@gmail.com" aria-label="Enviar correo a Malditos Raperos">
-        <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm8 8.7L20 7.5V6l-8 5.2L4 6v1.5l8 5.2Z"/></svg>
-        Email
-      </a>
-    </div>
-  </section>
-
-
-  <div id="statusToast" class="status-toast" aria-live="polite" aria-atomic="true">
-    <div id="statusToastIcon" class="status-toast-icon">✓</div>
-    <div id="statusToastMessage" class="status-toast-message">Actualizado correctamente</div>
+  <div id="statusToast" class="status-toast">
+    <div id="statusToastIcon" class="status-toast-icon"></div>
+    <div id="statusToastMessage" class="status-toast-message"></div>
   </div>
 
-  <div id="cookieBanner" class="cookie-banner" style="display: none;">
-    <div class="cookie-content">
-      <p>Utilizamos cookies propias y de terceros, como Google Analytics, para analizar el tráfico de la biblioteca.</p>
-      <div class="cookie-buttons">
-        <button id="acceptCookies" class="btn btn-cookie">Aceptar todas</button>
-        <button id="rejectCookies" class="btn btn-secondary btn-cookie">Rechazar</button>
+  <footer>
+    <div class="container">
+      <div class="contact-block">
+        <p>¿Eres artista o sello y quieres añadir, modificar o retirar algún lanzamiento de la biblioteca? Escríbenos:</p>
+        <div class="contact-links">
+          <a href="mailto:malditosraperosweb@gmail.com" class="contact-link">
+            <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            malditosraperosweb@gmail.com
+          </a>
+          <a href="https://instagram.com/malditosraperos" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            @malditosraperos
+          </a>
+        </div>
       </div>
+      <p>&copy; 2026 La Biblioteca de Malditos Raperos. Todos los derechos reservados.</p>
     </div>
-  </div>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-  getFirestore,  
-  collection,  
-  onSnapshot,  
-  doc,  
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
-      authDomain: "malditosraperos-c9198.firebaseapp.com",
-      projectId: "malditosraperos-c9198",
-      storageBucket: "malditosraperos-c9198.firebasestorage.app",
-      messagingSenderId: "78058247623",
-      appId: "1:78058247623:web:c05270f82c18f5b5bb35e2",
-      measurementId: "G-GQGTE0P3RS"
+      apiKey: "AIzaSyDE0...",
+      authDomain: "malditos-raperos.firebaseapp.com",
+      projectId: "malditos-raperos",
+      storageBucket: "malditos-raperos.appspot.com",
+      messagingSenderId: "557161730030",
+      appId: "1:557161730030:web:96e838e55c5dfb56c805eb"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const ADMIN_EMAILS = [
-      'malditosraperos@gmail.com'
-    ];
-
-    let isAdmin = false;
-    let albums = [];
+    let allAlbums = [];
+    let currentLibrary = 'rap';
     let currentPage = 1;
-    let statusToastTimeout = null;
+    let isAdmin = false;
 
-    const mesesNombres = {
+    const MONTH_NAMES = {
       "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio",
       "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
     };
 
-    const libraryConfig = {
-      rap: {
-        title: 'Listado de álbumes de rap',
-        subtitle: 'Consulta los lanzamientos de rap del panorama español almacenados en la biblioteca.',
-        breadcrumb: 'Listado de álbumes de rap '
-      },
-      rb: {
-        title: 'Listado de álbumes de r&b',
-        subtitle: 'Consulta los lanzamientos de r&b del panorama español almacenados en la biblioteca.',
-        breadcrumb: 'Listado de álbumes de r&b'
-      }
-    };
-
-    const params = new URLSearchParams(window.location.search);
-    const CURRENT_LIBRARY = params.get('library') === 'rb' ? 'rb' : 'rap';
-    const currentConfig = libraryConfig[CURRENT_LIBRARY];
-
-    document.title = `Biblioteca | ${CURRENT_LIBRARY === 'rap' ? 'Rap' : 'R&B'}`;
-    document.getElementById('pageTitle').innerText = currentConfig.title;
-    document.getElementById('pageSubtitle').innerText = currentConfig.subtitle;
-    document.getElementById('breadcrumbCurrent').innerText = currentConfig.breadcrumb;
-    document.getElementById('rapSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rap');
-    document.getElementById('rapSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rap');
-    document.getElementById('rbSwitch').classList.toggle('active', CURRENT_LIBRARY === 'rb');
-    document.getElementById('rbSwitch').classList.toggle('secondary', CURRENT_LIBRARY !== 'rb');
-
-    initCookieBanner();
-
-    onAuthStateChanged(auth, (user) => {
-      isAdmin = !!user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
-      document.body.classList.toggle('is-admin', isAdmin);
-      renderAlbums();
-    });
-
-    onSnapshot(collection(db, 'albums'), (snapshot) => {
-      albums = [];
-      snapshot.forEach((documentSnapshot) => {
-        albums.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
-      });
-      populateYearFilter();
-      renderAlbums();
-    });
-
-    function initCookieBanner() {
-      const banner = document.getElementById('cookieBanner');
-      const acceptBtn = document.getElementById('acceptCookies');
-      const rejectBtn = document.getElementById('rejectCookies');
-
-      if (!banner || !acceptBtn || !rejectBtn) return;
-
-      const cookieDecision = localStorage.getItem('cookiesMalditosRaperos');
-
-      if (!cookieDecision) {
-        banner.style.display = 'block';
-      } else if (cookieDecision === 'accepted') {
-        getAnalytics(app);
-      }
-
-      acceptBtn.addEventListener('click', () => {
-        localStorage.setItem('cookiesMalditosRaperos', 'accepted');
-        banner.style.display = 'none';
-        getAnalytics(app);
-      });
-
-      rejectBtn.addEventListener('click', () => {
-        localStorage.setItem('cookiesMalditosRaperos', 'rejected');
-        banner.style.display = 'none';
-      });
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
 
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+    // ✅ AUXILIAR PARA ESCAPAR COMILLAS EN NOMBRE DE AUTOR
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
+    window.escapeHtml = escapeHtml;
 
-    function escapeAttribute(value) {
-      return escapeHtml(value).replaceAll('`', '&#096;');
-    }
-
-    function getSafeCoverUrl(album) {
-      return album.cover || album.image || album.coverUrl || album.portada || '';
-    }
-
-
-    function showStatusToast(type, message) {
-      const toast = document.getElementById('statusToast');
-      const icon = document.getElementById('statusToastIcon');
-      const messageElement = document.getElementById('statusToastMessage');
-
-      if (!toast || !icon || !messageElement) return;
-
-      clearTimeout(statusToastTimeout);
-      toast.classList.remove('success', 'error', 'show');
-
-      icon.textContent = type === 'success' ? '✓' : '✕';
-      messageElement.textContent = message;
-      toast.classList.add(type === 'success' ? 'success' : 'error');
-
-      requestAnimationFrame(() => {
-        toast.classList.add('show');
-      });
-
-      statusToastTimeout = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2800);
-    }
-
-    function scrollToTop() {
+    // ✅ NUEVA FUNCIÓN PARA FILTRAR POR AUTOR CLICADO
+    function filterByAuthor(authorName) {
+      if (!authorName) return;
+      document.getElementById('searchTitle').value = '';
+      document.getElementById('searchAuthor').value = authorName;
+      resetPageAndRender();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    window.filterByAuthor = filterByAuthor;
 
-    function populateYearFilter() {
-  const yearSelect = document.getElementById('filterYear');
-  // Guardamos el valor previo, si es un año numérico. Si es "all" o vacío, por defecto "all"
-  const previousValue = yearSelect.value && yearSelect.value !== 'all' ? yearSelect.value : 'all';
+    function initLibrary() {
+      const libParam = getQueryParam('library');
+      if (libParam === 'rb') {
+        currentLibrary = 'rb';
+        document.getElementById('rbSwitch').classList.add('active');
+        document.getElementById('pageTitle').textContent = 'Biblioteca R&B';
+        document.getElementById('pageSubtitle').textContent = 'Descubre y navega por el catálogo de lanzamientos de R&B.';
+        document.getElementById('breadcrumbCurrent').textContent = 'R&B';
+      } else {
+        currentLibrary = 'rap';
+        document.getElementById('rapSwitch').classList.add('active');
+        document.getElementById('pageTitle').textContent = 'Biblioteca Rap';
+        document.getElementById('pageSubtitle').textContent = 'Descubre y navega por el catálogo de lanzamientos de Rap.';
+        document.getElementById('breadcrumbCurrent').textContent = 'Rap';
+      }
 
-  // Obtener años únicos normalizados como texto
-  const years = [...new Set(
-    albums
-      .map(a => String(a.year || '').trim())
-      .filter(y => y)
-  )];
-
-  // Ordenar descendente numéricamente cuando sea posible
-  years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
-
-  // Limpiar y pintar las opciones asegurando el nodo por defecto
-  yearSelect.innerHTML = '';
-  
-  const defaultOption = document.createElement('option');
-  defaultOption.value = 'all';
-  defaultOption.textContent = 'Todos los años';
-  yearSelect.appendChild(defaultOption);
-
-  years.forEach(year => {
-    const option = document.createElement('option');
-    option.value = year;
-    option.textContent = year;
-    yearSelect.appendChild(option);
-  });
-
-  // Forzar de manera segura el valor seleccionado
-  if (years.includes(previousValue)) {
-    yearSelect.value = previousValue;
-  } else {
-    yearSelect.value = 'all';
-  }
-}
-    
-function getFilteredAlbums() {
-      const rawYearFilter = document.getElementById('filterYear').value;
-      const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
-      const monthFilter = document.getElementById('filterMonth').value;
-
-      // Función interna para limpiar mayúsculas, espacios y tildes/acentos
-      const cleanString = (str) => {
-        return String(str ?? '')
-          .toLowerCase()
-          .trim()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, ""); // Remueve tildes, diéresis, etc.
-      };
-
-      // Limpiamos los textos que introduce el usuario en los buscadores
-      const searchAuthorValue = cleanString(document.getElementById('searchAuthor').value);
-      const searchTitleValue = cleanString(document.getElementById('searchTitle').value);
-
-      return albums.filter(album => {
-        const albumLibrary = album.library || 'rap';
-        const matchLibrary = albumLibrary === CURRENT_LIBRARY;
-        const matchYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
-        const matchMonth = monthFilter === 'all' || album.month === monthFilter;
-
-        // Limpiamos también las propiedades del álbum de la base de datos antes de comparar
-        const cleanAlbumAuthor = cleanString(album.author);
-        const cleanAlbumTitle = cleanString(album.title);
-
-        const matchAuthor = !searchAuthorValue || cleanAlbumAuthor.includes(searchAuthorValue);
-        const matchTitle = !searchTitleValue || cleanAlbumTitle.includes(searchTitleValue);
-
-        return matchLibrary && matchYear && matchMonth && matchAuthor && matchTitle;
+      onSnapshot(collection(db, "albums"), (snapshot) => {
+        allAlbums = [];
+        snapshot.forEach((doc) => {
+          allAlbums.push({ id: doc.id, ...doc.data() });
+        });
+        populateYearFilter();
+        render();
+      }, (error) => {
+        console.error("Error al cargar datos:", error);
+        document.getElementById('albumsGrid').innerHTML = '<div class="no-results">Error al sincronizar con la base de datos.</div>';
       });
     }
 
-    function buildAlbumLinksHtml(album) {
-      let linksHtml = '<div class="album-links-container">';
+    onAuthStateChanged(auth, (user) => {
+      isAdmin = !!user;
+      render();
+    });
 
-      if (album.link) {
-        linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
-      }
-      if (album.bandcamp) {
-        linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
-      }
-      if (album.youtube) {
-        linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
-      }
-      if (!album.link && !album.bandcamp && !album.youtube) {
-        linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
-      }
+    function populateYearFilter() {
+      const yearSelect = document.getElementById('filterYear');
+      const savedValue = yearSelect.value;
+      
+      const years = [...new Set(allAlbums
+        .filter(a => a.library === currentLibrary && a.year)
+        .map(a => parseInt(a.year))
+      )].sort((a, b) => b - a);
 
-      linksHtml += '</div>';
-      return linksHtml;
+      yearSelect.innerHTML = '<option value="all">Todos los años</option>';
+      years.forEach(year => {
+        yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+      });
+
+      if ([...yearSelect.options].some(o => o.value === savedValue)) {
+        yearSelect.value = savedValue;
+      } else {
+        yearSelect.value = 'all';
+      }
     }
 
-    window.resetPageAndRender = function() {
-      currentPage = 1;
-      renderAlbums();
-      scrollToTop();
-    };
-
-    window.changePage = function(direction) {
-      currentPage += direction;
-      renderAlbums();
-      scrollToTop();
-    };
-
-    window.goToPage = function(page) {
-      currentPage = page;
-      renderAlbums();
-      scrollToTop();
-    };
-
-    window.goToLastPage = function() {
-      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
-      const filteredAlbums = getFilteredAlbums();
-      currentPage = Math.ceil(filteredAlbums.length / itemsPerPage) || 1;
-      renderAlbums();
-      scrollToTop();
-    };
-
-    window.clearFilters = function() {
+    function clearFilters() {
       document.getElementById('searchAuthor').value = '';
       document.getElementById('searchTitle').value = '';
       document.getElementById('filterYear').value = 'all';
       document.getElementById('filterMonth').value = 'all';
       document.getElementById('sortDirection').value = 'desc';
       resetPageAndRender();
-    };
+    }
+    window.clearFilters = clearFilters;
 
-    window.renderAlbums = function() {
+    function resetPageAndRender() {
+      currentPage = 1;
+      render();
+    }
+    window.resetPageAndRender = resetPageAndRender;
+
+    function changePage(direction) {
+      currentPage += direction;
+      render();
+      window.scrollTo({ top: document.querySelector('.filters').offsetTop - 20, behavior: 'smooth' });
+    }
+    window.changePage = changePage;
+
+    function goToPage(pageNum) {
+      currentPage = pageNum;
+      render();
+      window.scrollTo({ top: document.querySelector('.filters').offsetTop - 20, behavior: 'smooth' });
+    }
+    window.goToPage = goToPage;
+
+    function goToLastPage() {
+      const filtered = getFilteredAlbums();
+      const limit = parseInt(document.getElementById('itemsPerPage').value);
+      const totalPages = Math.max(1, Math.ceil(filtered.length / limit));
+      goToPage(totalPages);
+    }
+    window.goToLastPage = goToLastPage;
+
+    function getFilteredAlbums() {
+      const authorQuery = document.getElementById('searchAuthor').value.toLowerCase().trim();
+      const titleQuery = document.getElementById('searchTitle').value.toLowerCase().trim();
+      const selectedYear = document.getElementById('filterYear').value;
+      const selectedMonth = document.getElementById('filterMonth').value;
+      const sortDir = document.getElementById('sortDirection').value;
+
+      let filtered = allAlbums.filter(album => album.library === currentLibrary);
+
+      if (authorQuery) {
+        filtered = filtered.filter(a => (a.author || '').toLowerCase().includes(authorQuery));
+      }
+      if (titleQuery) {
+        filtered = filtered.filter(a => (a.title || '').toLowerCase().includes(titleQuery));
+      }
+      if (selectedYear !== 'all') {
+        filtered = filtered.filter(a => String(a.year) === selectedYear);
+      }
+      if (selectedMonth !== 'all') {
+        filtered = filtered.filter(a => String(a.month) === selectedMonth);
+      }
+
+      filtered.sort((a, b) => {
+        const dateA = (a.year || '0000') + (a.month || '00');
+        const dateB = (b.year || '0000') + (b.month || '00');
+        
+        if (dateA !== dateB) {
+          return sortDir === 'desc' ? dateB.localeCompare(dateA) : dateA.localeCompare(dateB);
+        }
+        return (a.title || '').localeCompare(b.title || '');
+      });
+
+      return filtered;
+    }
+
+    function render() {
       const grid = document.getElementById('albumsGrid');
-      const sortDirection = document.getElementById('sortDirection').value;
-      const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value, 10);
-      grid.innerHTML = '';
-
-      const filteredAlbums = getFilteredAlbums();
-
-    filteredAlbums.sort((a, b) => {
-      // 1. Criterio principal: Año
-      const yearA = parseInt(a.year) || 0;
-      const yearB = parseInt(b.year) || 0;
-      if (yearA !== yearB) {
-        return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
-      }
-
-      // 2. Criterio secundario: Mes (si los años son iguales)
-      const monthA = parseInt(a.month) || 0;
-      const monthB = parseInt(b.month) || 0;
-      if (monthA !== monthB) {
-        return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
-      }
-
-      // 3. Criterio de "Desempate" seguro: Convertir cualquier variante de fecha a milisegundos numéricos
-      const getMs = (album) => {
-        const dateVal = album.createdAt || album.updatedAt;
-        if (!dateVal) return 0;
-        // Si es un Timestamp de Firestore (.toDate() o tiene .seconds)
-        if (typeof dateVal.toDate === 'function') return dateVal.toDate().getTime();
-        if (dateVal.seconds) return dateVal.seconds * 1000;
-        // Si ya es un String ISO o un objeto Date estándar
-        const parsed = Date.parse(dateVal);
-        return isNaN(parsed) ? 0 : parsed;
-      };
-
-      const timeA = getMs(a);
-      const timeB = getMs(b);
-
-      if (timeA !== timeB) {
-        return sortDirection === 'desc' ? timeB - timeA : timeA - timeB;
-      }
-      
-      return 0;
-    });
-
-      const totalItems = filteredAlbums.length;
-      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+      const filtered = getFilteredAlbums();
+      const limit = parseInt(document.getElementById('itemsPerPage').value);
+      const totalPages = Math.max(1, Math.ceil(filtered.length / limit));
 
       if (currentPage > totalPages) currentPage = totalPages;
-      if (currentPage < 1) currentPage = 1;
 
-      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-      document.getElementById('firstPageBtn').disabled = currentPage === 1;
-      document.getElementById('prevPageBtn').disabled = currentPage === 1;
-      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-      document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
-      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages} (${totalItems} resultados)`;
-      
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
+      document.getElementById('prevPageBtn').disabled = (currentPage === 1);
+      document.getElementById('firstPageBtn').disabled = (currentPage === 1);
+      document.getElementById('nextPageBtn').disabled = (currentPage === totalPages);
+      document.getElementById('lastPageBtn').disabled = (currentPage === totalPages);
+      document.getElementById('paginationInfo').textContent = `Página ${currentPage} de ${totalPages} (${filtered.length} lanzamientos)`;
 
-
-      if (paginatedAlbums.length === 0) {
-        grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="no-results">No se han encontrado lanzamientos con los criterios seleccionados.</div>';
         return;
       }
 
-      paginatedAlbums.forEach(album => {
-        const card = document.createElement('div');
+      const start = (currentPage - 1) * limit;
+      const end = start + limit;
+      const pageItems = filtered.slice(start, end);
+
+      grid.innerHTML = '';
+      pageItems.forEach(album => {
+        const card = document.createElement('article');
         card.className = 'album-card';
 
-        const linksHtml = buildAlbumLinksHtml(album);
-        const monthName = mesesNombres[album.month] || 'Mes desconocido';
-        const yearLabel = album.year || 'Año desconocido';
-        const coverUrl = getSafeCoverUrl(album);
-        const albumId = escapeAttribute(album.id);
-        const title = escapeHtml(album.title || 'Sin título');
-        const author = escapeHtml(album.author || 'Autor desconocido');
+        let linksHtml = '';
+        if (album.link) linksHtml += `<a class="album-link-btn spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">Escuchar en Spotify</a>`;
+        if (album.bandcamp) linksHtml += `<a class="album-link-btn bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">Escuchar en Bandcamp</a>`;
+        if (album.youtube) linksHtml += `<a class="album-link-btn youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">Escuchar en YouTube</a>`;
 
+        let adminActionsHtml = '';
+        if (isAdmin) {
+          adminActionsHtml = `
+            <div class="album-admin-actions">
+              <button class="btn album-edit-btn" onclick="openEditAlbumModal('${album.id}')">Editar Datos</button>
+            </div>
+          `;
+        }
+
+        const monthLabel = MONTH_NAMES[album.month] || 'Mes desconocido';
+        const yearLabel = album.year || 'Año desconocido';
+
+        // ✅ SE INTEGRA LA CLASE INTERACTIVA Y EL EVENTO ONCLICK EN EL AUTOR
         card.innerHTML = `
           <div class="album-cover-container">
-            <img
-              class="album-cover"
-              src="${escapeAttribute(coverUrl)}"
-              alt="Portada de ${title}"
-              loading="lazy"
-              onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=Sin+Portada';"
-            >
+            <img class="album-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/400x400?text=Sin+Portada'" loading="lazy">
           </div>
-
           <div class="album-info">
             <div>
-              <p class="album-title">${title}</p>
-              <p class="album-author">${author}</p>
-              <p class="album-date">📅 ${escapeHtml(monthName)} de ${escapeHtml(yearLabel)}</p>
+              <h2 class="album-title">${album.title || 'Sin título'}</h2>
+              <div class="album-author author-clickable" onclick="filterByAuthor('${escapeHtml(album.author || '')}')">${album.author || 'Autor desconocido'}</div>
+              <div class="album-date">📅 ${monthLabel} de ${yearLabel}</div>
             </div>
-
             <div>
-              ${linksHtml}
-
-             ${isAdmin ? `
-  <div class="album-admin-actions">  
-    <button  
-      type="button"  
-      class="btn album-edit-btn"  
-      onclick="openEditAlbumModal('${albumId}')"  
-    >  
-      ✏️ Editar disco  
-    </button>  
-
-    <button  
-      type="button"  
-      class="btn btn-secondary album-delete-btn"  
-      onclick="deleteAlbum('${albumId}')"  
-      style="margin-top:6px;"  
-    >  
-      🗑️ Eliminar disco  
-    </button>  
-  </div>  
-` : ''}
+              <div class="album-links-container">${linksHtml}</div>
+              ${adminActionsHtml}
             </div>
           </div>
         `;
-
         grid.appendChild(card);
       });
-    };
+    }
 
-    window.openEditAlbumModal = function(albumId) {
-      if (!isAdmin) {
-        showStatusToast('error', 'No tienes permisos para editar discos.');
-        return;
-      }
-
-      const album = albums.find(item => item.id === albumId);
-
-      if (!album) {
-        showStatusToast('error', 'No se ha encontrado el disco.');
-        return;
-      }
+    async function openEditAlbumModal(id) {
+      const album = allAlbums.find(a => a.id === id);
+      if (!album) return;
 
       document.getElementById('editAlbumId').value = album.id;
+      document.getElementById('editLibrary').value = album.library || 'rap';
       document.getElementById('editAuthor').value = album.author || '';
       document.getElementById('editTitle').value = album.title || '';
-      document.getElementById('editYear').value = album.year || '';
-      document.getElementById('editMonth').value = album.month || '01';
-      document.getElementById('editLibrary').value = album.library || CURRENT_LIBRARY || 'rap';
-      document.getElementById('editCover').value = getSafeCoverUrl(album);
+      document.getElementById('editCover').value = album.cover || '';
       document.getElementById('editLink').value = album.link || '';
       document.getElementById('editBandcamp').value = album.bandcamp || '';
       document.getElementById('editYoutube').value = album.youtube || '';
+      document.getElementById('editYear').value = album.year || '2026';
+      document.getElementById('editMonth').value = album.month || '01';
+
       document.getElementById('editAlbumModal').style.display = 'flex';
-    };
+    }
+    window.openEditAlbumModal = openEditAlbumModal;
 
-    window.closeEditAlbumModal = function() {
+    function closeEditAlbumModal() {
       document.getElementById('editAlbumModal').style.display = 'none';
-    };
-window.deleteAlbum = async function(albumId) {
-  if (!isAdmin) {
-    showStatusToast('error', 'No tienes permisos para eliminar discos.');
-    return;
-  }
+      document.getElementById('editAlbumForm').reset();
+    }
+    window.closeEditAlbumModal = closeEditAlbumModal;
 
-  const confirmDelete = confirm('¿Seguro que quieres eliminar este disco?');
-  if (!confirmDelete) return;
+    function showStatusToast(type, message) {
+      const toast = document.getElementById('statusToast');
+      const icon = document.getElementById('statusToastIcon');
+      const msg = document.getElementById('statusToastMessage');
 
-  try {
-    await deleteDoc(doc(db, 'albums', albumId));
-    showStatusToast('success', 'Disco eliminado correctamente.');
-  } catch (error) {
-    console.error('Error al eliminar el disco:', error);
-    showStatusToast('error', 'No se ha podido eliminar el disco.');
-  }
-};
-    document.getElementById('editAlbumModal').addEventListener('click', function(event) {
-      if (event.target.id === 'editAlbumModal') {
-        closeEditAlbumModal();
-      }
-    });
+      toast.className = 'status-toast';
+      toast.classList.add(type);
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      msg.textContent = message;
+
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
 
     document.getElementById('editAlbumForm').addEventListener('submit', async function(event) {
       event.preventDefault();
@@ -1245,6 +1034,13 @@ window.deleteAlbum = async function(albumId) {
         showStatusToast('error', 'No se ha podido actualizar el disco.');
       }
     });
+
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('editAlbumModal');
+      if (e.target === modal) closeEditAlbumModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', initLibrary);
   </script>
 </body>
 </html>

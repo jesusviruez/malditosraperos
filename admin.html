@@ -462,6 +462,19 @@
       cursor: pointer; transition: var(--transition);
     }
     .close-modal:hover { color: var(--danger-color); }
+
+    .meta {
+  color: var(--accent-color);
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meta:hover {
+  text-decoration: underline;
+}
+
   </style>
 </head>
 <body>
@@ -1107,8 +1120,14 @@ window.resetForm = function(clearStatus = true) {
           <div>
             <span class="pill ${albumLibrary}">${albumLibrary === 'rap' ? 'Rap' : 'R&B'}</span>
             <h3>${album.title || 'Sin título'}</h3>
-            <div class="meta">${album.author || 'Autor desconocido'}</div>
-            <div class="details">
+<div
+  class="meta author-link"
+  data-author="${album.author || ''}"
+  title="Ver todos los álbumes de este autor"
+>
+  ${album.author || 'Autor desconocido'}
+</div>
+<div class="details">
               <span>📅 ${monthName} de ${yearLabel}</span>
               <span>📚 ${albumLibrary === 'rap' ? 'Biblioteca Rap' : 'Biblioteca R&B'}</span>
             </div>
@@ -1121,6 +1140,10 @@ window.resetForm = function(clearStatus = true) {
         `;
 
         list.appendChild(card);
+        card.querySelector('.author-link')?.addEventListener('click', (e) => {
+  filterByAuthor(e.target.dataset.author);
+});
+
       });
     };
 
@@ -1134,6 +1157,15 @@ window.resetForm = function(clearStatus = true) {
       el.textContent = message;
       el.classList.add(type);
     }
+
+    window.filterByAuthor = function(author) {
+  document.getElementById('adminSearch').value = author;
+  currentPage = 1;
+  renderAdminList();
+
+  document.getElementById('adminSearch')
+    .scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
   </script>
 </body>
 </html>

@@ -588,6 +588,18 @@
         max-width: none;
       }
     }
+
+    .album-author {
+  color: var(--accent-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.album-author:hover {
+  text-decoration: underline;
+}
   </style>
 </head>
 <body>
@@ -1121,7 +1133,12 @@ function getFilteredAlbums() {
           <div class="album-info">
             <div>
               <p class="album-title">${title}</p>
-              <p class="album-author">${author}</p>
+            <p
+            class="album-author"
+            onclick="filterByAuthor('${escapeAttribute(album.author || '')}')"
+            title="Ver todos los álbumes de este autor">
+            ${author}
+          </p>
               <p class="album-date">📅 ${escapeHtml(monthName)} de ${escapeHtml(yearLabel)}</p>
             </div>
 
@@ -1245,6 +1262,15 @@ window.deleteAlbum = async function(albumId) {
         showStatusToast('error', 'No se ha podido actualizar el disco.');
       }
     });
+
+window.filterByAuthor = function(author) {
+  document.getElementById('searchAuthor').value = author;
+  currentPage = 1;
+  renderAlbums();
+  showStatusToast('success', `Mostrando discos de ${author}`);
+  scrollToTop();
+};
+
   </script>
 </body>
 </html>

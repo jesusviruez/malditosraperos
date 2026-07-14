@@ -552,10 +552,18 @@
             <input type="url" id="albumCover" required placeholder="https://ejemplo.com/portada.jpg">
           </div>
 
-          <div class="form-group">
-            <label for="albumLink">Link de Spotify</label>
-            <input type="url" id="albumLink" placeholder="https://open.spotify.com/album/...">
-          </div>
+        <div class="form-group">
+  <label for="albumLink">Link de Spotify</label>
+  <div class="input-with-btn">
+    <input type="url" id="albumLink">
+    <button
+      type="button"
+      class="btn btn-secondary btn-search-helper"
+      onclick="helperSearchSpotify('albumAuthor','albumTitleInput')">
+      🟢 Buscar link
+    </button>
+  </div>
+</div>
 
           <div class="form-group">
             <label for="albumBandcamp">Link de Bandcamp (opcional)</label>
@@ -565,10 +573,18 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="albumYoutube">Link de YouTube (opcional)</label>
-            <input type="url" id="albumYoutube" placeholder="https://www.youtube.com/playlist?list=...">
-          </div>
+        <div class="form-group">
+  <label for="albumYoutube">Link de YouTube (opcional)</label>
+  <div class="input-with-btn">
+    <input type="url" id="albumYoutube">
+    <button
+      type="button"
+      class="btn btn-secondary btn-search-helper"
+      onclick="helperSearchYoutube('albumAuthor','albumTitleInput')">
+      🔴 Buscar link
+    </button>
+  </div>
+</div>
 
 <div class="form-group">
   <label for="albumReleaseYear">Año</label>
@@ -697,10 +713,18 @@
           <input type="url" id="editAlbumCover" required>
         </div>
 
-        <div class="form-group">
-          <label for="editAlbumLink">Link de Spotify</label>
-          <input type="url" id="editAlbumLink">
-        </div>
+     <div class="form-group">
+  <label for="editAlbumLink">Link de Spotify</label>
+  <div class="input-with-btn">
+    <input type="url" id="editAlbumLink">
+    <button
+      type="button"
+      class="btn btn-secondary btn-search-helper"
+      onclick="helperSearchSpotify('editAlbumAuthor','editAlbumTitleInput')">
+      🟢 Buscar link
+    </button>
+  </div>
+</div>
 
         <div class="form-group">
           <label for="editAlbumBandcamp">Link de Bandcamp (opcional)</label>
@@ -710,10 +734,18 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="editAlbumYoutube">Link de YouTube (opcional)</label>
-          <input type="url" id="editAlbumYoutube">
-        </div>
+      <div class="form-group">
+  <label for="editAlbumYoutube">Link de YouTube (opcional)</label>
+  <div class="input-with-btn">
+    <input type="url" id="editAlbumYoutube">
+    <button
+      type="button"
+      class="btn btn-secondary btn-search-helper"
+      onclick="helperSearchYoutube('editAlbumAuthor','editAlbumTitleInput')">
+      🔴 Buscar link
+    </button>
+  </div>
+</div>
 
         <div class="form-group">
           <label for="editAlbumReleaseYear">Año</label>
@@ -793,6 +825,38 @@
       
       window.open(searchUrl, '_blank');
     };
+
+    window.helperSearchSpotify = function(authorInputId, titleInputId) {
+  const author = document.getElementById(authorInputId)?.value.trim() || "";
+  const title = document.getElementById(titleInputId)?.value.trim() || "";
+
+  if (!author && !title) {
+    alert("Escribe el autor o el título primero.");
+    return;
+  }
+
+  const query = encodeURIComponent(`${author} ${title}`);
+  window.open(
+    `https://open.spotify.com/search/${query}`,
+    '_blank'
+  );
+};
+
+window.helperSearchYoutube = function(authorInputId, titleInputId) {
+  const author = document.getElementById(authorInputId)?.value.trim() || "";
+  const title = document.getElementById(titleInputId)?.value.trim() || "";
+
+  if (!author && !title) {
+    alert("Escribe el autor o el título primero.");
+    return;
+  }
+
+  const query = encodeURIComponent(`${author} ${title} album`);
+  window.open(
+    `https://www.youtube.com/results?search_query=${query}`,
+    '_blank'
+  );
+};
 
     onSnapshot(collection(db, 'albums'), (snapshot) => {
       albums = [];

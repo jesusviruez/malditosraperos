@@ -1169,9 +1169,9 @@ window.resetForm = function(clearStatus = true) {
         card.className = 'admin-card';
 
         let linksHtml = '';
-        if (album.link) {
+if (album.link) {
           linksHtml += `<a class="link-badge spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">Spotify</a>`;
-        }
+}
         if (album.bandcamp) {
           linksHtml += `<a class="link-badge bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">Bandcamp</a>`;
         }

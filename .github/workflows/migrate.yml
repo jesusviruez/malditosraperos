@@ -1,0 +1,24 @@
+name: Run Firestore Migration
+
+on:
+  workflow_dispatch: # Esto permite ejecutar el script manualmente desde la pestaña "Actions" de GitHub
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install firebase-admin axios
+
+      - name: Run migration script
+        env:
+          FIREBASE_CONFIG_JSON: ${{ secrets.FIREBASE_CONFIG_JSON }}
+        run: node scripts/migrate.js

@@ -662,6 +662,12 @@
     <option value="asc">Más antiguos primero</option>
   </select>
 
+<button
+  class="btn"
+  onclick="backfillStreamingLinks()">
+  🎵 Completar Apple/Tidal/Amazon
+</button>
+         
 <button 
     id="filterNoCoverBtn"
     class="btn btn-secondary"
@@ -818,8 +824,15 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBXtUHO5_IYEAFk696uBThhd-etduPA0y8",
       authDomain: "malditosraperos-c9198.firebaseapp.com",
@@ -1294,6 +1307,129 @@ if (album.appleMusic) {
 
   document.getElementById('adminSearch')
     .scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+    window.backfillStreamingLinks = async function () {
+
+  if (!userLoggedIn) {
+    alert("Debes iniciar sesión.");
+    return;
+  }
+
+  const pendientes = albums.filter(album =>
+    album.link &&
+    (!album.appleMusic || !album.tidal || !album.amazonMusic)
+  );
+
+  if (!pendientes.length) {
+    alert("No hay álbumes pendientes.");
+    return;
+  }
+
+  const confirmar = confirm(
+    `Se van a procesar ${pendientes.length} álbumes.\n\n¿Continuar?`
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  let actualizados = 0;
+  let errores = 0;
+
+  for (const album of pendientes) {
+
+    try {
+
+      console.log(
+        `Procesando: ${album.author} - ${album.title}`
+      );
+
+      const response = await fetch(
+        "https://api.song.link/v1-alpha.1/links?url=" +
+        encodeURIComponent(album.link)
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      const updateData = {};
+
+      if (
+        !album.appleMusic &&
+        data.linksByPlatform?.appleMusic?.url
+      ) {
+        updateData.appleMusic =
+          data.linksByPlatform.appleMusic.url;
+      }
+
+      if (
+        !album.tidal &&
+        data.linksByPlatform?.tidal?.url
+      ) {
+        updateData.tidal =
+          data.linksByPlatform.tidal.url;
+      }
+
+      if (
+        !album.amazonMusic &&
+        data.linksByPlatform?.amazonMusic?.url
+      ) {
+        updateData.amazonMusic =
+          data.linksByPlatform.amazonMusic.url;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+
+        await updateDoc(
+          doc(db, "albums", album.id),
+          updateData
+        );
+
+        actualizados++;
+
+        console.log(
+          "✅ Actualizado",
+          album.title,
+          updateData
+        );
+
+      } else {
+
+        console.log(
+          "⚪ Sin coincidencias",
+          album.title
+        );
+      }
+
+      // Espera para evitar rate limits
+      await new Promise(resolve =>
+        setTimeout(resolve, 7000)
+      );
+
+    } catch (error) {
+
+      errores++;
+
+      console.error(
+        `❌ Error en ${album.title}`,
+        error
+      );
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 10000)
+      );
+    }
+  }
+
+  alert(
+    `Proceso finalizado\n\nActualizados: ${actualizados}\nErrores: ${errores}`
+  );
 };
   </script>
 </body>

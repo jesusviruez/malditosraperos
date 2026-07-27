@@ -361,6 +361,9 @@
     .link-badge.spotify { color: #1DB954; background: rgba(29,185,84,0.14); }
     .link-badge.bandcamp { color: #62b4ec; background: rgba(30,161,242,0.14); }
     .link-badge.youtube { color: #ff6f6f; background: rgba(255,0,0,0.12); }
+    .link-badge.amazon { color: #FF9900; background: rgba(255,153,0,0.14); }
+    .link-badge.apple { color: #FA243C; background: rgba(250,36,60,0.14); }
+    .link-badge.tidal { color: #00FFFF; background: rgba(0,255,255,0.14); }
 
     .admin-actions {
       display: flex;
@@ -586,6 +589,30 @@
   </div>
 </div>
 
+          <div class="form-group">
+            <label for="albumAmazonMusic">Link de Amazon Music (opcional)</label>
+            <div class="input-with-btn">
+              <input type="url" id="albumAmazonMusic" placeholder="https://music.amazon.com/...">
+              <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchAmazonMusic('albumAuthor', 'albumTitleInput')">📦 Buscar link</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="albumAppleMusic">Link de Apple Music (opcional)</label>
+            <div class="input-with-btn">
+              <input type="url" id="albumAppleMusic" placeholder="https://music.apple.com/...">
+              <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchAppleMusic('albumAuthor', 'albumTitleInput')">🍎 Buscar link</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="albumTidal">Link de Tidal (opcional)</label>
+            <div class="input-with-btn">
+              <input type="url" id="albumTidal" placeholder="https://tidal.com/album/...">
+              <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchTidal('albumAuthor', 'albumTitleInput')">🌊 Buscar link</button>
+            </div>
+          </div>
+
 <div class="form-group">
   <label for="albumReleaseYear">Año</label>
   <input type="number" id="albumReleaseYear" required min="1900" max="2100" placeholder="Ej: 2026" value="2026">
@@ -748,6 +775,30 @@
 </div>
 
         <div class="form-group">
+          <label for="editAlbumAmazonMusic">Link de Amazon Music (opcional)</label>
+          <div class="input-with-btn">
+            <input type="url" id="editAlbumAmazonMusic">
+            <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchAmazonMusic('editAlbumAuthor', 'editAlbumTitleInput')">📦 Buscar link</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editAlbumAppleMusic">Link de Apple Music (opcional)</label>
+          <div class="input-with-btn">
+            <input type="url" id="editAlbumAppleMusic">
+            <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchAppleMusic('editAlbumAuthor', 'editAlbumTitleInput')">🍎 Buscar link</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editAlbumTidal">Link de Tidal (opcional)</label>
+          <div class="input-with-btn">
+            <input type="url" id="editAlbumTidal">
+            <button type="button" class="btn btn-secondary btn-search-helper" onclick="helperSearchTidal('editAlbumAuthor', 'editAlbumTitleInput')">🌊 Buscar link</button>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label for="editAlbumReleaseYear">Año</label>
           <input type="number" id="editAlbumReleaseYear" required min="1900" max="2100">
         </div>
@@ -858,6 +909,39 @@ window.helperSearchYoutube = function(authorInputId, titleInputId) {
   );
 };
 
+    window.helperSearchAmazonMusic = function(authorInputId, titleInputId) {
+      const author = document.getElementById(authorInputId)?.value.trim() || "";
+      const title = document.getElementById(titleInputId)?.value.trim() || "";
+      if (!author && !title) {
+        alert("Escribe el autor o el título primero.");
+        return;
+      }
+      const query = encodeURIComponent(`${author} ${title}`);
+      window.open(`https://music.amazon.com/search/${query}`, '_blank');
+    };
+
+    window.helperSearchAppleMusic = function(authorInputId, titleInputId) {
+      const author = document.getElementById(authorInputId)?.value.trim() || "";
+      const title = document.getElementById(titleInputId)?.value.trim() || "";
+      if (!author && !title) {
+        alert("Escribe el autor o el título primero.");
+        return;
+      }
+      const query = encodeURIComponent(`${author} ${title}`);
+      window.open(`https://music.apple.com/us/search?term=${query}`, '_blank');
+    };
+
+    window.helperSearchTidal = function(authorInputId, titleInputId) {
+      const author = document.getElementById(authorInputId)?.value.trim() || "";
+      const title = document.getElementById(titleInputId)?.value.trim() || "";
+      if (!author && !title) {
+        alert("Escribe el autor o el título primero.");
+        return;
+      }
+      const query = encodeURIComponent(`${author} ${title}`);
+      window.open(`https://listen.tidal.com/search?q=${query}`, '_blank');
+    };
+
     onSnapshot(collection(db, 'albums'), (snapshot) => {
       albums = [];
       snapshot.forEach((doc) => {
@@ -885,6 +969,9 @@ window.helperSearchYoutube = function(authorInputId, titleInputId) {
         link: document.getElementById('editAlbumLink').value.trim() || '',
         bandcamp: document.getElementById('editAlbumBandcamp').value.trim() || '',
         youtube: document.getElementById('editAlbumYoutube').value.trim() || '',
+        amazonMusicUrl: document.getElementById('editAlbumAmazonMusic').value.trim() || '',
+        appleMusicUrl: document.getElementById('editAlbumAppleMusic').value.trim() || '',
+        tidalUrl: document.getElementById('editAlbumTidal').value.trim() || '',
         year: document.getElementById('editAlbumReleaseYear').value,
         month: document.getElementById('editAlbumReleaseMonth').value
       };
@@ -986,6 +1073,9 @@ window.saveAlbum = async function(event) {
         link: document.getElementById('albumLink').value.trim() || '',
         bandcamp: document.getElementById('albumBandcamp').value.trim() || '',
         youtube: document.getElementById('albumYoutube').value.trim() || '',
+        amazonMusicUrl: document.getElementById('albumAmazonMusic').value.trim() || '',
+        appleMusicUrl: document.getElementById('albumAppleMusic').value.trim() || '',
+        tidalUrl: document.getElementById('albumTidal').value.trim() || '',
         year: document.getElementById('albumReleaseYear').value,
         month: document.getElementById('albumReleaseMonth').value
       };
@@ -1012,6 +1102,9 @@ window.editAlbum = function(id) {
       document.getElementById('editAlbumLink').value = album.link || '';
       document.getElementById('editAlbumBandcamp').value = album.bandcamp || '';
       document.getElementById('editAlbumYoutube').value = album.youtube || '';
+      document.getElementById('editAlbumAmazonMusic').value = album.amazonMusicUrl || '';
+      document.getElementById('editAlbumAppleMusic').value = album.appleMusicUrl || '';
+      document.getElementById('editAlbumTidal').value = album.tidalUrl || '';
       document.getElementById('editAlbumReleaseYear').value = album.year || '2026';
       document.getElementById('editAlbumReleaseMonth').value = album.month || '01';
 
@@ -1169,14 +1262,23 @@ window.resetForm = function(clearStatus = true) {
         card.className = 'admin-card';
 
         let linksHtml = '';
-if (album.link) {
+        if (album.link) {
           linksHtml += `<a class="link-badge spotify" href="${album.link}" target="_blank" rel="noopener noreferrer">Spotify</a>`;
-}
+        }
         if (album.bandcamp) {
           linksHtml += `<a class="link-badge bandcamp" href="${album.bandcamp}" target="_blank" rel="noopener noreferrer">Bandcamp</a>`;
         }
         if (album.youtube) {
           linksHtml += `<a class="link-badge youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">YouTube</a>`;
+        }
+        if (album.amazonMusicUrl) {
+          linksHtml += `<a class="link-badge amazon" href="${album.amazonMusicUrl}" target="_blank" rel="noopener noreferrer">Amazon Music</a>`;
+        }
+        if (album.appleMusicUrl) {
+          linksHtml += `<a class="link-badge apple" href="${album.appleMusicUrl}" target="_blank" rel="noopener noreferrer">Apple Music</a>`;
+        }
+        if (album.tidalUrl) {
+          linksHtml += `<a class="link-badge tidal" href="${album.tidalUrl}" target="_blank" rel="noopener noreferrer">Tidal</a>`;
         }
 
         card.innerHTML = `

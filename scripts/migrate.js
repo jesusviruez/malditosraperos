@@ -1,5 +1,5 @@
-const admin = require('firebase-admin');
-const axios = require('axios');
+import admin from 'firebase-admin';
+import axios from 'axios';
 
 // Inicializar Firebase usando las credenciales inyectadas por GitHub
 const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG_JSON);
@@ -40,7 +40,7 @@ async function migrateAlbums() {
                 console.error(`Error en el álbum ${doc.id}:`, error.message);
             }
             
-            // Pausa de medio segundo para no saturar la API gratuita de Odesli
+            // Pausa de medio segundo para no saturar la API
             await new Promise(resolve => setTimeout(resolve, 500));
         }
     }

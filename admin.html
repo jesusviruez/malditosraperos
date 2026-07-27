@@ -475,6 +475,21 @@
   text-decoration: underline;
 }
 
+    .link-badge.tidal {
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.link-badge.amazon {
+  color: #ffb84d;
+  background: rgba(255, 153, 0, 0.14);
+}
+
+.link-badge.apple {
+  color: #f5f5f7;
+  background: rgba(255, 255, 255, 0.14);
+}
+
   </style>
 </head>
 <body>
@@ -584,6 +599,21 @@
       🔴 Buscar link
     </button>
   </div>
+</div>
+
+          <div class="form-group">
+  <label for="albumTidal">Link de Tidal</label>
+  <input type="url" id="albumTidal" placeholder="https://tidal.com/browse/album/...">
+</div>
+
+<div class="form-group">
+  <label for="albumAmazonMusic">Link de Amazon Music</label>
+  <input type="url" id="albumAmazonMusic" placeholder="https://music.amazon.es/albums/...">
+</div>
+
+<div class="form-group">
+  <label for="albumAppleMusic">Link de Apple Music</label>
+  <input type="url" id="albumAppleMusic" placeholder="https://music.apple.com/es/album/...">
 </div>
 
 <div class="form-group">
@@ -748,6 +778,21 @@
 </div>
 
         <div class="form-group">
+  <label for="editAlbumTidal">Link de Tidal</label>
+  <input type="url" id="editAlbumTidal">
+</div>
+
+<div class="form-group">
+  <label for="editAlbumAmazonMusic">Link de Amazon Music</label>
+  <input type="url" id="editAlbumAmazonMusic">
+</div>
+
+<div class="form-group">
+  <label for="editAlbumAppleMusic">Link de Apple Music</label>
+  <input type="url" id="editAlbumAppleMusic">
+</div>
+
+        <div class="form-group">
           <label for="editAlbumReleaseYear">Año</label>
           <input type="number" id="editAlbumReleaseYear" required min="1900" max="2100">
         </div>
@@ -877,17 +922,20 @@ window.helperSearchYoutube = function(authorInputId, titleInputId) {
       if (!userLoggedIn) return;
 
       const id = document.getElementById('editAlbumId').value;
-      const albumData = {
-        library: document.getElementById('editAlbumLibrary').value,
-        author: document.getElementById('editAlbumAuthor').value.trim(),
-        title: document.getElementById('editAlbumTitleInput').value.trim(),
-        cover: document.getElementById('editAlbumCover').value.trim(),
-        link: document.getElementById('editAlbumLink').value.trim() || '',
-        bandcamp: document.getElementById('editAlbumBandcamp').value.trim() || '',
-        youtube: document.getElementById('editAlbumYoutube').value.trim() || '',
-        year: document.getElementById('editAlbumReleaseYear').value,
-        month: document.getElementById('editAlbumReleaseMonth').value
-      };
+const albumData = {
+  library: document.getElementById('albumLibrary').value,
+  author: document.getElementById('albumAuthor').value.trim(),
+  title: document.getElementById('albumTitleInput').value.trim(),
+  cover: document.getElementById('albumCover').value.trim(),
+  link: document.getElementById('albumLink').value.trim() || '',
+  bandcamp: document.getElementById('albumBandcamp').value.trim() || '',
+  youtube: document.getElementById('albumYoutube').value.trim() || '',
+  tidal: document.getElementById('albumTidal').value.trim() || '',
+  amazonMusic: document.getElementById('albumAmazonMusic').value.trim() || '',
+  appleMusic: document.getElementById('albumAppleMusic').value.trim() || '',
+  year: document.getElementById('albumReleaseYear').value,
+  month: document.getElementById('albumReleaseMonth').value
+};
 
       try {
         await updateDoc(doc(db, 'albums', id), albumData);
@@ -978,17 +1026,20 @@ window.saveAlbum = async function(event) {
       event.preventDefault();
       if (!userLoggedIn) return;
 
-      const albumData = {
-        library: document.getElementById('albumLibrary').value,
-        author: document.getElementById('albumAuthor').value.trim(),
-        title: document.getElementById('albumTitleInput').value.trim(),
-        cover: document.getElementById('albumCover').value.trim(),
-        link: document.getElementById('albumLink').value.trim() || '',
-        bandcamp: document.getElementById('albumBandcamp').value.trim() || '',
-        youtube: document.getElementById('albumYoutube').value.trim() || '',
-        year: document.getElementById('albumReleaseYear').value,
-        month: document.getElementById('albumReleaseMonth').value
-      };
+const albumData = {
+  library: document.getElementById('albumLibrary').value,
+  author: document.getElementById('albumAuthor').value.trim(),
+  title: document.getElementById('albumTitleInput').value.trim(),
+  cover: document.getElementById('albumCover').value.trim(),
+  link: document.getElementById('albumLink').value.trim() || '',
+  bandcamp: document.getElementById('albumBandcamp').value.trim() || '',
+  youtube: document.getElementById('albumYoutube').value.trim() || '',
+  tidal: document.getElementById('albumTidal').value.trim() || '',
+  amazonMusic: document.getElementById('albumAmazonMusic').value.trim() || '',
+  appleMusic: document.getElementById('albumAppleMusic').value.trim() || '',
+  year: document.getElementById('albumReleaseYear').value,
+  month: document.getElementById('albumReleaseMonth').value
+};
 
       try {
         await addDoc(collection(db, 'albums'), albumData);
@@ -1014,6 +1065,9 @@ window.editAlbum = function(id) {
       document.getElementById('editAlbumYoutube').value = album.youtube || '';
       document.getElementById('editAlbumReleaseYear').value = album.year || '2026';
       document.getElementById('editAlbumReleaseMonth').value = album.month || '01';
+      document.getElementById('editAlbumTidal').value = album.tidal || '';
+      document.getElementById('editAlbumAmazonMusic').value = album.amazonMusic || '';
+      document.getElementById('editAlbumAppleMusic').value = album.appleMusic || '';
 
       document.getElementById('editModal').classList.add('active');
     };
@@ -1178,6 +1232,17 @@ window.resetForm = function(clearStatus = true) {
         if (album.youtube) {
           linksHtml += `<a class="link-badge youtube" href="${album.youtube}" target="_blank" rel="noopener noreferrer">YouTube</a>`;
         }
+        if (album.tidal) {
+  linksHtml += `${album.tidal}Tidal</a>`;
+}
+
+if (album.amazonMusic) {
+  linksHtml += `${album.amazonMusic}Amazon Music</a>`;
+}
+
+if (album.appleMusic) {
+  linksHtml += `${album.appleMusic}Apple Music</a>`;
+}
 
         card.innerHTML = `
           <img class="admin-cover" src="${album.cover || ''}" alt="Portada de ${album.title || 'álbum'}" onerror="this.src='https://placehold.co/200x200?text=Sin+Portada'">

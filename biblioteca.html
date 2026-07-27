@@ -18,6 +18,9 @@
       --spotify-color: #1DB954;
       --bandcamp-color: #1da1f2;
       --youtube-color: #FF0000;
+      --amazon-color: #FF9900;
+      --apple-color: #FA243C;
+      --tidal-color: #00FFFF;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -226,6 +229,12 @@
       color: var(--accent-color);
       font-size: 0.95rem;
       font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .album-author:hover {
+      text-decoration: underline;
     }
 
     .album-date {
@@ -270,6 +279,27 @@
     }
     .album-link-btn.youtube:hover { background: var(--youtube-color); color: #ffffff; }
 
+    .album-link-btn.amazon {
+      background: rgba(255, 153, 0, 0.15);
+      border-color: rgba(255, 153, 0, 0.3);
+      color: #FF9900;
+    }
+    .album-link-btn.amazon:hover { background: var(--amazon-color); color: #0b0c10; }
+
+    .album-link-btn.apple {
+      background: rgba(250, 36, 60, 0.15);
+      border-color: rgba(250, 36, 60, 0.3);
+      color: #FA243C;
+    }
+    .album-link-btn.apple:hover { background: var(--apple-color); color: #ffffff; }
+
+    .album-link-btn.tidal {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.3);
+      color: #00FFFF;
+    }
+    .album-link-btn.tidal:hover { background: var(--tidal-color); color: #0b0c10; }
+
     .album-admin-actions { margin-top: 10px; }
 
     .album-edit-btn {
@@ -285,14 +315,14 @@
     }
 
     .album-delete-btn {
-  border: 1px solid rgba(255, 74, 74, 0.4);
-  color: #ff4a4a;
-}
+      border: 1px solid rgba(255, 74, 74, 0.4);
+      color: #ff4a4a;
+    }
 
-.album-delete-btn:hover {
-  background: #ff4a4a;
-  color: #ffffff;
-}
+    .album-delete-btn:hover {
+      background: #ff4a4a;
+      color: #ffffff;
+    }
 
     .no-results {
       grid-column: 1 / -1;
@@ -393,7 +423,6 @@
       gap: 10px;
       margin-top: 8px;
     }
-
 
     .status-toast {
       position: fixed;
@@ -588,18 +617,6 @@
         max-width: none;
       }
     }
-
-    .album-author {
-  color: var(--accent-color);
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.album-author:hover {
-  text-decoration: underline;
-}
   </style>
 </head>
 <body>
@@ -686,7 +703,7 @@
 
         <label>Autor <input type="text" id="editAuthor" required></label>
         <label>Título <input type="text" id="editTitle" required></label>
-        <label>Año <input type="text" id="editYear" placeholder="2025" required></label>
+        <label>Año <input type="text" id="editYear" placeholder="2026" required></label>
 
         <label>
           Mes
@@ -710,6 +727,9 @@
         <label>Spotify <input type="url" id="editLink" placeholder="https://open.spotify.com/..."></label>
         <label>Bandcamp <input type="url" id="editBandcamp" placeholder="https://..."></label>
         <label>YouTube <input type="url" id="editYoutube" placeholder="https://..."></label>
+        <label>Amazon Music <input type="url" id="editAmazonMusic" placeholder="https://music.amazon.com/..."></label>
+        <label>Apple Music <input type="url" id="editAppleMusic" placeholder="https://music.apple.com/..."></label>
+        <label>Tidal <input type="url" id="editTidal" placeholder="https://tidal.com/..."></label>
 
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeEditAlbumModal()">Cancelar</button>
@@ -739,7 +759,6 @@
     </div>
   </section>
 
-
   <div id="statusToast" class="status-toast" aria-live="polite" aria-atomic="true">
     <div id="statusToastIcon" class="status-toast-icon">✓</div>
     <div id="statusToastMessage" class="status-toast-message">Actualizado correctamente</div>
@@ -757,14 +776,14 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-  getFirestore,  
-  collection,  
-  onSnapshot,  
-  doc,  
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import {
+      getFirestore,  
+      collection,  
+      onSnapshot,  
+      doc,  
+      updateDoc,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -883,7 +902,6 @@
       return album.cover || album.image || album.coverUrl || album.portada || '';
     }
 
-
     function showStatusToast(type, message) {
       const toast = document.getElementById('statusToast');
       const icon = document.getElementById('statusToastIcon');
@@ -912,58 +930,51 @@
     }
 
     function populateYearFilter() {
-  const yearSelect = document.getElementById('filterYear');
-  // Guardamos el valor previo, si es un año numérico. Si es "all" o vacío, por defecto "all"
-  const previousValue = yearSelect.value && yearSelect.value !== 'all' ? yearSelect.value : 'all';
+      const yearSelect = document.getElementById('filterYear');
+      const previousValue = yearSelect.value && yearSelect.value !== 'all' ? yearSelect.value : 'all';
 
-  // Obtener años únicos normalizados como texto
-  const years = [...new Set(
-    albums
-      .map(a => String(a.year || '').trim())
-      .filter(y => y)
-  )];
+      const years = [...new Set(
+        albums
+          .map(a => String(a.year || '').trim())
+          .filter(y => y)
+      )];
 
-  // Ordenar descendente numéricamente cuando sea posible
-  years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
+      years.sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
 
-  // Limpiar y pintar las opciones asegurando el nodo por defecto
-  yearSelect.innerHTML = '';
-  
-  const defaultOption = document.createElement('option');
-  defaultOption.value = 'all';
-  defaultOption.textContent = 'Todos los años';
-  yearSelect.appendChild(defaultOption);
+      yearSelect.innerHTML = '';
+      
+      const defaultOption = document.createElement('option');
+      defaultOption.value = 'all';
+      defaultOption.textContent = 'Todos los años';
+      yearSelect.appendChild(defaultOption);
 
-  years.forEach(year => {
-    const option = document.createElement('option');
-    option.value = year;
-    option.textContent = year;
-    yearSelect.appendChild(option);
-  });
+      years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      });
 
-  // Forzar de manera segura el valor seleccionado
-  if (years.includes(previousValue)) {
-    yearSelect.value = previousValue;
-  } else {
-    yearSelect.value = 'all';
-  }
-}
+      if (years.includes(previousValue)) {
+        yearSelect.value = previousValue;
+      } else {
+        yearSelect.value = 'all';
+      }
+    }
     
-function getFilteredAlbums() {
+    function getFilteredAlbums() {
       const rawYearFilter = document.getElementById('filterYear').value;
       const yearFilter = rawYearFilter && rawYearFilter !== '' ? rawYearFilter : 'all';
       const monthFilter = document.getElementById('filterMonth').value;
 
-      // Función interna para limpiar mayúsculas, espacios y tildes/acentos
       const cleanString = (str) => {
         return String(str ?? '')
           .toLowerCase()
           .trim()
           .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, ""); // Remueve tildes, diéresis, etc.
+          .replace(/[\u0300-\u036f]/g, "");
       };
 
-      // Limpiamos los textos que introduce el usuario en los buscadores
       const searchAuthorValue = cleanString(document.getElementById('searchAuthor').value);
       const searchTitleValue = cleanString(document.getElementById('searchTitle').value);
 
@@ -973,7 +984,6 @@ function getFilteredAlbums() {
         const matchYear = yearFilter === 'all' || String(album.year || '').trim() === yearFilter;
         const matchMonth = monthFilter === 'all' || album.month === monthFilter;
 
-        // Limpiamos también las propiedades del álbum de la base de datos antes de comparar
         const cleanAlbumAuthor = cleanString(album.author);
         const cleanAlbumTitle = cleanString(album.title);
 
@@ -986,17 +996,34 @@ function getFilteredAlbums() {
 
     function buildAlbumLinksHtml(album) {
       let linksHtml = '<div class="album-links-container">';
+      let hasLinks = false;
 
       if (album.link) {
+        hasLinks = true;
         linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
       }
       if (album.bandcamp) {
+        hasLinks = true;
         linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
       }
       if (album.youtube) {
+        hasLinks = true;
         linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
       }
-      if (!album.link && !album.bandcamp && !album.youtube) {
+      if (album.amazonMusicUrl) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn amazon" href="${escapeAttribute(album.amazonMusicUrl)}" target="_blank" rel="noopener noreferrer">📦 Amazon Music</a>`;
+      }
+      if (album.appleMusicUrl) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn apple" href="${escapeAttribute(album.appleMusicUrl)}" target="_blank" rel="noopener noreferrer">🍎 Apple Music</a>`;
+      }
+      if (album.tidalUrl) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn tidal" href="${escapeAttribute(album.tidalUrl)}" target="_blank" rel="noopener noreferrer">🌊 Tidal</a>`;
+      }
+
+      if (!hasLinks) {
         linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
       }
 
@@ -1047,42 +1074,37 @@ function getFilteredAlbums() {
 
       const filteredAlbums = getFilteredAlbums();
 
-    filteredAlbums.sort((a, b) => {
-      // 1. Criterio principal: Año
-      const yearA = parseInt(a.year) || 0;
-      const yearB = parseInt(b.year) || 0;
-      if (yearA !== yearB) {
-        return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
-      }
+      filteredAlbums.sort((a, b) => {
+        const yearA = parseInt(a.year) || 0;
+        const yearB = parseInt(b.year) || 0;
+        if (yearA !== yearB) {
+          return sortDirection === 'desc' ? yearB - yearA : yearA - yearB;
+        }
 
-      // 2. Criterio secundario: Mes (si los años son iguales)
-      const monthA = parseInt(a.month) || 0;
-      const monthB = parseInt(b.month) || 0;
-      if (monthA !== monthB) {
-        return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
-      }
+        const monthA = parseInt(a.month) || 0;
+        const monthB = parseInt(b.month) || 0;
+        if (monthA !== monthB) {
+          return sortDirection === 'desc' ? monthB - monthA : monthA - monthB;
+        }
 
-      // 3. Criterio de "Desempate" seguro: Convertir cualquier variante de fecha a milisegundos numéricos
-      const getMs = (album) => {
-        const dateVal = album.createdAt || album.updatedAt;
-        if (!dateVal) return 0;
-        // Si es un Timestamp de Firestore (.toDate() o tiene .seconds)
-        if (typeof dateVal.toDate === 'function') return dateVal.toDate().getTime();
-        if (dateVal.seconds) return dateVal.seconds * 1000;
-        // Si ya es un String ISO o un objeto Date estándar
-        const parsed = Date.parse(dateVal);
-        return isNaN(parsed) ? 0 : parsed;
-      };
+        const getMs = (album) => {
+          const dateVal = album.createdAt || album.updatedAt;
+          if (!dateVal) return 0;
+          if (typeof dateVal.toDate === 'function') return dateVal.toDate().getTime();
+          if (dateVal.seconds) return dateVal.seconds * 1000;
+          const parsed = Date.parse(dateVal);
+          return isNaN(parsed) ? 0 : parsed;
+        };
 
-      const timeA = getMs(a);
-      const timeB = getMs(b);
+        const timeA = getMs(a);
+        const timeB = getMs(b);
 
-      if (timeA !== timeB) {
-        return sortDirection === 'desc' ? timeB - timeA : timeA - timeB;
-      }
-      
-      return 0;
-    });
+        if (timeA !== timeB) {
+          return sortDirection === 'desc' ? timeB - timeA : timeA - timeB;
+        }
+        
+        return 0;
+      });
 
       const totalItems = filteredAlbums.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
@@ -1090,7 +1112,6 @@ function getFilteredAlbums() {
       if (currentPage > totalPages) currentPage = totalPages;
       if (currentPage < 1) currentPage = 1;
 
-      document.getElementById('paginationInfo').innerText = `Página ${currentPage} de ${totalPages}`;
       document.getElementById('firstPageBtn').disabled = currentPage === 1;
       document.getElementById('prevPageBtn').disabled = currentPage === 1;
       document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
@@ -1100,7 +1121,6 @@ function getFilteredAlbums() {
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       const paginatedAlbums = filteredAlbums.slice(startIndex, endIndex);
-
 
       if (paginatedAlbums.length === 0) {
         grid.innerHTML = '<div class="no-results">No hay lanzamientos que coincidan con los criterios de búsqueda.</div>';
@@ -1133,38 +1153,38 @@ function getFilteredAlbums() {
           <div class="album-info">
             <div>
               <p class="album-title">${title}</p>
-            <p
-            class="album-author"
-            onclick="filterByAuthor('${escapeAttribute(album.author || '')}')"
-            title="Ver todos los álbumes de este autor">
-            ${author}
-          </p>
+              <p
+                class="album-author"
+                onclick="filterByAuthor('${escapeAttribute(album.author || '')}')"
+                title="Ver todos los álbumes de este autor">
+                ${author}
+              </p>
               <p class="album-date">📅 ${escapeHtml(monthName)} de ${escapeHtml(yearLabel)}</p>
             </div>
 
             <div>
               ${linksHtml}
 
-             ${isAdmin ? `
-  <div class="album-admin-actions">  
-    <button  
-      type="button"  
-      class="btn album-edit-btn"  
-      onclick="openEditAlbumModal('${albumId}')"  
-    >  
-      ✏️ Editar disco  
-    </button>  
+              ${isAdmin ? `
+                <div class="album-admin-actions">  
+                  <button  
+                    type="button"  
+                    class="btn album-edit-btn"  
+                    onclick="openEditAlbumModal('${albumId}')"  
+                  >  
+                    ✏️ Editar disco  
+                  </button>  
 
-    <button  
-      type="button"  
-      class="btn btn-secondary album-delete-btn"  
-      onclick="deleteAlbum('${albumId}')"  
-      style="margin-top:6px;"  
-    >  
-      🗑️ Eliminar disco  
-    </button>  
-  </div>  
-` : ''}
+                  <button  
+                    type="button"  
+                    class="btn btn-secondary album-delete-btn"  
+                    onclick="deleteAlbum('${albumId}')"  
+                    style="margin-top:6px;"  
+                  >  
+                    🗑️ Eliminar disco  
+                  </button>  
+                </div>  
+              ` : ''}
             </div>
           </div>
         `;
@@ -1196,29 +1216,34 @@ function getFilteredAlbums() {
       document.getElementById('editLink').value = album.link || '';
       document.getElementById('editBandcamp').value = album.bandcamp || '';
       document.getElementById('editYoutube').value = album.youtube || '';
+      document.getElementById('editAmazonMusic').value = album.amazonMusicUrl || '';
+      document.getElementById('editAppleMusic').value = album.appleMusicUrl || '';
+      document.getElementById('editTidal').value = album.tidalUrl || '';
       document.getElementById('editAlbumModal').style.display = 'flex';
     };
 
     window.closeEditAlbumModal = function() {
       document.getElementById('editAlbumModal').style.display = 'none';
     };
-window.deleteAlbum = async function(albumId) {
-  if (!isAdmin) {
-    showStatusToast('error', 'No tienes permisos para eliminar discos.');
-    return;
-  }
 
-  const confirmDelete = confirm('¿Seguro que quieres eliminar este disco?');
-  if (!confirmDelete) return;
+    window.deleteAlbum = async function(albumId) {
+      if (!isAdmin) {
+        showStatusToast('error', 'No tienes permisos para eliminar discos.');
+        return;
+      }
 
-  try {
-    await deleteDoc(doc(db, 'albums', albumId));
-    showStatusToast('success', 'Disco eliminado correctamente.');
-  } catch (error) {
-    console.error('Error al eliminar el disco:', error);
-    showStatusToast('error', 'No se ha podido eliminar el disco.');
-  }
-};
+      const confirmDelete = confirm('¿Seguro que quieres eliminar este disco?');
+      if (!confirmDelete) return;
+
+      try {
+        await deleteDoc(doc(db, 'albums', albumId));
+        showStatusToast('success', 'Disco eliminado correctamente.');
+      } catch (error) {
+        console.error('Error al eliminar el disco:', error);
+        showStatusToast('error', 'No se ha podido eliminar el disco.');
+      }
+    };
+
     document.getElementById('editAlbumModal').addEventListener('click', function(event) {
       if (event.target.id === 'editAlbumModal') {
         closeEditAlbumModal();
@@ -1250,6 +1275,9 @@ window.deleteAlbum = async function(albumId) {
         link: document.getElementById('editLink').value.trim(),
         bandcamp: document.getElementById('editBandcamp').value.trim(),
         youtube: document.getElementById('editYoutube').value.trim(),
+        amazonMusicUrl: document.getElementById('editAmazonMusic').value.trim(),
+        appleMusicUrl: document.getElementById('editAppleMusic').value.trim(),
+        tidalUrl: document.getElementById('editTidal').value.trim(),
         updatedAt: new Date().toISOString()
       };
 
@@ -1263,14 +1291,13 @@ window.deleteAlbum = async function(albumId) {
       }
     });
 
-window.filterByAuthor = function(author) {
-  document.getElementById('searchAuthor').value = author;
-  currentPage = 1;
-  renderAlbums();
-  showStatusToast('success', `Mostrando discos de ${author}`);
-  scrollToTop();
-};
-
+    window.filterByAuthor = function(author) {
+      document.getElementById('searchAuthor').value = author;
+      currentPage = 1;
+      renderAlbums();
+      showStatusToast('success', `Mostrando discos de ${author}`);
+      scrollToTop();
+    };
   </script>
 </body>
 </html>

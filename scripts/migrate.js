@@ -16,7 +16,7 @@ async function migrateAlbums() {
     
     for (const doc of snapshot.docs) {
         const data = doc.data();
-        const spotifyUrl = data.spotifyUrl; 
+        const spotifyUrl = data.link; 
 
         // Si tiene Spotify y todavía no tiene Apple Music procesado
         if (spotifyUrl && !data.appleMusicUrl) {

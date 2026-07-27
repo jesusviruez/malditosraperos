@@ -243,19 +243,29 @@
       margin-top: 5px;
     }
 
-    .album-links-container { display: flex; flex-direction: column; gap: 6px; }
+   .album-links-container { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 6px; 
+      align-items: center;
+    }
 
     .album-link-btn {
       text-align: center;
       text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 600;
-      display: block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
       transition: var(--transition);
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.05);
+      flex: 1 1 calc(33.333% - 6px); /* Esto hace que entren perfectamente 3 por fila */
+      box-sizing: border-box;
     }
 
     .album-link-btn.spotify {
@@ -994,37 +1004,37 @@
       });
     }
 
-    function buildAlbumLinksHtml(album) {
+function buildAlbumLinksHtml(album) {
       let linksHtml = '<div class="album-links-container">';
       let hasLinks = false;
 
       if (album.link) {
         hasLinks = true;
-        linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>`;
-      }
-      if (album.bandcamp) {
-        hasLinks = true;
-        linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer">🔵 Bandcamp</a>`;
-      }
-      if (album.youtube) {
-        hasLinks = true;
-        linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer">🔴 YouTube</a>`;
-      }
-      if (album.amazonMusicUrl) {
-        hasLinks = true;
-        linksHtml += `<a class="album-link-btn amazon" href="${escapeAttribute(album.amazonMusicUrl)}" target="_blank" rel="noopener noreferrer">📦 Amazon Music</a>`;
+        linksHtml += `<a class="album-link-btn spotify" href="${escapeAttribute(album.link)}" target="_blank" rel="noopener noreferrer" title="Spotify">🟢 Spotify</a>`;
       }
       if (album.appleMusicUrl) {
         hasLinks = true;
-        linksHtml += `<a class="album-link-btn apple" href="${escapeAttribute(album.appleMusicUrl)}" target="_blank" rel="noopener noreferrer">🍎 Apple Music</a>`;
+        linksHtml += `<a class="album-link-btn apple" href="${escapeAttribute(album.appleMusicUrl)}" target="_blank" rel="noopener noreferrer" title="Apple Music">🍎 Apple</a>`;
+      }
+      if (album.amazonMusicUrl) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn amazon" href="${escapeAttribute(album.amazonMusicUrl)}" target="_blank" rel="noopener noreferrer" title="Amazon Music">📦 Amazon</a>`;
       }
       if (album.tidalUrl) {
         hasLinks = true;
-        linksHtml += `<a class="album-link-btn tidal" href="${escapeAttribute(album.tidalUrl)}" target="_blank" rel="noopener noreferrer">🌊 Tidal</a>`;
+        linksHtml += `<a class="album-link-btn tidal" href="${escapeAttribute(album.tidalUrl)}" target="_blank" rel="noopener noreferrer" title="Tidal">🌊 Tidal</a>`;
+      }
+      if (album.bandcamp) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn bandcamp" href="${escapeAttribute(album.bandcamp)}" target="_blank" rel="noopener noreferrer" title="Bandcamp">🔵 Bandcamp</a>`;
+      }
+      if (album.youtube) {
+        hasLinks = true;
+        linksHtml += `<a class="album-link-btn youtube" href="${escapeAttribute(album.youtube)}" target="_blank" rel="noopener noreferrer" title="YouTube">🔴 YouTube</a>`;
       }
 
       if (!hasLinks) {
-        linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Próximamente enlaces</span>';
+        linksHtml += '<span style="font-size:0.85rem; color:var(--text-muted); text-align:center; width:100%;">Próximamente enlaces</span>';
       }
 
       linksHtml += '</div>';
